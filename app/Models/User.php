@@ -22,7 +22,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_admin',
     ];
+    public function events() { return $this->belongsToMany(Event::class); }
 
     /**
      * The attributes that should be hidden for serialization.
