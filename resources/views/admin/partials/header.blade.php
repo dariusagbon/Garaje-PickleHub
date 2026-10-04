@@ -33,6 +33,8 @@
                    href="{{ route('admin.events.history') }}">Event history</a>
                 <a @class(['active' => request()->routeIs('admin.bookings.*')])
                    href="{{ route('admin.bookings.index') }}">Bookings</a>
+                <a @class(['active' => request()->routeIs('admin.reports.*')])
+                   href="{{ route('admin.reports.monthly') }}">Monthly report</a>
                 <a href="{{ url('/') }}">View website</a>
             </nav>
         </aside>

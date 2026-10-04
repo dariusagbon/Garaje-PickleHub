@@ -17,6 +17,7 @@
         <p class="admin-subtitle">{{ now()->format('l, F j') }} · Here's what's happening at PickleHub.</p>
     </div>
     <div class="flex flex-wrap gap-2">
+        <a class="button button-outline" href="{{ route('admin.reports.monthly') }}">Monthly report</a>
         <a class="button button-outline" href="{{ route('admin.bookings.index') }}">Bookings</a>
         <a class="button button-dark" href="{{ route('admin.events.create') }}">
             New event <span aria-hidden="true">+</span>

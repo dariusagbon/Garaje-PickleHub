@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\MonthlyReportController;
 use App\Http\Controllers\PlayerDashboardController;
 use App\Models\Event;
 use Illuminate\Support\Facades\Route;
@@ -94,4 +95,7 @@ Route::middleware(['auth', 'admin'])
         Route::get('bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
         Route::patch('bookings/{booking}', [AdminBookingController::class, 'update'])->name('bookings.update');
         Route::delete('bookings/{booking}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy');
+
+        // Reports
+        Route::get('reports/monthly', MonthlyReportController::class)->name('reports.monthly');
     });
