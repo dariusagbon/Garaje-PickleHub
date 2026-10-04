@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 class EventController extends Controller {
  public function show(Event $event){$event->load(['playerRegistrations','matches.players']); return view('events.show',compact('event'));}
  public function register(Request $r, Event $event){
+  if($event->isPast()) return back()->withErrors(['event'=>'This event has already ended.']);
   $data=$r->validate(['player_name'=>'required|string|max:100']);
   $registration=$event->playerRegistrations()->where('user_id',$r->user()->id)->first();
   if(!$registration && $event->playerRegistrations()->count()>=$event->capacity) return back()->withErrors(['event'=>'This event is full.']);
@@ -36,7 +37,8 @@ class EventController extends Controller {
   if($high<11 || $high-$low<2) return back()->withErrors(['score_a'=>'A game must be won by at least 2 points and reach 11 points.']);
   $match->update($data); return back()->with('message','Score saved.');
  }
- public function index(){return view('admin.events.index',['events'=>Event::with('playerRegistrations')->latest()->get()]);}
+ public function index(){return view('admin.events.index',['events'=>Event::upcoming()->with('playerRegistrations')->orderBy('date')->orderBy('time')->get(),'pastCount'=>Event::past()->count()]);}
+ public function history(){return view('admin.events.history',['events'=>Event::past()->with(['playerRegistrations.user','matches'])->orderByDesc('date')->orderByDesc('time')->get()]);}
  public function create(){return view('admin.events.form',['event'=>new Event]);}
  public function store(Request $r){$data=$r->validate(['title'=>'required|max:255','date'=>'required|date','time'=>'required','description'=>'nullable|string','capacity'=>'required|integer|min:1','score_pin'=>'required|string|min:4|max:32']);$data['score_pin']=Hash::make($data['score_pin']);Event::create($data);return redirect()->route('admin.events.index');}
  public function edit(Event $event){return view('admin.events.form',compact('event'));}

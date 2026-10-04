@@ -9,9 +9,13 @@
  @if($errors->any())<div class="mt-6 border border-[#c86a42] bg-[#f9e5da] p-4 text-sm">@foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach</div>@endif
  <div class="mt-10 grid gap-10 lg:grid-cols-2">
   <section><p class="eyebrow eyebrow-dark">Registration</p><h2 class="mt-2 font-[Space_Grotesk] text-2xl font-bold uppercase">{{ $event->playerRegistrations->count() }} / {{ $event->capacity }} players</h2>
+   @if($event->isPast())
+   <p class="mt-5 text-sm text-[#59645e]">This event has ended. Registration is closed.</p>
+   @else
    @auth
    <form class="mt-5 space-y-3" method="POST" action="{{ route('events.register',$event) }}">@csrf<label class="block text-sm font-bold" for="player_name">Player name</label><input class="w-full border border-[#c9c6ba] bg-[#faf8f2] p-3" id="player_name" name="player_name" maxlength="100" required value="{{ old('player_name', optional($event->playerRegistrations->firstWhere('user_id',auth()->id()))?->player_name ?? auth()->user()->name) }}"><button class="button button-dark">{{ $event->playerRegistrations->firstWhere('user_id',auth()->id()) ? 'Update name' : 'Register' }}</button></form>
    @else <p class="mt-5 text-sm text-[#59645e]"><a class="underline" href="{{ route('login') }}">Log in</a> to register and choose your player name.</p>@endauth
+   @endif
    <h3 class="mt-10 font-[Space_Grotesk] text-xl font-bold uppercase">Registered players</h3><ul class="mt-3 space-y-2">@forelse($event->playerRegistrations as $registration)<li class="border-b border-[#d7d3c7] py-2 text-sm">{{ $registration->player_name }}</li>@empty<li class="py-2 text-sm text-[#59645e]">No players yet.</li>@endforelse</ul>
   </section>
   <section><div class="flex items-end justify-between gap-4"><div><p class="eyebrow eyebrow-dark">Randomized doubles</p><h2 class="mt-2 font-[Space_Grotesk] text-2xl font-bold uppercase">Matches & results</h2></div>@if($event->matches->isEmpty() && $event->playerRegistrations->count() >= 4)<form method="POST" action="{{ route('events.matches.randomize',$event) }}">@csrf<button class="button button-outline">Generate matches</button></form>@auth @if(auth()->user()->is_admin)<form method="POST" action="{{ route('admin.events.matches.randomize',$event) }}">@csrf<button class="button button-outline">Regenerate</button></form>@endif @endauth @elseif(auth()->user()?->is_admin)<form method="POST" action="{{ route('admin.events.matches.randomize',$event) }}">@csrf<button class="button button-outline">Regenerate</button></form>@endif</div>

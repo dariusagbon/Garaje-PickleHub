@@ -183,6 +183,21 @@
     .admin-player-list { @apply flex flex-wrap gap-2; }
     .admin-player-chip { @apply border border-[#c9c6ba] bg-[#f4f1e8] px-3 py-2 text-xs font-bold; }
     .admin-muted { @apply text-xs text-[#788078]; }
+    .history-search { @apply w-full border border-[#d7d3c7] bg-[#f4f1e8] px-3 py-2 text-sm outline-none transition focus:border-[#c86a42] focus:ring-1 focus:ring-[#c86a42] sm:w-64; }
+    .admin-history-list { @apply divide-y divide-[#e8e4da]; }
+    .history-event summary { @apply flex cursor-pointer list-none items-center gap-5 px-2 py-5 transition hover:bg-[#f4f1e8]; }
+    .history-event summary::-webkit-details-marker { display: none; }
+    .history-event summary h3 { @apply mt-1 font-[Space_Grotesk] text-lg font-bold uppercase; }
+    .history-event summary p:not(.eyebrow) { @apply mt-1 text-xs text-[#788078]; }
+    .history-toggle { @apply ml-auto text-[#788078] transition-transform duration-200; }
+    .history-event[open] .history-toggle { @apply rotate-180 text-[#c86a42]; }
+    .history-body { @apply px-2 pb-6; animation: fade-up .25s ease-out; }
+    .history-table-wrap { @apply overflow-x-auto border border-[#e8e4da]; }
+    .history-table { @apply w-full min-w-[560px] text-left text-xs; }
+    .history-table th { @apply bg-[#e4e1d7] px-3 py-2 text-[9px] font-bold uppercase tracking-[1px] text-[#59645e]; }
+    .history-table td { @apply border-t border-[#e8e4da] px-3 py-2.5; }
+    .history-table tbody tr { @apply transition hover:bg-[#f4f1e8]; }
+    .history-table a { @apply text-[#c86a42] hover:underline; }
     .menu-line { @apply my-1 block h-px w-5 bg-[#14201e]; }
     .auth-layout { @apply grid min-h-screen lg:grid-cols-[.9fr_1.1fr]; }
     .auth-visual { @apply relative flex min-h-[360px] flex-col justify-between overflow-hidden bg-[#14201e] p-7 text-[#f4f1e8] sm:p-12 lg:min-h-screen lg:p-16; }

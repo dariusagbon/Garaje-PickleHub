@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Http\Controllers\{AuthController,BookingController,EventController,AdminBookingController};
 
 Route::get('/', function () {
-    $events = Schema::hasTable('events') ? \App\Models\Event::latest()->take(6)->get() : collect();
+    $events = Schema::hasTable('events') ? \App\Models\Event::upcoming()->orderBy('date')->orderBy('time')->take(6)->get() : collect();
     return view('welcome', compact('events'));
 });
 Route::view('/scoring', 'scoring')->name('scoring');
@@ -22,6 +22,7 @@ Route::patch('/events/{event}/matches/{match}/score',[EventController::class,'sc
 Route::post('/events/{event}/matches/randomize',[EventController::class,'randomize'])->name('events.matches.randomize');
 Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(function(){
  Route::get('/', fn() => redirect()->route('admin.events.index'))->name('dashboard');
+ Route::get('events/history',[EventController::class,'history'])->name('events.history');
  Route::resource('events',EventController::class)->except(['show']);
  Route::get('bookings',[AdminBookingController::class,'index'])->name('bookings.index');
  Route::patch('bookings/{booking}',[AdminBookingController::class,'update'])->name('bookings.update');
@@ -34,8 +35,8 @@ Route::get('/dashboard', function () {
         return redirect()->route('admin.dashboard');
     }
 
-    $events = \App\Models\Event::query()->latest()->take(6)->get();
-    $registeredEvents = auth()->user()->events()->latest('date')->take(6)->get();
+    $events = \App\Models\Event::upcoming()->orderBy('date')->orderBy('time')->take(6)->get();
+    $registeredEvents = auth()->user()->events()->upcoming()->orderBy('date')->orderBy('time')->take(6)->get();
 
     return view('player.dashboard', compact('events', 'registeredEvents'));
 })->middleware(['auth'])->name('dashboard');

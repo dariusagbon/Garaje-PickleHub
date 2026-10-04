@@ -349,6 +349,19 @@ if ('IntersectionObserver' in window && revealTargets.length) {
     revealTargets.forEach((target) => target.classList.add('revealed'));
 }
 
+const historySearch = document.querySelector('#history-search');
+historySearch?.addEventListener('input', () => {
+    const term = historySearch.value.trim().toLowerCase();
+    let shown = 0;
+    document.querySelectorAll('[data-history-search]').forEach((item) => {
+        const match = item.dataset.historySearch.includes(term);
+        item.classList.toggle('hidden', !match);
+        if (match) shown += 1;
+        if (term && match) item.open = true;
+    });
+    document.querySelector('#history-no-results')?.classList.toggle('hidden', shown > 0);
+});
+
 document.querySelectorAll('[data-score-target]').forEach((button) => {
     button.addEventListener('click', () => {
         const input = document.querySelector(`#${button.dataset.scoreTarget}`);

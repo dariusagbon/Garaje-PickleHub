@@ -3,7 +3,7 @@
     <div>
         <p class="eyebrow eyebrow-dark">Control center</p>
         <h1 class="admin-title">Events</h1>
-        <p class="admin-subtitle">Create events, manage matchups, and publish live scores.</p>
+        <p class="admin-subtitle">Create events, manage matchups, and publish live scores. Past events move to <a class="underline" href="{{ route('admin.events.history') }}">event history</a>{{ $pastCount ? " ($pastCount)" : '' }}.</p>
     </div>
     <a class="button button-dark" href="{{ route('admin.events.create') }}">New event <span aria-hidden="true">+</span></a>
 </div>
@@ -14,7 +14,7 @@
     <div class="admin-stat"><span>Capacity</span><strong>{{ $events->sum('capacity') }}</strong></div>
 </div>
 <section class="admin-card mt-8">
-    <div class="admin-card-heading"><div><p class="eyebrow eyebrow-dark">Schedule</p><h2>All events</h2></div><a class="nav-link" href="{{ route('admin.bookings.index') }}">Manage bookings &#8594;</a></div>
+    <div class="admin-card-heading"><div><p class="eyebrow eyebrow-dark">Schedule</p><h2>Upcoming events</h2></div><a class="nav-link" href="{{ route('admin.events.history') }}">Event history &#8594;</a></div>
     <div class="admin-event-list">
         @forelse($events as $event)
             <article class="admin-event-row">
@@ -23,7 +23,7 @@
                 <div class="admin-actions"><a class="button button-outline" href="{{ route('events.show', $event) }}">Open</a><a class="button button-outline" href="{{ route('admin.events.edit', $event) }}">Edit</a><form method="POST" action="{{ route('admin.events.destroy', $event) }}">@csrf @method('DELETE')<button class="button button-danger" type="submit">Cancel</button></form></div>
             </article>
         @empty
-            <div class="admin-empty"><p>No events have been created yet.</p><a class="button button-dark mt-4" href="{{ route('admin.events.create') }}">Create your first event</a></div>
+            <div class="admin-empty"><p>No upcoming events.</p><a class="button button-dark mt-4" href="{{ route('admin.events.create') }}">Create your first event</a></div>
         @endforelse
     </div>
 </section>
@@ -47,7 +47,7 @@
                 <a class="button button-outline" href="{{ route('events.show', $event) }}">Open event</a>
             </article>
         @empty
-            <div class="admin-empty"><p>No events have been created yet.</p></div>
+            <div class="admin-empty"><p>No upcoming events.</p></div>
         @endforelse
     </div>
 </section>

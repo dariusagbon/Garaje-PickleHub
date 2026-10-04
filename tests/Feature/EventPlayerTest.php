@@ -99,4 +99,55 @@ class EventPlayerTest extends TestCase
             'score_b' => 7,
         ]);
     }
+
+    public function test_past_events_are_hidden_from_the_player_dashboard(): void
+    {
+        $user = User::factory()->create();
+        $upcoming = $this->event(['title' => 'Tomorrow Social']);
+        $past = $this->event(['title' => 'Last Week Social', 'date' => now()->subWeek()]);
+        $upcoming->users()->attach($user);
+        $past->users()->attach($user);
+
+        $this->actingAs($user)->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Tomorrow Social')
+            ->assertDontSee('Last Week Social');
+        $this->get('/')->assertSee('Tomorrow Social')->assertDontSee('Last Week Social');
+    }
+
+    public function test_players_cannot_register_for_past_events(): void
+    {
+        $event = $this->event(['date' => now()->subDay()]);
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('events.register', $event), ['player_name' => 'Late Player'])
+            ->assertSessionHasErrors('event');
+        $this->assertDatabaseMissing('event_registrations', ['event_id' => $event->id]);
+    }
+
+    public function test_admin_event_history_lists_past_events_and_who_joined(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $player = User::factory()->create(['name' => 'Pat Player', 'email' => 'pat@example.com']);
+        $past = $this->event(['title' => 'Last Week Social', 'date' => now()->subWeek()]);
+        $this->event(['title' => 'Tomorrow Social']);
+        $past->playerRegistrations()->create(['user_id' => $player->id, 'player_name' => 'Smash Pat']);
+
+        $this->actingAs($admin)->get(route('admin.events.history'))
+            ->assertOk()
+            ->assertSee('Last Week Social')
+            ->assertSee('Smash Pat')
+            ->assertSee('pat@example.com')
+            ->assertDontSee('Tomorrow Social');
+
+        $this->actingAs($admin)->get(route('admin.events.index'))
+            ->assertOk()
+            ->assertSee('Tomorrow Social')
+            ->assertDontSee('Last Week Social');
+    }
+
+    public function test_players_cannot_view_event_history(): void
+    {
+        $this->actingAs(User::factory()->create())->get(route('admin.events.history'))->assertForbidden();
+    }
 }

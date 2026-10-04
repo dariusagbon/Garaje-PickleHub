@@ -23,7 +23,9 @@
             <p class="eyebrow eyebrow-dark">Control center</p>
             <nav class="admin-nav" aria-label="Admin navigation">
                 <a class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Dashboard</a>
-                <a class="{{ request()->routeIs('admin.events.*') ? 'active' : '' }}" href="{{ route('admin.events.index') }}">Events</a>
+                <a class="{{ request()->routeIs('admin.events.*') && ! request()->routeIs('admin.events.history') ? 'active' : '' }}" href="{{ route('admin.events.index') }}">Events</a>
+                <a class="{{ request()->routeIs('admin.events.history') ? 'active' : '' }}" href="{{ route('admin.events.history') }}">Event history</a>
+                <a class="{{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}" href="{{ route('admin.bookings.index') }}">Bookings</a>
                 <a href="{{ url('/') }}">View website</a>
             </nav>
         </aside>
