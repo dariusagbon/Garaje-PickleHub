@@ -19,7 +19,6 @@ Route::post('/logout',[AuthController::class,'logout'])->middleware('auth')->nam
 Route::get('/events/{event}',[EventController::class,'show'])->name('events.show');
 Route::post('/events/{event}/register',[EventController::class,'register'])->middleware('auth')->name('events.register');
 Route::patch('/events/{event}/matches/{match}/score',[EventController::class,'score'])->name('events.matches.score');
-Route::post('/events/{event}/matches/randomize',[EventController::class,'randomize'])->name('events.matches.randomize');
 Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(function(){
  Route::get('/', fn() => redirect()->route('admin.events.index'))->name('dashboard');
  Route::get('events/history',[EventController::class,'history'])->name('events.history');

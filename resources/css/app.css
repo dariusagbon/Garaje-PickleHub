@@ -183,6 +183,15 @@
     .admin-player-list { @apply flex flex-wrap gap-2; }
     .admin-player-chip { @apply border border-[#c9c6ba] bg-[#f4f1e8] px-3 py-2 text-xs font-bold; }
     .admin-muted { @apply text-xs text-[#788078]; }
+    .player-queue-row { @apply flex items-center justify-between gap-3 border-b border-[#d7d3c7] py-2 text-sm; }
+    .player-queue-meta { @apply flex items-center gap-2 text-xs text-[#788078]; }
+    .queue-badge { @apply px-2 py-0.5 text-[9px] font-bold uppercase tracking-[1px]; }
+    .queue-badge.playing { @apply bg-[#f9e5da] text-[#a04d32]; }
+    .queue-badge.waiting { @apply bg-[#dce9df] text-[#3c6b4a]; }
+    .queue-card { @apply mt-6 border border-[#d7d3c7] bg-[#faf8f2] p-4 text-sm text-[#59645e]; }
+    .queue-card p:not(.eyebrow) { @apply mt-2; }
+    .queue-chips { @apply mt-3 flex flex-wrap gap-2; }
+    .queue-chips small { @apply ml-1 text-[10px] text-[#788078]; }
     .history-search { @apply w-full border border-[#d7d3c7] bg-[#f4f1e8] px-3 py-2 text-sm outline-none transition focus:border-[#c86a42] focus:ring-1 focus:ring-[#c86a42] sm:w-64; }
     .admin-history-list { @apply divide-y divide-[#e8e4da]; }
     .history-event summary { @apply flex cursor-pointer list-none items-center gap-5 px-2 py-5 transition hover:bg-[#f4f1e8]; }

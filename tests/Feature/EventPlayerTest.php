@@ -37,34 +37,98 @@ class EventPlayerTest extends TestCase
         $this->assertDatabaseHas('event_registrations', ['event_id' => $event->id, 'user_id' => $user->id, 'player_name' => 'Updated Name']);
     }
 
-    public function test_admin_can_randomize_four_registered_players_into_a_doubles_match(): void
+    private function registerPlayers(Event $event, int $count): array
+    {
+        return collect(range(1, $count))->map(function ($number) use ($event) {
+            $user = User::factory()->create();
+            $this->actingAs($user)->post(route('events.register', $event), ['player_name' => "Player $number"])
+                ->assertSessionHasNoErrors();
+            return $user;
+        })->all();
+    }
+
+    private function gamesPlayed(Event $event): array
+    {
+        return $event->playerRegistrations()->get()->mapWithKeys(fn ($registration) => [
+            $registration->player_name => \DB::table('event_match_players')->where('event_registration_id', $registration->id)->count(),
+        ])->all();
+    }
+
+    private function finish(Event $event, EventMatch $match): void
+    {
+        $this->patch(route('events.matches.score', [$event, $match]), ['score_pin' => '2468', 'score_a' => 11, 'score_b' => 5])
+            ->assertSessionHasNoErrors();
+    }
+
+    public function test_registering_the_fourth_player_automatically_creates_a_doubles_match(): void
     {
         $event = $this->event();
-        foreach (range(1, 4) as $number) {
-            $user = User::factory()->create();
-            $event->playerRegistrations()->create(['user_id' => $user->id, 'player_name' => "Player $number"]);
-        }
-        $admin = User::factory()->create(['is_admin' => true]);
+        $this->registerPlayers($event, 3);
+        $this->assertDatabaseCount('event_matches', 0);
 
-        $this->actingAs($admin)->post(route('admin.events.matches.randomize', $event))->assertRedirect();
-        $match = EventMatch::first();
-        $this->assertNotNull($match);
+        $this->registerPlayers($event, 1);
+
+        $match = EventMatch::sole();
         $this->assertCount(4, $match->players);
         $this->assertSame(2, $match->teamA->count());
         $this->assertSame(2, $match->teamB->count());
     }
 
-    public function test_guest_can_generate_initial_matches(): void
+    public function test_nobody_plays_twice_until_everyone_has_played(): void
     {
         $event = $this->event();
-        foreach (range(1, 4) as $number) {
-            $user = User::factory()->create();
-            $event->playerRegistrations()->create(['user_id' => $user->id, 'player_name' => "Player $number"]);
+        $this->registerPlayers($event, 6);
+        $first = EventMatch::sole();
+
+        $this->finish($event, $first);
+
+        $second = EventMatch::latest('id')->first();
+        $this->assertNotSame($first->id, $second->id);
+        // The two players who sat out must be in the next game.
+        $firstIds = $first->players->pluck('id');
+        $this->assertSame(2, $second->players->pluck('id')->diff($firstIds)->count());
+        $this->assertEqualsCanonicalizing([1, 1, 1, 1, 2, 2], array_values($this->gamesPlayed($event)));
+    }
+
+    public function test_game_counts_stay_balanced_over_many_rounds(): void
+    {
+        $event = $this->event(['capacity' => 20]);
+        $this->registerPlayers($event, 7);
+
+        for ($round = 0; $round < 12; $round++) {
+            $this->finish($event, EventMatch::whereNull('score_a')->firstOrFail());
+            $games = $this->gamesPlayed($event);
+            $this->assertLessThanOrEqual(1, max($games) - min($games));
         }
+    }
 
-        $this->post(route('events.matches.randomize', $event))->assertRedirect();
+    public function test_eight_players_get_two_games_at_once(): void
+    {
+        $event = $this->event();
+        $this->registerPlayers($event, 8);
 
-        $this->assertDatabaseCount('event_matches', 1);
+        $this->assertSame(2, $event->matches()->count());
+        $this->assertEquals(array_fill(0, 8, 1), array_values($this->gamesPlayed($event)));
+    }
+
+    public function test_admin_reshuffle_keeps_scored_games(): void
+    {
+        $event = $this->event();
+        $this->registerPlayers($event, 6);
+        $scored = EventMatch::sole();
+        $this->finish($event, $scored);
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)->post(route('admin.events.matches.randomize', $event))->assertRedirect();
+
+        $this->assertDatabaseHas('event_matches', ['id' => $scored->id, 'score_a' => 11]);
+        $this->assertSame(2, $event->matches()->count());
+    }
+
+    public function test_players_cannot_reshuffle_games(): void
+    {
+        $event = $this->event();
+        $this->actingAs(User::factory()->create())->post(route('admin.events.matches.randomize', $event))->assertForbidden();
     }
 
     public function test_scores_must_reach_eleven_and_win_by_two(): void
