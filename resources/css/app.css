@@ -21,7 +21,7 @@
     .eyebrow-dark { @apply text-[#c86a42]; }
     .section-title { @apply mt-3 font-[Space_Grotesk] text-4xl font-bold uppercase leading-[.95] tracking-[-1.5px] sm:text-5xl; }
     .hero { background: #14201e; }
-    .hero-image { background: linear-gradient(90deg, rgba(9, 18, 18, .9), rgba(9, 18, 18, .35)), url('/images/background.jpg') center/cover; }
+    .hero-image { background-position: center; background-size: cover; background-repeat: no-repeat; }
     .court-card { @apply border border-[#d7d3c7] bg-[#faf8f2] p-5; }
     .court-card h3, .event-card h3 { @apply mt-2 font-[Space_Grotesk] text-xl font-bold uppercase; }
     .court-card-dark { @apply border-0 bg-[#14201e] text-[#f4f1e8]; }

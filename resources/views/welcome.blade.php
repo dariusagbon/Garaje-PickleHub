@@ -57,7 +57,7 @@
     <main>
         {{-- ============================== Hero ============================== --}}
         <section id="home" class="hero relative overflow-hidden px-6 py-20 sm:px-[7vw] lg:min-h-[580px] lg:py-32">
-            <div class="hero-image absolute inset-0"></div>
+            <div class="hero-image absolute inset-0" style="background-image: linear-gradient(90deg, rgba(9, 18, 18, .45), rgba(9, 18, 18, .15)), url('{{ asset('images/background.jpg') }}');"></div>
 
             <div class="relative z-[1] max-w-3xl">
                 <p class="eyebrow">Davao's home for pickleball</p>
