@@ -37,7 +37,8 @@ let selectedDate = new Date(today.getFullYear(), today.getMonth(), today.getDate
 let booked = new Set();
 let selectedHours = [];
 
-const dateKey = (date) => date.toISOString().slice(0, 10);
+const pad = (value) => String(value).padStart(2, '0');
+const dateKey = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 const hourText = (hour) => `${hour % 12 || 12}:00 ${hour >= 12 ? 'PM' : 'AM'}`;
 const isBooked = (date, hour) => booked.has(`${dateKey(date)}|${courts[0]}|${hour}`);
 

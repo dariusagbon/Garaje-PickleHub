@@ -70,4 +70,42 @@ class BookingTest extends TestCase
             ->where('guest_email', 'rally@example.com')
             ->count());
     }
+
+    public function test_availability_returns_plain_booking_dates(): void
+    {
+        $date = now()->addDay()->toDateString();
+        $this->postJson(route('bookings.store'), [
+            'guest_name' => 'Court Player',
+            'guest_email' => 'player@example.com',
+            'booking_date' => $date,
+            'court' => 'PickleHub Court',
+            'hours' => [8],
+        ])->assertCreated();
+
+        $this->getJson('/api/bookings')
+            ->assertOk()
+            ->assertExactJson([['booking_date' => $date, 'court' => 'PickleHub Court', 'hour' => 8]]);
+    }
+
+    public function test_a_cancelled_slot_can_be_booked_again(): void
+    {
+        $date = now()->addDay()->toDateString();
+        $data = [
+            'guest_name' => 'First Player',
+            'guest_email' => 'first@example.com',
+            'booking_date' => $date,
+            'court' => 'PickleHub Court',
+            'hours' => [12],
+        ];
+        $this->postJson(route('bookings.store'), $data)->assertCreated();
+        \App\Models\Booking::query()->update(['status' => 'cancelled']);
+
+        $this->postJson(route('bookings.store'), array_merge($data, [
+            'guest_name' => 'Second Player',
+            'guest_email' => 'second@example.com',
+        ]))->assertCreated();
+
+        $this->assertDatabaseHas('bookings', ['guest_email' => 'second@example.com', 'hour' => 12, 'status' => 'confirmed']);
+        $this->assertSame(1, DB::table('bookings')->count());
+    }
 }
