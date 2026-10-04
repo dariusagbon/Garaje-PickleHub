@@ -1,18 +1,30 @@
 @use('App\Services\Matchmaker')
+@use('Carbon\Carbon')
 @use('Illuminate\Support\Str')
 @php
     $myRegistration = $event->playerRegistrations->firstWhere('user_id', auth()->id());
+
+    $registered = $event->playerRegistrations->count();
+    $spotsLeft = max(0, $event->capacity - $registered);
+    $fill = $event->capacity ? min(100, round($registered / $event->capacity * 100)) : 0;
+    $perMatch = Matchmaker::PLAYERS_PER_MATCH;
 
     // Players not in an unscored game, fewest games first: they fill the next game.
     $waiting = $event->playerRegistrations
         ->reject(fn ($registration) => $stats[$registration->id]->active)
         ->sortBy(fn ($registration) => $stats[$registration->id]->games)
         ->values();
-    $needed = max(0, Matchmaker::PLAYERS_PER_MATCH - $waiting->count());
+    $needed = max(0, $perMatch - $waiting->count());
 
     $canReshuffle = auth()->user()?->is_admin
         && ! $event->isPast()
         && $event->matches->contains(fn ($match) => ! $match->isComplete());
+
+    $initials = fn ($name) => collect(preg_split('/\s+/', trim($name)))
+        ->filter()
+        ->take(2)
+        ->map(fn ($part) => mb_strtoupper(mb_substr($part, 0, 1)))
+        ->join('');
 @endphp
 <!doctype html>
 <html lang="en">
@@ -23,74 +35,136 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-[#f4f1e8] text-[#14201e]">
-<main class="mx-auto max-w-5xl px-6 py-12 sm:px-10">
+<main class="mx-auto max-w-6xl px-6 py-10 sm:px-10 sm:py-12">
     <a class="nav-link" href="{{ url('/') }}">← Back to PickleHub</a>
 
-    <header class="mt-8 border-b border-[#d7d3c7] pb-8">
-        <p class="eyebrow eyebrow-dark">
-            {{ $event->date->format('l, M j, Y') }} · {{ \Carbon\Carbon::parse($event->time)->format('g:i A') }}
-        </p>
-        <h1 class="section-title">{{ $event->title }}</h1>
-        <p class="mt-4 max-w-2xl text-[#59645e]">{{ $event->description }}</p>
+    {{-- ============================== Event header ============================== --}}
+    <header class="ev-hero">
+        <div class="min-w-0">
+            <p class="eyebrow">
+                {{ $event->isPast() ? 'Event ended' : ($event->date->isToday() ? 'Today' : 'Upcoming event') }}
+            </p>
+            <h1 class="ev-hero-title">{{ $event->title }}</h1>
+            @if ($event->description)
+                <p class="ev-hero-description">{{ $event->description }}</p>
+            @endif
+        </div>
+
+        <dl class="ev-facts">
+            <div>
+                <dt>Date</dt>
+                <dd>{{ $event->date->format('D, M j') }}</dd>
+            </div>
+            <div>
+                <dt>Start</dt>
+                <dd>{{ Carbon::parse($event->time)->format('g:i A') }}</dd>
+            </div>
+            <div>
+                <dt>Players</dt>
+                <dd>{{ $registered }}<small>/ {{ $event->capacity }}</small></dd>
+            </div>
+            <div>
+                <dt>Spots left</dt>
+                <dd>{{ $event->isPast() ? '—' : $spotsLeft }}</dd>
+            </div>
+            <div class="ev-facts-meter">
+                <span class="ev-meter" aria-hidden="true"><i style="width: {{ $fill }}%"></i></span>
+                <small>{{ $fill }}% full</small>
+            </div>
+        </dl>
     </header>
 
     @if (session('message'))
-        <p class="mt-6 border border-[#9eb3a2] bg-[#e4eee5] p-4 text-sm">{{ session('message') }}</p>
+        <p class="ev-alert ev-alert-success" role="status">{{ session('message') }}</p>
     @endif
 
     @if ($errors->any())
-        <div class="mt-6 border border-[#c86a42] bg-[#f9e5da] p-4 text-sm">
+        <div class="ev-alert ev-alert-error" role="alert">
             @foreach ($errors->all() as $error)
                 <p>{{ $error }}</p>
             @endforeach
         </div>
     @endif
 
-    <div class="mt-10 grid gap-10 lg:grid-cols-2">
+    <div class="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
 
         {{-- ============================== Registration ============================== --}}
-        <section>
-            <p class="eyebrow eyebrow-dark">Registration</p>
-            <h2 class="mt-2 font-[Space_Grotesk] text-2xl font-bold uppercase">
-                {{ $event->playerRegistrations->count() }} / {{ $event->capacity }} players
-            </h2>
+        <section class="ev-panel">
+            <div class="ev-panel-head">
+                <div>
+                    <p class="eyebrow eyebrow-dark">Registration</p>
+                    <h2>Join the event</h2>
+                </div>
+                <span @class(['ev-status', 'is-full' => ! $spotsLeft || $event->isPast()])>
+                    {{ $event->isPast() ? 'Closed' : ($spotsLeft ? 'Open' : 'Full') }}
+                </span>
+            </div>
+
+            <div class="ev-count">
+                <strong>{{ $registered }}</strong>
+                <span>of {{ $event->capacity }} players registered</span>
+            </div>
+            <span class="ev-meter ev-meter-lg" aria-hidden="true"><i style="width: {{ $fill }}%"></i></span>
 
             @if ($event->isPast())
-                <p class="mt-5 text-sm text-[#59645e]">This event has ended. Registration is closed.</p>
+                <p class="ev-note">This event has ended. Registration is closed.</p>
             @else
                 @auth
-                    <form class="mt-5 space-y-3" method="POST" action="{{ route('events.register', $event) }}">
-                        @csrf
-                        <label class="block text-sm font-bold" for="player_name">Player name</label>
-                        <input class="w-full border border-[#c9c6ba] bg-[#faf8f2] p-3"
-                               id="player_name" name="player_name" maxlength="100" required
-                               value="{{ old('player_name', $myRegistration?->player_name ?? auth()->user()->name) }}">
-                        <button class="button button-dark">{{ $myRegistration ? 'Update name' : 'Register' }}</button>
-                    </form>
+                    @if ($myRegistration)
+                        <p class="ev-joined">
+                            <span aria-hidden="true">✓</span>
+                            You're in as <strong>{{ $myRegistration->player_name }}</strong>
+                        </p>
+                    @endif
+
+                    @if ($myRegistration || $spotsLeft)
+                        <form class="ev-join-form" method="POST" action="{{ route('events.register', $event) }}">
+                            @csrf
+                            <label for="player_name">{{ $myRegistration ? 'Change your player name' : 'Your player name' }}</label>
+                            <div class="ev-join-row">
+                                <input id="player_name" name="player_name" maxlength="100" required
+                                       value="{{ old('player_name', $myRegistration?->player_name ?? auth()->user()->name) }}">
+                                <button class="button button-dark">{{ $myRegistration ? 'Update name' : 'Register' }}</button>
+                            </div>
+                        </form>
+                    @else
+                        <p class="ev-note">This event is full.</p>
+                    @endif
                 @else
-                    <p class="mt-5 text-sm text-[#59645e]">
-                        <a class="underline" href="{{ route('login') }}">Log in</a> to register and choose your player name.
-                    </p>
+                    <div class="ev-login-cta">
+                        <p>Log in to register and choose the name shown on the scoreboard.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <a class="button button-dark" href="{{ route('login') }}">Log in to join</a>
+                            <a class="button button-outline" href="{{ route('register') }}">Create account</a>
+                        </div>
+                    </div>
                 @endauth
             @endif
 
-            <h3 class="mt-10 font-[Space_Grotesk] text-xl font-bold uppercase">Registered players</h3>
-            <ul class="mt-3">
-                @forelse ($event->playerRegistrations as $registration)
-                    @php $playerStats = $stats[$registration->id]; @endphp
-                    <li class="player-queue-row">
-                        <span>{{ $registration->player_name }}</span>
-                        <span class="player-queue-meta">
-                            {{ $playerStats->games }} {{ Str::plural('game', $playerStats->games) }}
+            {{-- Registered players --}}
+            <h3 class="ev-subhead">Registered players <span>{{ $registered }}</span></h3>
+            @if ($event->playerRegistrations->isEmpty())
+                <div class="ev-empty">
+                    <span class="ev-empty-icon" aria-hidden="true">🏓</span>
+                    <p><strong>No players yet.</strong> Be the first to join!</p>
+                </div>
+            @else
+                <ul class="ev-players">
+                    @foreach ($event->playerRegistrations as $registration)
+                        @php $playerStats = $stats[$registration->id]; @endphp
+                        <li @class(['is-me' => $registration->is($myRegistration)])>
+                            <span class="ev-avatar" aria-hidden="true">{{ $initials($registration->player_name) }}</span>
+                            <span class="min-w-0 flex-1">
+                                <strong>{{ $registration->player_name }}</strong>
+                                <small>{{ $playerStats->games }} {{ Str::plural('game', $playerStats->games) }}</small>
+                            </span>
                             <b class="queue-badge {{ $playerStats->active ? 'playing' : 'waiting' }}">
                                 {{ $playerStats->active ? 'In a game' : 'Waiting' }}
                             </b>
-                        </span>
-                    </li>
-                @empty
-                    <li class="py-2 text-sm text-[#59645e]">No players yet.</li>
-                @endforelse
-            </ul>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
 
             @if ($event->playerRegistrations->isNotEmpty() && ! $event->isPast())
                 <div class="queue-card">
@@ -116,11 +190,11 @@
         </section>
 
         {{-- ============================== Matches ============================== --}}
-        <section>
-            <div class="flex items-end justify-between gap-4">
+        <section class="ev-panel">
+            <div class="ev-panel-head">
                 <div>
                     <p class="eyebrow eyebrow-dark">Randomized doubles</p>
-                    <h2 class="mt-2 font-[Space_Grotesk] text-2xl font-bold uppercase">Matches & results</h2>
+                    <h2>Matches & results</h2>
                 </div>
 
                 @if ($canReshuffle)
@@ -132,13 +206,13 @@
                 @endif
             </div>
 
-            <p class="mt-3 text-xs text-[#59645e]">
-                Teams are drawn automatically as players register.
-                Nobody plays a second game until everyone has played, unless there aren't enough fresh players to fill a team.
-                Single-game scoring: first to 11, winning by 2.
-            </p>
+            <ul class="ev-rules">
+                <li><span aria-hidden="true">⚄</span><p><strong>Auto teams</strong>Drawn at random as players register.</p></li>
+                <li><span aria-hidden="true">↻</span><p><strong>Fair rotation</strong>Everyone plays before anyone plays twice.</p></li>
+                <li><span aria-hidden="true">11</span><p><strong>One game</strong>First to 11, win by 2.</p></li>
+            </ul>
 
-            <div class="mt-5 space-y-6">
+            <div class="mt-6 space-y-6">
                 @forelse ($event->matches as $match)
                     <article class="scoreboard-card">
                         <div class="flex flex-col justify-between gap-4 border-b border-[#d7d3c7] pb-5 sm:flex-row sm:items-center">
@@ -192,9 +266,29 @@
                         </form>
                     </article>
                 @empty
-                    <p class="text-sm text-[#59645e]">
-                        The first doubles game is drawn automatically once {{ Matchmaker::PLAYERS_PER_MATCH }} players register.
-                    </p>
+                    {{-- Four seats that fill up as players register; the first game is drawn when all are taken. --}}
+                    <div class="ev-first-game">
+                        <div class="ev-seats" aria-hidden="true">
+                            @for ($seat = 0; $seat < $perMatch; $seat++)
+                                @php $player = $event->playerRegistrations[$seat] ?? null; @endphp
+                                <span @class(['ev-seat', 'is-filled' => $player])>
+                                    {{ $player ? $initials($player->player_name) : '?' }}
+                                </span>
+                                @if ($seat === 1)
+                                    <em>vs</em>
+                                @endif
+                            @endfor
+                        </div>
+                        <p class="ev-first-game-title">
+                            {{ $event->isPast() ? 'No games were played.' : 'Waiting for the first game' }}
+                        </p>
+                        @unless ($event->isPast())
+                            <p class="ev-first-game-text">
+                                {{ min($registered, $perMatch) }} of {{ $perMatch }} players ready.
+                                The first doubles game is drawn automatically once {{ $perMatch }} players register.
+                            </p>
+                        @endunless
+                    </div>
                 @endforelse
             </div>
         </section>
