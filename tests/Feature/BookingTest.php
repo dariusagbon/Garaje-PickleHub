@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Booking;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -64,7 +65,7 @@ class BookingTest extends TestCase
             'hours' => [9, 10, 11],
         ])->assertCreated();
 
-        $this->assertSame(3, \Illuminate\Support\Facades\DB::table('bookings')
+        $this->assertSame(3, DB::table('bookings')
             ->whereDate('booking_date', $date)
             ->where('court', 'PickleHub Court')
             ->where('guest_email', 'rally@example.com')
@@ -98,7 +99,7 @@ class BookingTest extends TestCase
             'hours' => [12],
         ];
         $this->postJson(route('bookings.store'), $data)->assertCreated();
-        \App\Models\Booking::query()->update(['status' => 'cancelled']);
+        Booking::query()->update(['status' => 'cancelled']);
 
         $this->postJson(route('bookings.store'), array_merge($data, [
             'guest_name' => 'Second Player',

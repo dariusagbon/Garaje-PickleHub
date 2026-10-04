@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\Booking;
 use App\Models\Event;
 use App\Models\EventMatch;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class EventPlayerTest extends TestCase
@@ -19,7 +21,7 @@ class EventPlayerTest extends TestCase
             'date' => now()->addDay(),
             'time' => '10:00',
             'capacity' => 8,
-            'score_pin' => \Illuminate\Support\Facades\Hash::make('2468'),
+            'score_pin' => Hash::make('2468'),
         ], $attributes));
     }
 
@@ -43,6 +45,7 @@ class EventPlayerTest extends TestCase
             $user = User::factory()->create();
             $this->actingAs($user)->post(route('events.register', $event), ['player_name' => "Player $number"])
                 ->assertSessionHasNoErrors();
+
             return $user;
         })->all();
     }
@@ -223,8 +226,16 @@ class EventPlayerTest extends TestCase
         $match = EventMatch::sole();
         $myTeam = $match->players->firstWhere('user_id', $me->id)->pivot->team;
         $match->update($myTeam == 1 ? ['score_a' => 11, 'score_b' => 4] : ['score_a' => 4, 'score_b' => 11]);
-        \App\Models\Booking::create(['guest_name' => $me->name, 'guest_email' => $me->email, 'booking_date' => now()->addDays(2)->toDateString(), 'court' => 'PickleHub Court', 'hour' => 9, 'status' => 'confirmed']);
-        \App\Models\Booking::create(['guest_name' => $me->name, 'guest_email' => $me->email, 'booking_date' => now()->addDays(2)->toDateString(), 'court' => 'PickleHub Court', 'hour' => 10, 'status' => 'confirmed']);
+        foreach ([9, 10] as $hour) {
+            Booking::create([
+                'guest_name' => $me->name,
+                'guest_email' => $me->email,
+                'booking_date' => now()->addDays(2)->toDateString(),
+                'court' => 'PickleHub Court',
+                'hour' => $hour,
+                'status' => 'confirmed',
+            ]);
+        }
 
         $this->actingAs($me)->get(route('dashboard'))
             ->assertOk()
@@ -245,7 +256,14 @@ class EventPlayerTest extends TestCase
     {
         $admin = User::factory()->create(['is_admin' => true]);
         $this->event(['title' => 'Tomorrow Social']);
-        \App\Models\Booking::create(['guest_name' => 'Morning Rally', 'guest_email' => 'rally@example.com', 'booking_date' => today()->toDateString(), 'court' => 'PickleHub Court', 'hour' => 9, 'status' => 'confirmed']);
+        Booking::create([
+            'guest_name' => 'Morning Rally',
+            'guest_email' => 'rally@example.com',
+            'booking_date' => today()->toDateString(),
+            'court' => 'PickleHub Court',
+            'hour' => 9,
+            'status' => 'confirmed',
+        ]);
 
         $this->actingAs($admin)->get(route('admin.dashboard'))
             ->assertOk()

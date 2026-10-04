@@ -33,14 +33,23 @@ class AdminDashboardController extends Controller
         ]);
 
         $upcomingEvents = Event::upcoming()
-            ->withCount(['playerRegistrations', 'matches', 'matches as live_matches_count' => fn ($q) => $q->whereNull('score_a')])
-            ->orderBy('date')->orderBy('time')->take(5)->get();
+            ->withCount([
+                'playerRegistrations',
+                'matches',
+                'matches as live_matches_count' => fn ($q) => $q->whereNull('score_a'),
+            ])
+            ->orderBy('date')
+            ->orderBy('time')
+            ->take(5)
+            ->get();
 
         $activity = Booking::latest()->take(8)->get()->map(fn ($booking) => (object) [
             'type' => $booking->status === 'cancelled' ? 'cancelled' : 'booking',
             'at' => $booking->updated_at,
             'title' => $booking->guest_name,
-            'detail' => ($booking->status === 'cancelled' ? 'Cancelled ' : 'Booked ').$booking->booking_date->format('M j').' · '.Carbon::createFromTime($booking->hour)->format('g:i A'),
+            'detail' => ($booking->status === 'cancelled' ? 'Cancelled ' : 'Booked ')
+                .$booking->booking_date->format('M j')
+                .' · '.Carbon::createFromTime($booking->hour)->format('g:i A'),
             'url' => route('admin.bookings.index'),
         ])->concat(EventRegistration::with('event')->latest()->take(8)->get()->map(fn ($registration) => (object) [
             'type' => 'registration',

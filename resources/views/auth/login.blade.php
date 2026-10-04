@@ -27,8 +27,12 @@
                 <p class="eyebrow eyebrow-dark mt-12">Player access</p>
                 <h2 class="auth-title">Log in</h2>
                 <p class="auth-intro">Welcome back. Enter your details to continue.</p>
-                @if($errors->any())
-                    <div class="auth-alert" role="alert">@foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach</div>
+                @if ($errors->any())
+                    <div class="auth-alert" role="alert">
+                        @foreach ($errors->all() as $error)
+                            <p>{{ $error }}</p>
+                        @endforeach
+                    </div>
                 @endif
                 <form class="auth-form" method="POST" action="{{ route('login') }}">
                     @csrf

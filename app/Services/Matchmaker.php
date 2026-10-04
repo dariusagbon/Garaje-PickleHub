@@ -18,12 +18,15 @@ use Illuminate\Support\Facades\DB;
 class Matchmaker
 {
     public const TEAM_SIZE = 2;
+
     public const PLAYERS_PER_MATCH = self::TEAM_SIZE * 2;
 
     /** Create as many new games as the free players allow. Returns how many were created. */
     public function fill(Event $event): int
     {
-        if ($event->isPast()) return 0;
+        if ($event->isPast()) {
+            return 0;
+        }
 
         return DB::transaction(function () use ($event) {
             Event::whereKey($event->id)->lockForUpdate()->first();
@@ -32,6 +35,7 @@ class Matchmaker
                 $this->createMatch($event, $players);
                 $created++;
             }
+
             return $created;
         });
     }
@@ -40,9 +44,13 @@ class Matchmaker
     public function reshuffle(Event $event): int
     {
         return DB::transaction(function () use ($event) {
-            $pending = $event->matches()->where(fn ($q) => $q->whereNull('score_a')->orWhereNull('score_b'))->pluck('id');
+            $pending = $event->matches()
+                ->where(fn ($q) => $q->whereNull('score_a')->orWhereNull('score_b'))
+                ->pluck('id');
+
             DB::table('event_match_players')->whereIn('match_id', $pending)->delete();
             $event->matches()->whereIn('id', $pending)->delete();
+
             return $this->fill($event);
         });
     }
@@ -61,14 +69,21 @@ class Matchmaker
             ->groupBy('event_match_players.event_registration_id')
             ->select('event_match_players.event_registration_id as id')
             ->selectRaw('count(*) as games')
-            ->selectRaw('sum(case when event_matches.score_a is null or event_matches.score_b is null then 1 else 0 end) as active')
+            ->selectRaw(
+                'sum(case when event_matches.score_a is null or event_matches.score_b is null'
+                .' then 1 else 0 end) as active'
+            )
             ->get()
             ->keyBy('id');
 
-        return $event->playerRegistrations()->pluck('id')->mapWithKeys(fn ($id) => [$id => (object) [
-            'games' => (int) ($rows[$id]->games ?? 0),
-            'active' => (int) ($rows[$id]->active ?? 0) > 0,
-        ]]);
+        return $event->playerRegistrations()
+            ->pluck('id')
+            ->mapWithKeys(fn ($id) => [
+                $id => (object) [
+                    'games' => (int) ($rows[$id]->games ?? 0),
+                    'active' => (int) ($rows[$id]->active ?? 0) > 0,
+                ],
+            ]);
     }
 
     /** @return Collection<int, EventRegistration>|null */

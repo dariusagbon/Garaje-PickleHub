@@ -23,32 +23,42 @@ class PlayerDashboardController extends Controller
 
         // Every game this player has been drawn into, newest first, with both teams loaded.
         $games = EventMatch::with(['event', 'players'])
-            ->whereHas('players', fn ($q) => $q->whereIn('event_registrations.id', $registrationIds))
+            ->whereHas('players', fn ($q) => $q
+                ->whereIn('event_registrations.id', $registrationIds))
             ->latest('id')
             ->get()
             ->map(function (EventMatch $match) use ($registrationIds) {
                 $me = $match->players->first(fn ($player) => $registrationIds->contains($player->id));
                 $myTeam = (int) $me->pivot->team;
                 $match->setAttribute('my_team', $myTeam);
-                $match->setAttribute('partners', $match->players->filter(fn ($p) => $p->pivot->team == $myTeam && $p->id !== $me->id)->pluck('player_name'));
-                $match->setAttribute('opponents', $match->players->filter(fn ($p) => $p->pivot->team != $myTeam)->pluck('player_name'));
+                $match->setAttribute('partners', $match->players
+                    ->filter(fn ($p) => $p->pivot->team == $myTeam && $p->id !== $me->id)
+                    ->pluck('player_name'));
+                $match->setAttribute('opponents', $match->players
+                    ->filter(fn ($p) => $p->pivot->team != $myTeam)
+                    ->pluck('player_name'));
+
                 $mine = $myTeam === 1 ? $match->score_a : $match->score_b;
                 $theirs = $myTeam === 1 ? $match->score_b : $match->score_a;
                 $match->setAttribute('my_score', $mine);
                 $match->setAttribute('their_score', $theirs);
                 $match->setAttribute('won', $match->isComplete() ? $mine > $theirs : null);
+
                 return $match;
             });
 
         $finished = $games->filter(fn ($game) => $game->isComplete());
         $currentGame = $games->first(fn ($game) => ! $game->isComplete() && ! $game->event->isPast());
 
-        $myEvents = $registrations->pluck('event')->filter(fn ($event) => ! $event->isPast())
-            ->sortBy(fn ($event) => $event->date->format('Y-m-d').' '.$event->time)->values();
+        $myEvents = $registrations->pluck('event')
+            ->filter(fn ($event) => ! $event->isPast())
+            ->sortBy(fn ($event) => $event->date->format('Y-m-d').' '.$event->time)
+            ->values();
         $myEventIds = $myEvents->pluck('id');
         $eventStatus = $myEvents->mapWithKeys(function (Event $event) use ($matchmaker, $registrations) {
             $registration = $registrations->firstWhere('event_id', $event->id);
             $stat = $matchmaker->stats($event)[$registration->id] ?? null;
+
             return [$event->id => (object) [
                 'player_name' => $registration->player_name,
                 'games' => $stat?->games ?? 0,
@@ -56,20 +66,28 @@ class PlayerDashboardController extends Controller
             ]];
         });
 
-        $openEvents = Event::upcoming()->withCount('playerRegistrations')
+        $openEvents = Event::upcoming()
+            ->withCount('playerRegistrations')
             ->whereNotIn('id', $myEventIds)
-            ->orderBy('date')->orderBy('time')->take(6)->get();
+            ->orderBy('date')
+            ->orderBy('time')
+            ->take(6)
+            ->get();
 
-        $bookings = Booking::where('guest_email', $user->email)->where('status', 'confirmed')
+        $bookings = Booking::where('guest_email', $user->email)
+            ->where('status', 'confirmed')
             ->whereDate('booking_date', '>=', today())
-            ->orderBy('booking_date')->orderBy('hour')->get()
+            ->orderBy('booking_date')
+            ->orderBy('hour')
+            ->get()
             ->groupBy(fn ($booking) => $booking->booking_date->format('Y-m-d'));
 
+        $wins = $finished->where('won', true)->count();
         $stats = [
             'events' => $registrations->count(),
             'games' => $finished->count(),
-            'wins' => $finished->where('won', true)->count(),
-            'win_rate' => $finished->count() ? round($finished->where('won', true)->count() / $finished->count() * 100) : null,
+            'wins' => $wins,
+            'win_rate' => $finished->count() ? round($wins / $finished->count() * 100) : null,
         ];
 
         return view('player.dashboard', [
