@@ -33,7 +33,6 @@ class MonthlyReportTest extends TestCase
             'date' => $date,
             'time' => '18:00',
             'capacity' => $capacity,
-            'score_pin' => 'x',
         ]);
     }
 

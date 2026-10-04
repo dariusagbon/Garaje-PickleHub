@@ -14,7 +14,6 @@ class Event extends Model
         'time',
         'description',
         'capacity',
-        'score_pin',
     ];
 
     protected $casts = ['date' => 'date'];
