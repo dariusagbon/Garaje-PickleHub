@@ -60,47 +60,77 @@ class EventController extends Controller
     }
 
     /**
-     * Saves a live score. Called in the background on every point (autosave),
-     * or as a normal form post when JavaScript is off.
+     * Records one scoring action on a game, using side-out rules.
+     * Sent in the background as each rally is tapped, or as a normal form
+     * post when JavaScript is off.
+     *
+     * Actions: rally_a / rally_b (who won the rally), undo, serve_a / serve_b
+     * (which team serves first, before the first rally).
      */
     public function score(Request $request, Event $event, EventMatch $match, Matchmaker $matchmaker)
     {
         abort_unless($match->event_id === $event->id, 404);
 
         $data = $request->validate([
-            'score_a' => 'required|integer|min:0|max:99',
-            'score_b' => 'required|integer|min:0|max:99',
+            'action' => 'required|in:rally_a,rally_b,undo,serve_a,serve_b',
+            // How many rallies the scorer's screen showed; guards against two devices scoring at once.
+            'rallies_seen' => 'nullable|integer|min:0',
         ]);
 
-        if (! EventMatch::isPossibleScore($data['score_a'], $data['score_b'])) {
-            $message = 'That score is not possible: the game ends as soon as a team reaches '
-                .EventMatch::POINTS_TO_WIN.' with a '.EventMatch::WIN_BY.'-point lead.';
-
-            return $request->expectsJson()
-                ? response()->json(['message' => $message, 'errors' => ['score_a' => [$message]]], 422)
-                : back()->withErrors(['score_a' => $message]);
+        $recorded = count($match->rallies ?? []);
+        if (isset($data['rallies_seen']) && (int) $data['rallies_seen'] !== $recorded) {
+            return $this->scoreResponse($request, $match, false, 409,
+                'This game was updated on another device. The latest score is now shown.');
         }
 
         $wasComplete = $match->isComplete();
-        $match->update($data);
+
+        $applied = match ($data['action']) {
+            'rally_a' => $match->recordRally('A'),
+            'rally_b' => $match->recordRally('B'),
+            'undo' => $match->undoRally(),
+            'serve_a' => $match->setFirstServingTeam('A'),
+            'serve_b' => $match->setFirstServingTeam('B'),
+        };
+
+        if (! $applied) {
+            $message = match ($data['action']) {
+                'undo' => 'There is nothing to undo.',
+                'serve_a', 'serve_b' => 'The first server can only be changed before the first rally.',
+                default => 'This game is over. Undo the last rally to correct it.',
+            };
+
+            return $this->scoreResponse($request, $match, false, 422, $message);
+        }
 
         // The game just ended: free its players and draw the next game.
         $nextGameReady = ! $wasComplete && $match->isComplete() && $matchmaker->fill($event) > 0;
 
+        return $this->scoreResponse($request, $match, $nextGameReady);
+    }
+
+    private function scoreResponse(Request $request, EventMatch $match, bool $nextGameReady, int $status = 200, ?string $error = null)
+    {
+        $state = $match->scoring();
+
         if ($request->expectsJson()) {
             return response()->json([
-                'score_a' => $match->score_a,
-                'score_b' => $match->score_b,
-                'complete' => $match->isComplete(),
-                'winner' => $match->winnerLabel(),
+                ...$state,
+                'winner_label' => $match->winnerLabel(),
+                'can_undo' => ! empty($match->rallies),
                 'next_game_ready' => $nextGameReady,
-            ]);
+                'message' => $error,
+            ], $status);
+        }
+
+        if ($error) {
+            return back()->withErrors(['score' => $error]);
         }
 
         return back()->with('message', match (true) {
             $nextGameReady => 'Game over! The next game is ready.',
-            $match->isComplete() => 'Final score saved.',
-            default => 'Score saved.',
+            $state['complete'] => 'Game over! '.$match->winnerLabel().'.',
+            default => 'Score '.$state['call'].'.',
         });
     }
 

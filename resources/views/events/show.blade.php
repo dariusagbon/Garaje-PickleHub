@@ -237,37 +237,52 @@
             <ul class="ev-rules">
                 <li><span aria-hidden="true">⚄</span><p><strong>Auto teams</strong>Drawn at random as players register.</p></li>
                 <li><span aria-hidden="true">↻</span><p><strong>Fair rotation</strong>Everyone plays before anyone plays twice.</p></li>
-                <li><span aria-hidden="true">11</span><p><strong>One game</strong>First to 11, win by 2.</p></li>
+                <li><span aria-hidden="true">11</span><p><strong>Side-out scoring</strong>Only the serving team scores. First to 11, win by 2.</p></li>
             </ul>
 
             <div class="mt-6 space-y-6">
                 @forelse ($event->matches as $match)
-                    <article @class(['scoreboard-card', 'is-final' => $match->isComplete()])>
+                    @php
+                        $state = $match->scoring();
+                        $servingSide = strtolower($state['serving_team']);
+                        $canStartChoice = empty($match->rallies) && ! $state['complete'] && ! $match->score_a && ! $match->score_b;
+                    @endphp
+                    <article @class(['scoreboard-card', 'is-final' => $state['complete']])>
                         <div class="flex flex-col justify-between gap-4 border-b border-[#d7d3c7] pb-5 sm:flex-row sm:items-center">
                             <div>
                                 <p class="eyebrow eyebrow-dark">
-                                    Game {{ $loop->iteration }} · <span data-game-state>{{ $match->isComplete() ? 'Final' : 'Live' }}</span>
+                                    Game {{ $loop->iteration }} · <span data-game-state>{{ $state['complete'] ? 'Final' : 'Live' }}</span>
                                 </p>
-                                <p class="mt-2 text-sm font-bold text-[#59645e]">Single game · First to 11, win by 2</p>
+                                <p class="mt-2 text-sm font-bold text-[#59645e]">Side-out scoring · First to 11, win by 2</p>
                             </div>
-                            <div @class(['score-result', 'complete' => $match->isComplete()]) data-game-result>
+                            <div @class(['score-result', 'complete' => $state['complete']]) data-game-result>
                                 {{ $match->winnerLabel() ?? 'In progress' }}
                             </div>
                         </div>
 
-                        {{-- Scores save automatically (resources/js/modules/live-score.js). --}}
+                        {{-- Rally-by-rally scoring; saves automatically (resources/js/modules/live-score.js). --}}
                         <form class="score-form" method="POST" action="{{ route('events.matches.score', [$event, $match]) }}" data-live-score>
                             @csrf
                             @method('PATCH')
+                            <input type="hidden" name="rallies_seen" value="{{ count($match->rallies ?? []) }}" data-rallies-seen>
+
+                            {{-- The score call: serving score – receiving score – server number --}}
+                            <div class="score-call-bar" data-call-bar @if ($state['complete']) hidden @endif>
+                                <span class="score-call-label">Score call</span>
+                                <strong class="score-call" data-call>{{ $state['call'] }}</strong>
+                                <span class="score-call-info" data-serve-info>
+                                    Team {{ $state['serving_team'] }} serving · Server {{ $state['server'] }} · serve from the {{ $state['serve_from'] }}
+                                </span>
+                            </div>
 
                             <div class="scoreboard-teams mt-5 grid gap-4 md:grid-cols-2">
                                 @foreach (['a' => $match->teamA, 'b' => $match->teamB] as $side => $players)
                                     @php
                                         $team = 'Team '.strtoupper($side);
-                                        $inputId = "score-{$side}-{$match->id}";
                                         $isMyTeam = $myRegistration && $players->contains('id', $myRegistration->id);
+                                        $isServing = $servingSide === $side && ! $state['complete'];
                                     @endphp
-                                    <section class="score-team score-team-{{ $side }}">
+                                    <section @class(['score-team', "score-team-{$side}", 'is-serving' => $isServing]) data-team="{{ strtoupper($side) }}">
                                         <p class="eyebrow eyebrow-dark">{{ $team }}</p>
                                         <p class="mt-2 min-h-10 text-sm font-bold text-[#59645e]">
                                             @if ($isAdmin)
@@ -278,26 +293,40 @@
                                                 {{ $players->count() }} {{ Str::plural('player', $players->count()) }}
                                             @endif
                                         </p>
-                                        <div class="event-score-number">
-                                            <input id="{{ $inputId }}" type="number" min="0" name="score_{{ $side }}"
-                                                   value="{{ $match->{'score_'.$side} ?? 0 }}" required>
-                                        </div>
-                                        <div class="score-control justify-center">
-                                            <button type="button" data-score-target="{{ $inputId }}" data-score-change="-1" aria-label="Decrease {{ $team }} score">−</button>
-                                            <button type="button" data-score-target="{{ $inputId }}" data-score-change="1" aria-label="Increase {{ $team }} score">+</button>
-                                        </div>
+
+                                        <strong class="scoreboard-number" data-score>{{ $state['score_'.$side] }}</strong>
+
+                                        <p class="serve-badge" data-serve-badge @unless ($isServing) hidden @endunless>
+                                            <span class="serve-badge-dot" aria-hidden="true">●</span>
+                                            Serving · Server <span data-server>{{ $state['server'] }}</span>
+                                        </p>
+
+                                        <button class="rally-button" type="submit" name="action" value="rally_{{ $side }}"
+                                                data-rally @disabled($state['complete'])>
+                                            Rally won by {{ $team }}
+                                        </button>
                                     </section>
                                 @endforeach
+                            </div>
+
+                            <div class="score-tools">
+                                <div class="first-serve" data-first-serve @unless ($canStartChoice) hidden @endunless>
+                                    <span>First serve:</span>
+                                    @foreach (['A', 'B'] as $letter)
+                                        <button type="submit" name="action" value="serve_{{ strtolower($letter) }}"
+                                                @class(['first-serve-option', 'is-selected' => $match->first_serving_team === $letter])
+                                                data-first-serve-option="{{ $letter }}">Team {{ $letter }}</button>
+                                    @endforeach
+                                </div>
+                                <button class="undo-rally" type="submit" name="action" value="undo"
+                                        data-undo @disabled(empty($match->rallies))>↶ Undo last rally</button>
                             </div>
 
                             <div class="score-save-bar">
                                 <p class="score-save-status" data-save-status role="status" aria-live="polite">
                                     <span class="score-save-dot" aria-hidden="true"></span>
-                                    <span data-save-text>Scores save automatically</span>
+                                    <span data-save-text>Each rally saves automatically</span>
                                 </p>
-                                <noscript>
-                                    <button class="button button-dark" type="submit">Save score</button>
-                                </noscript>
                             </div>
                         </form>
                     </article>

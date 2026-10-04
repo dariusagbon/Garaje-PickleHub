@@ -48,6 +48,8 @@ export function createInitialState(options = {}) {
         gamesWon: { A: 0, B: 0 },
         gameNumber: 1,
         servingTeam: startingTeam,
+        // Who served first in the current game; the other side serves first in the next game.
+        gameStartingTeam: startingTeam,
         // Doubles games begin with the special “server 2” exception.
         server: mode === 'doubles' ? 2 : 1,
         openingServeException: mode === 'doubles',
@@ -65,11 +67,14 @@ export const checkGameWon = (state, team) =>
 export const checkMatchWon = (state, team) =>
     state.gamesWon[team] >= Math.floor(state.bestOf / 2) + 1;
 
-const resetForNextGame = (state, winner) => ({
+// Rule: in the next game of a match, the team that received first in the
+// previous game serves first (the serve alternates; it does not go to the winner).
+const resetForNextGame = (state) => ({
     ...state,
     score: { A: 0, B: 0 },
     gameNumber: state.gameNumber + 1,
-    servingTeam: winner,
+    servingTeam: otherTeam(state.gameStartingTeam),
+    gameStartingTeam: otherTeam(state.gameStartingTeam),
     server: state.mode === 'doubles' ? 2 : 1,
     openingServeException: state.mode === 'doubles',
 });
@@ -140,7 +145,7 @@ export function scorePoint(state, winner) {
     if (checkMatchWon(next, winner)) {
         next.matchWinner = winner;
     } else {
-        Object.assign(next, resetForNextGame(next, winner));
+        Object.assign(next, resetForNextGame(next));
     }
     next.eventLog.push({
         type: scoredPoint ? 'point' : 'sideOut',

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\SideOutScoring;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,17 +10,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class EventMatch extends Model
 {
     /** A game is won by the first team to reach this many points... */
-    public const POINTS_TO_WIN = 11;
+    public const POINTS_TO_WIN = SideOutScoring::POINTS_TO_WIN;
 
     /** ...with at least this lead. */
-    public const WIN_BY = 2;
+    public const WIN_BY = SideOutScoring::WIN_BY;
 
-    protected $fillable = ['event_id', 'score_a', 'score_b'];
+    protected $fillable = ['event_id', 'score_a', 'score_b', 'first_serving_team'];
 
     protected $casts = [
         'score_a' => 'integer',
         'score_b' => 'integer',
+        'start_score_a' => 'integer',
+        'start_score_b' => 'integer',
+        'rallies' => 'array',
         'completed_at' => 'datetime',
+    ];
+
+    protected $attributes = [
+        'first_serving_team' => 'A',
     ];
 
     protected static function booted(): void
@@ -50,17 +58,78 @@ class EventMatch extends Model
         return $high >= self::POINTS_TO_WIN && $high - $low >= self::WIN_BY;
     }
 
-    /**
-     * Whether a score can occur in a real game. The game stops as soon as it is
-     * won, so 13–5 is impossible (it ended at 11–5), while 13–11 is fine.
-     */
-    public static function isPossibleScore(int $a, int $b): bool
+    /*
+    |--------------------------------------------------------------------------
+    | Rally-by-rally scoring (side-out rules, see SideOutScoring)
+    |--------------------------------------------------------------------------
+    */
+
+    /** Score, server and score call for the game as it stands. */
+    public function scoring(): array
     {
-        if (! self::isWinningScore($a, $b)) {
-            return true;
+        if ($this->rallies === null) {
+            // No rallies recorded yet: whatever is on the board is the starting point.
+            return SideOutScoring::replay($this->first_serving_team, [], (int) $this->score_a, (int) $this->score_b);
         }
 
-        return max($a, $b) === self::POINTS_TO_WIN || abs($a - $b) === self::WIN_BY;
+        return SideOutScoring::replay(
+            $this->first_serving_team,
+            $this->rallies,
+            $this->start_score_a,
+            $this->start_score_b,
+        );
+    }
+
+    /** Record who won a rally. Returns false if the game is already over. */
+    public function recordRally(string $team): bool
+    {
+        if ($this->scoring()['complete']) {
+            return false;
+        }
+
+        if ($this->rallies === null) {
+            $this->start_score_a = (int) $this->score_a;
+            $this->start_score_b = (int) $this->score_b;
+        }
+
+        $this->rallies = [...($this->rallies ?? []), $team];
+
+        return $this->applyScoring();
+    }
+
+    /** Remove the last recorded rally. Returns false if there is nothing to undo. */
+    public function undoRally(): bool
+    {
+        if (empty($this->rallies)) {
+            return false;
+        }
+
+        $rallies = $this->rallies;
+        array_pop($rallies);
+        $this->rallies = $rallies; // stays [] (not null) so the start score is kept
+
+        return $this->applyScoring();
+    }
+
+    /** Choose which team serves first. Only possible before the first rally. */
+    public function setFirstServingTeam(string $team): bool
+    {
+        if (! empty($this->rallies)) {
+            return false;
+        }
+
+        $this->first_serving_team = $team;
+
+        return $this->applyScoring();
+    }
+
+    private function applyScoring(): bool
+    {
+        $state = $this->scoring();
+        $this->score_a = $state['score_a'];
+        $this->score_b = $state['score_b'];
+
+        return $this->save();
     }
 
     /*

@@ -44,11 +44,11 @@ class Matchmaker
     public function reshuffle(Event $event): int
     {
         return DB::transaction(function () use ($event) {
-            // Games already in progress keep their teams; only games with no points yet are redrawn.
+            // Games already in progress keep their teams; only games with no rallies yet are redrawn.
             $pending = $event->matches()
                 ->unfinished()
-                ->where(fn ($q) => $q->whereNull('score_a')->orWhere('score_a', 0))
-                ->where(fn ($q) => $q->whereNull('score_b')->orWhere('score_b', 0))
+                ->get()
+                ->filter(fn ($match) => empty($match->rallies) && ! $match->score_a && ! $match->score_b)
                 ->pluck('id');
 
             DB::table('event_match_players')->whereIn('match_id', $pending)->delete();

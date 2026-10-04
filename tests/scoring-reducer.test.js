@@ -67,10 +67,12 @@ test('games require two-point margin and match wins use best-of format', () => {
     for (let point = 0; point < 3; point += 1) state = scorePoint(state, 'A');
     assert.deepEqual(state.gamesWon, { A: 1, B: 0 });
     assert.deepEqual(state.score, { A: 0, B: 0 });
-    // One more game for A finishes the best-of-three match.
-    for (let game = 0; game < 1; game += 1) {
-        for (let point = 0; point < 3; point += 1) state = scorePoint(state, 'A');
-    }
+    // Game 2: B received first in game 1, so B serves first now.
+    assert.equal(state.servingTeam, 'B');
+    state = scorePoint(state, 'A'); // A wins the rally on B's serve: side out, no point
+    assert.deepEqual(state.score, { A: 0, B: 0 });
+    // Three points on A's serve finish the best-of-three match.
+    for (let point = 0; point < 3; point += 1) state = scorePoint(state, 'A');
     assert.equal(state.matchWinner, 'A');
     assert.deepEqual(state.gamesWon, { A: 2, B: 0 });
 });
@@ -80,4 +82,16 @@ test('reducer exposes score and undo actions', () => {
     state = scoringReducer(state, { type: 'SCORE', team: 'A' });
     assert.equal(state.score.A, 1);
     assert.equal(scoringReducer(state, { type: 'UNDO' }).score.A, 0);
+});
+
+test('the team that received first serves first in the next game', () => {
+    let state = createInitialState({ mode: 'doubles', pointsToWin: 2, bestOf: 3, startingTeam: 'A' });
+    // A serves first and wins game 1: 0-0-2 → A scores twice.
+    state = scorePoint(state, 'A');
+    state = scorePoint(state, 'A');
+    assert.deepEqual(state.gamesWon, { A: 1, B: 0 });
+    assert.equal(state.gameNumber, 2);
+    assert.equal(state.servingTeam, 'B'); // B received first in game 1, so B serves first now
+    assert.equal(state.server, 2); // with the 0-0-2 opening exception again
+    assert.deepEqual(state.score, { A: 0, B: 0 });
 });

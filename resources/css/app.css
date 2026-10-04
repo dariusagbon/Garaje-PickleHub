@@ -144,6 +144,23 @@
     .score-result { @apply mt-1 text-[9px] font-bold uppercase tracking-[1px] text-[#9da098]; }
     .score-result.complete { @apply text-[#3c6b4a]; }
     .score-control { @apply mt-2 flex items-center; }
+    .score-call-bar { @apply mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 bg-[#14201e] px-4 py-3 text-[#f4f1e8]; }
+    .score-call-label { @apply text-[9px] font-bold uppercase tracking-[1.5px] text-[#c5cbc4]; }
+    .score-call { @apply font-[Space_Grotesk] text-2xl font-bold tracking-[1px] text-[#e1aa62] tabular-nums; }
+    .score-call-info { @apply text-xs text-[#c5cbc4]; }
+    .score-team { @apply relative transition; }
+    .score-team.is-serving { @apply border-2 border-[#14201e] shadow-[0_10px_24px_-14px_rgba(20,32,30,.6)]; }
+    .serve-badge { @apply mx-auto mt-2 flex w-max items-center gap-1.5 whitespace-nowrap bg-[#14201e] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[1px] text-[#e1aa62]; }
+    .serve-badge-dot { @apply text-[8px]; }
+    .score-team .scoreboard-number { @apply mt-3 block; }
+    .rally-button { @apply mt-5 block min-h-14 w-full bg-[#14201e] px-4 text-xs font-bold uppercase tracking-[1px] text-[#f4f1e8] transition hover:-translate-y-0.5 hover:bg-[#c86a42] active:translate-y-0 active:scale-[.98] disabled:cursor-not-allowed disabled:bg-[#b9b5aa] disabled:hover:translate-y-0; }
+    .score-tools { @apply mt-5 flex flex-wrap items-center justify-between gap-3; }
+    .first-serve { @apply flex flex-wrap items-center gap-2 text-xs font-bold text-[#59645e]; }
+    .first-serve[hidden] { display: none; }
+    .first-serve-option { @apply border border-[#d7d3c7] bg-[#f4f1e8] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[1px] transition hover:border-[#c86a42]; }
+    .first-serve-option.is-selected { @apply border-[#14201e] bg-[#14201e] text-[#e1aa62]; }
+    .undo-rally { @apply ml-auto border border-[#d7d3c7] bg-[#faf8f2] px-3 py-2 text-[10px] font-bold uppercase tracking-[1px] text-[#59645e] transition hover:border-[#c86a42] hover:text-[#c86a42] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[#d7d3c7] disabled:hover:text-[#59645e]; }
+    .score-call-bar[hidden], .serve-badge[hidden] { display: none; }
     .score-save-bar { @apply mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#e8e4da] pt-4; }
     .score-save-status { @apply flex items-center gap-2 text-xs font-bold text-[#788078]; }
     .score-save-dot { @apply h-2 w-2 rounded-full bg-[#c9c6ba]; }

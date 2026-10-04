@@ -57,8 +57,12 @@ class EventPlayerTest extends TestCase
 
     private function finish(Event $event, EventMatch $match): void
     {
-        $this->patch(route('events.matches.score', [$event, $match]), ['score_a' => 11, 'score_b' => 5])
-            ->assertSessionHasNoErrors();
+        // The serving team wins 11 straight rallies: 11-0, game over.
+        $serving = strtolower($match->refresh()->scoring()['serving_team']);
+        foreach (range(1, 11) as $i) {
+            $this->patch(route('events.matches.score', [$event, $match]), ['action' => "rally_{$serving}"])
+                ->assertSessionHasNoErrors();
+        }
     }
 
     public function test_registering_the_fourth_player_automatically_creates_a_doubles_match(): void
@@ -132,61 +136,78 @@ class EventPlayerTest extends TestCase
         $this->actingAs(User::factory()->create())->post(route('admin.events.matches.randomize', $event))->assertForbidden();
     }
 
-    public function test_live_scores_autosave_without_a_pin_and_keep_the_game_open(): void
+    private function rally(Event $event, EventMatch $match, string $action)
     {
-        $event = $this->event();
-        $match = $event->matches()->create();
-
-        $this->patchJson(route('events.matches.score', [$event, $match]), ['score_a' => 3, 'score_b' => 2])
-            ->assertOk()
-            ->assertJson(['score_a' => 3, 'score_b' => 2, 'complete' => false, 'winner' => null]);
-
-        $match->refresh();
-        $this->assertSame(3, $match->score_a);
-        $this->assertFalse($match->isComplete());
+        return $this->patchJson(route('events.matches.score', [$event, $match]), ['action' => $action]);
     }
 
-    public function test_a_game_is_final_once_a_team_reaches_eleven_with_a_two_point_lead(): void
+    public function test_only_the_serving_team_scores_a_point(): void
     {
         $event = $this->event();
         $match = $event->matches()->create();
 
-        // 11-10 is still live: no two-point lead yet.
-        $this->patchJson(route('events.matches.score', [$event, $match]), ['score_a' => 11, 'score_b' => 10])
+        // A serves first (0-0-2) and wins the rally: point to A.
+        $this->rally($event, $match, 'rally_a')
             ->assertOk()
-            ->assertJson(['complete' => false]);
+            ->assertJson(['score_a' => 1, 'score_b' => 0, 'serving_team' => 'A', 'call' => '1-0-2']);
 
-        $this->patchJson(route('events.matches.score', [$event, $match]), ['score_a' => 12, 'score_b' => 10])
+        // B wins the next rally on A's serve: no point, side out to B's server 1.
+        $this->rally($event, $match, 'rally_b')
             ->assertOk()
-            ->assertJson(['complete' => true, 'winner' => 'Team A wins']);
+            ->assertJson(['score_a' => 1, 'score_b' => 0, 'serving_team' => 'B', 'server' => 1, 'call' => '0-1-1']);
 
+        $this->assertSame([1, 0], [$match->refresh()->score_a, $match->score_b]);
+    }
+
+    public function test_a_game_ends_at_eleven_by_two_and_takes_no_more_rallies(): void
+    {
+        $event = $this->event();
+        $match = $event->matches()->create();
+
+        foreach (range(1, 11) as $i) {
+            $response = $this->rally($event, $match, 'rally_a');
+        }
+        $response->assertJson(['complete' => true, 'winner' => 'A', 'winner_label' => 'Team A wins']);
         $this->assertNotNull($match->refresh()->completed_at);
+
+        $this->rally($event, $match, 'rally_b')->assertStatus(422);
+        $this->assertSame([11, 0], [$match->refresh()->score_a, $match->score_b]);
     }
 
-    public function test_impossible_scores_are_rejected(): void
+    public function test_undo_removes_the_last_rally_and_reopens_a_finished_game(): void
+    {
+        $event = $this->event();
+        $match = $event->matches()->create();
+        foreach (range(1, 11) as $i) {
+            $this->rally($event, $match, 'rally_a');
+        }
+
+        $this->rally($event, $match, 'undo')
+            ->assertOk()
+            ->assertJson(['score_a' => 10, 'complete' => false, 'can_undo' => true]);
+        $this->assertNull($match->refresh()->completed_at);
+    }
+
+    public function test_first_server_can_be_chosen_only_before_the_first_rally(): void
     {
         $event = $this->event();
         $match = $event->matches()->create();
 
-        // The game would have ended at 11-5, so 13-5 cannot happen.
-        $this->patchJson(route('events.matches.score', [$event, $match]), ['score_a' => 13, 'score_b' => 5])
-            ->assertStatus(422)
-            ->assertJsonValidationErrors('score_a');
-
-        $this->assertNull($match->refresh()->score_a);
+        $this->rally($event, $match, 'serve_b')->assertOk()->assertJson(['serving_team' => 'B', 'call' => '0-0-2']);
+        $this->rally($event, $match, 'rally_b')->assertOk()->assertJson(['score_b' => 1]);
+        $this->rally($event, $match, 'serve_a')->assertStatus(422);
     }
 
-    public function test_correcting_a_final_score_reopens_the_game(): void
+    public function test_a_stale_screen_cannot_double_record_a_rally(): void
     {
         $event = $this->event();
-        $match = $event->matches()->create(['score_a' => 11, 'score_b' => 4]);
-        $this->assertTrue($match->isComplete());
+        $match = $event->matches()->create();
+        $this->patchJson(route('events.matches.score', [$event, $match]), ['action' => 'rally_a', 'rallies_seen' => 0])->assertOk();
 
-        $this->patchJson(route('events.matches.score', [$event, $match]), ['score_a' => 10, 'score_b' => 4])
-            ->assertOk()
-            ->assertJson(['complete' => false]);
-
-        $this->assertFalse($match->refresh()->isComplete());
+        // A second device still showing 0 rallies taps too: refused, and given the latest state.
+        $this->patchJson(route('events.matches.score', [$event, $match]), ['action' => 'rally_a', 'rallies_seen' => 0])
+            ->assertStatus(409)
+            ->assertJson(['score_a' => 1, 'rallies' => 1]);
     }
 
     public function test_finishing_a_game_draws_the_next_one(): void
@@ -195,30 +216,35 @@ class EventPlayerTest extends TestCase
         $this->registerPlayers($event, 6);
         $first = EventMatch::sole();
 
-        $this->patchJson(route('events.matches.score', [$event, $first]), ['score_a' => 7, 'score_b' => 3])
-            ->assertJson(['next_game_ready' => false]);
+        foreach (range(1, 10) as $i) {
+            $this->rally($event, $first, 'rally_a')->assertJson(['next_game_ready' => false]);
+        }
         $this->assertSame(1, $event->matches()->count());
 
-        $this->patchJson(route('events.matches.score', [$event, $first]), ['score_a' => 11, 'score_b' => 3])
-            ->assertJson(['complete' => true, 'next_game_ready' => true]);
+        $this->rally($event, $first, 'rally_a')->assertJson(['complete' => true, 'next_game_ready' => true]);
         $this->assertSame(2, $event->matches()->count());
     }
 
-    public function test_guest_can_update_a_match_score_without_javascript(): void
+    public function test_scoring_works_without_javascript(): void
     {
         $event = $this->event();
         $match = $event->matches()->create();
 
-        $this->patch(route('events.matches.score', [$event, $match]), [
-            'score_a' => 11,
-            'score_b' => 7,
-        ])->assertRedirect()->assertSessionHas('message', 'Final score saved.');
+        $this->patch(route('events.matches.score', [$event, $match]), ['action' => 'rally_a'])
+            ->assertRedirect()
+            ->assertSessionHas('message', 'Score 1-0-2.');
 
-        $this->assertDatabaseHas('event_matches', [
-            'id' => $match->id,
-            'score_a' => 11,
-            'score_b' => 7,
-        ]);
+        $this->assertSame(1, $match->refresh()->score_a);
+    }
+
+    public function test_raw_scores_can_no_longer_be_posted(): void
+    {
+        $event = $this->event();
+        $match = $event->matches()->create();
+
+        $this->patchJson(route('events.matches.score', [$event, $match]), ['score_a' => 11, 'score_b' => 0])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('action');
     }
 
     public function test_past_events_are_hidden_from_the_player_dashboard(): void

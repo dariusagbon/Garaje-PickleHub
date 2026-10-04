@@ -1,109 +1,115 @@
-// Live scoring on an event page: the +/- buttons and typed scores save
-// automatically. Each game card is a form marked with data-live-score.
+// Live rally-by-rally scoring on an event page (side-out rules are applied on
+// the server, see app/Services/SideOutScoring.php). Each game card is a form
+// marked data-live-score; its buttons send an "action": rally_a, rally_b,
+// undo, serve_a or serve_b. Taps are queued and sent in order.
 
-const SAVE_DELAY_MS = 500; // wait for a pause in tapping before saving
 const RETRY_DELAY_MS = 3000;
 
 function setupLiveScore(form) {
-    const inputs = form.querySelectorAll('input[name="score_a"], input[name="score_b"]');
-    const statusBox = form.querySelector('[data-save-status]');
-    const statusText = form.querySelector('[data-save-text]');
     const card = form.closest('.scoreboard-card');
-    const result = card?.querySelector('[data-game-result]');
-    const gameState = card?.querySelector('[data-game-state]');
+    const el = (selector) => form.querySelector(selector);
+    const statusBox = el('[data-save-status]');
+    const statusText = el('[data-save-text]');
+    const ralliesSeen = el('[data-rallies-seen]');
+    // Read the URL from the attribute: form.action would return the buttons named "action".
+    const url = form.getAttribute('action');
     const token = form.querySelector('input[name="_token"]')?.value
         || document.querySelector('meta[name="csrf-token"]')?.content
         || '';
 
-    let timer = null;
-    let latestRequest = 0;
-    let unsaved = false;
+    let queue = Promise.resolve();
+    let pending = 0;
 
     const setStatus = (state, text) => {
         statusBox.dataset.state = state;
         statusText.textContent = text;
     };
 
-    const scores = () => ({
-        score_a: Math.max(0, Number(form.score_a.value || 0)),
-        score_b: Math.max(0, Number(form.score_b.value || 0)),
-    });
+    // Paint the card from the state the server sent back.
+    function render(state) {
+        ralliesSeen.value = state.rallies;
 
-    async function save() {
-        const requestId = ++latestRequest;
-        setStatus('saving', 'Saving…');
+        form.querySelectorAll('[data-team]').forEach((panel) => {
+            const team = panel.dataset.team;
+            const serving = !state.complete && state.serving_team === team;
+            panel.querySelector('[data-score]').textContent = state[`score_${team.toLowerCase()}`];
+            panel.classList.toggle('is-serving', serving);
+            panel.querySelector('[data-serve-badge]').hidden = !serving;
+            panel.querySelector('[data-server]').textContent = state.server;
+            panel.querySelector('[data-rally]').disabled = state.complete;
+        });
 
+        el('[data-call-bar]').hidden = state.complete;
+        el('[data-call]').textContent = state.call;
+        el('[data-serve-info]').textContent =
+            `Team ${state.serving_team} serving · Server ${state.server} · serve from the ${state.serve_from}`;
+
+        el('[data-undo]').disabled = !state.can_undo;
+        el('[data-first-serve]').hidden = state.rallies > 0 || state.complete || state.score_a > 0 || state.score_b > 0;
+        form.querySelectorAll('[data-first-serve-option]').forEach((option) => {
+            option.classList.toggle('is-selected', option.dataset.firstServeOption === state.serving_team);
+        });
+
+        const result = card?.querySelector('[data-game-result]');
+        if (result) {
+            result.textContent = state.winner_label || 'In progress';
+            result.classList.toggle('complete', state.complete);
+        }
+        const gameState = card?.querySelector('[data-game-state]');
+        if (gameState) gameState.textContent = state.complete ? 'Final' : 'Live';
+        card?.classList.toggle('is-final', state.complete);
+    }
+
+    async function send(action) {
         try {
-            const response = await fetch(form.action, {
+            const response = await fetch(url, {
                 method: 'PATCH',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': token,
                 },
-                body: JSON.stringify(scores()),
+                body: JSON.stringify({ action, rallies_seen: Number(ralliesSeen.value) }),
             });
+            const data = await response.json().catch(() => null);
 
-            // A newer tap is already being saved; ignore this older reply.
-            if (requestId !== latestRequest) return;
+            if (!data || response.status >= 500) throw new Error(`HTTP ${response.status}`);
 
-            const data = await response.json().catch(() => ({}));
+            if ('call' in data) render(data);
 
-            if (response.status === 422) {
-                unsaved = false;
-                setStatus('error', data.message || 'That score could not be saved.');
+            if (!response.ok) {
+                setStatus('error', data.message || 'That could not be saved.');
                 return;
             }
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-            unsaved = false;
             const time = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-            setStatus('saved', `Saved ✓ ${time}`);
-
-            if (result) {
-                result.textContent = data.winner || 'In progress';
-                result.classList.toggle('complete', Boolean(data.complete));
-            }
-            if (gameState) gameState.textContent = data.complete ? 'Final' : 'Live';
-            card?.classList.toggle('is-final', Boolean(data.complete));
+            setStatus('saved', data.complete ? `Game over · saved ${time}` : `Saved ✓ ${time}`);
 
             if (data.next_game_ready) {
                 setStatus('saved', 'Game over! Loading the next game…');
                 setTimeout(() => window.location.reload(), 1200);
             }
         } catch {
-            if (requestId !== latestRequest) return;
             setStatus('error', 'Couldn’t save. Retrying…');
-            timer = setTimeout(save, RETRY_DELAY_MS);
+            await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+            return send(action);
         }
     }
 
-    const scheduleSave = () => {
-        unsaved = true;
-        setStatus('pending', 'Saving…');
-        clearTimeout(timer);
-        timer = setTimeout(save, SAVE_DELAY_MS);
-    };
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const action = event.submitter?.value;
+        if (!action) return;
 
-    inputs.forEach((input) => input.addEventListener('input', scheduleSave));
-
-    form.querySelectorAll('[data-score-target]').forEach((button) => {
-        button.addEventListener('click', () => {
-            const input = document.querySelector(`#${button.dataset.scoreTarget}`);
-            input.value = Math.max(0, Number(input.value || 0) + Number(button.dataset.scoreChange));
-            scheduleSave();
+        pending += 1;
+        setStatus('saving', 'Saving…');
+        queue = queue.then(() => send(action)).finally(() => {
+            pending -= 1;
         });
     });
 
-    // Enter in a score box saves straight away instead of reloading the page.
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        clearTimeout(timer);
-        save();
-    });
-
     window.addEventListener('beforeunload', (event) => {
-        if (unsaved) event.preventDefault();
+        if (pending > 0) event.preventDefault();
     });
 }
 
