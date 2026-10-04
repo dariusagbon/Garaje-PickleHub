@@ -259,7 +259,11 @@
     .history-table td { @apply border-t border-[#e8e4da] px-3 py-2.5; }
     .history-table tbody tr { @apply transition hover:bg-[#f4f1e8]; }
     .history-table a { @apply text-[#c86a42] hover:underline; }
-    .menu-line { @apply my-1 block h-px w-5 bg-[#14201e]; }
+    .menu-line { @apply my-1 block h-px w-5 bg-[#14201e] transition duration-200; }
+    /* Hamburger turns into an X while the menu is open. */
+    #menu-toggle[aria-expanded="true"] .menu-line:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+    #menu-toggle[aria-expanded="true"] .menu-line:nth-child(2) { opacity: 0; }
+    #menu-toggle[aria-expanded="true"] .menu-line:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
     .auth-layout { @apply grid min-h-screen lg:grid-cols-[.9fr_1.1fr]; }
     .auth-visual { @apply relative flex min-h-[360px] flex-col justify-between overflow-hidden bg-[#14201e] p-7 text-[#f4f1e8] sm:p-12 lg:min-h-screen lg:p-16; }
     .auth-visual::after { @apply absolute -bottom-24 -right-16 h-80 w-80 rounded-full border-[32px] border-[#e1aa62]/20 content-['']; }
@@ -425,6 +429,37 @@
     .admin-form input, .admin-form textarea { @apply mt-2 w-full border border-[#d7d3c7] bg-[#f4f1e8] p-3 text-sm outline-none focus:border-[#c86a42] focus:ring-1 focus:ring-[#c86a42]; }
     .admin-form small { @apply mt-2 block text-xs font-normal normal-case tracking-normal text-[#788078]; }
     .admin-form-grid { @apply grid gap-5 sm:grid-cols-2; }
+}
+
+/* Mobile dropdown menu (public header): full-width, easy-to-tap rows. */
+@media (max-width: 767px) {
+    #main-menu:not(.hidden) {
+        display: flex;
+        flex-direction: column;
+        padding-top: .25rem;
+        padding-bottom: 1.25rem;
+        box-shadow: 0 18px 30px -20px rgba(20, 32, 30, .45);
+        animation: fade-up .2s ease-out;
+    }
+    #main-menu .nav-link {
+        width: 100%;
+        padding: .95rem 0;
+        border-bottom: 1px solid #e4e1d7;
+        font-size: .8rem;
+        text-align: left;
+    }
+    #main-menu .nav-user {
+        padding: .95rem 0 .25rem;
+        color: #788078;
+    }
+    #main-menu form .nav-link { border-bottom: 0; }
+    #main-menu .button {
+        order: 99; /* keep the call-to-action at the bottom, below the account links */
+        width: 100%;
+        margin-top: 1.25rem;
+        padding-top: .95rem;
+        padding-bottom: .95rem;
+    }
 }
 
 @media (max-width: 639px) {
