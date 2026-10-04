@@ -214,4 +214,30 @@ class EventPlayerTest extends TestCase
     {
         $this->actingAs(User::factory()->create())->get(route('admin.events.history'))->assertForbidden();
     }
+
+    public function test_player_dashboard_shows_results_bookings_and_open_events(): void
+    {
+        $event = $this->event(['title' => 'Tomorrow Social']);
+        $other = $this->event(['title' => 'Open Ladder']);
+        [$me] = $this->registerPlayers($event, 4);
+        $match = EventMatch::sole();
+        $myTeam = $match->players->firstWhere('user_id', $me->id)->pivot->team;
+        $match->update($myTeam == 1 ? ['score_a' => 11, 'score_b' => 4] : ['score_a' => 4, 'score_b' => 11]);
+        \App\Models\Booking::create(['guest_name' => $me->name, 'guest_email' => $me->email, 'booking_date' => now()->addDays(2)->toDateString(), 'court' => 'PickleHub Court', 'hour' => 9, 'status' => 'confirmed']);
+        \App\Models\Booking::create(['guest_name' => $me->name, 'guest_email' => $me->email, 'booking_date' => now()->addDays(2)->toDateString(), 'court' => 'PickleHub Court', 'hour' => 10, 'status' => 'confirmed']);
+
+        $this->actingAs($me)->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Tomorrow Social')
+            ->assertSee('Open Ladder')
+            ->assertSee('9:00 AM – 11:00 AM')
+            ->assertSee('100%')
+            ->assertSee('11<i>–</i>4', false);
+    }
+
+    public function test_admin_is_redirected_from_player_dashboard(): void
+    {
+        $this->actingAs(User::factory()->create(['is_admin' => true]))->get(route('dashboard'))
+            ->assertRedirect(route('admin.dashboard'));
+    }
 }

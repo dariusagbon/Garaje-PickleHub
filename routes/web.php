@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
-use App\Http\Controllers\{AuthController,BookingController,EventController,AdminBookingController};
+use App\Http\Controllers\{AuthController,BookingController,EventController,AdminBookingController,PlayerDashboardController};
 
 Route::get('/', function () {
     $events = Schema::hasTable('events') ? \App\Models\Event::upcoming()->orderBy('date')->orderBy('time')->take(6)->get() : collect();
@@ -29,13 +29,4 @@ Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(func
  Route::post('events/{event}/matches/randomize',[EventController::class,'randomize'])->name('events.matches.randomize');
 });
 
-Route::get('/dashboard', function () {
-    if (auth()->user()->is_admin) {
-        return redirect()->route('admin.dashboard');
-    }
-
-    $events = \App\Models\Event::upcoming()->orderBy('date')->orderBy('time')->take(6)->get();
-    $registeredEvents = auth()->user()->events()->upcoming()->orderBy('date')->orderBy('time')->take(6)->get();
-
-    return view('player.dashboard', compact('events', 'registeredEvents'));
-})->middleware(['auth'])->name('dashboard');
+Route::get('/dashboard', PlayerDashboardController::class)->middleware(['auth'])->name('dashboard');

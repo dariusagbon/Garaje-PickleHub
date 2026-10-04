@@ -176,6 +176,58 @@
     .player-event-row span:first-child { @apply text-[#59645e]; }
     .player-event-row strong { @apply font-[Space_Grotesk] uppercase; }
     .player-empty { @apply border border-dashed border-[#c9c6ba] p-5 text-sm text-[#59645e]; }
+    .dash-topbar { @apply sticky top-0 z-20 flex h-[68px] items-center justify-between border-b border-white/10 bg-[#14201e]/95 px-6 backdrop-blur sm:px-[7vw]; }
+    .dash-topbar .nav-link { @apply text-[#c5cbc4] hover:text-[#e1aa62]; }
+    .dash-topbar span.text-sm { @apply text-[#f4f1e8]; }
+    .dash-hero { @apply relative overflow-hidden bg-[#14201e] px-6 pb-28 pt-10 text-[#f4f1e8] sm:px-10 sm:pt-14; background-image: radial-gradient(circle at 85% 20%, rgba(225,170,98,.18), transparent 45%), radial-gradient(circle at 10% 110%, rgba(200,106,66,.25), transparent 50%); }
+    .dash-hero-inner { @apply mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_minmax(0,420px)] lg:items-center; }
+    .dash-avatar { @apply flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#e1aa62] font-[Space_Grotesk] text-2xl font-bold text-[#14201e] shadow-[0_0_0_6px_rgba(225,170,98,.18)] sm:h-20 sm:w-20 sm:text-3xl; }
+    .dash-title { @apply mt-1 font-[Space_Grotesk] text-3xl font-bold uppercase leading-none tracking-[-1px] sm:text-5xl; }
+    .dash-next { @apply border border-white/15 bg-white/5 p-5 backdrop-blur sm:p-6; }
+    .dash-next-title { @apply mt-2 block font-[Space_Grotesk] text-2xl font-bold uppercase leading-tight transition hover:text-[#e1aa62]; }
+    .dash-countdown { @apply mt-4 grid grid-cols-4 gap-2; }
+    .dash-countdown span { @apply flex flex-col items-center bg-white/10 py-2; }
+    .dash-countdown b { @apply font-[Space_Grotesk] text-2xl tabular-nums text-[#e1aa62]; }
+    .dash-countdown small { @apply text-[9px] font-bold uppercase tracking-[1px] text-[#c5cbc4]; }
+    .dash-countdown-live { @apply mt-4 bg-[#c86a42] px-3 py-2 text-sm font-bold; }
+    .dash-chip { @apply inline-block shrink-0 px-2 py-1 text-[9px] font-bold uppercase tracking-[1px]; }
+    .dash-chip.playing { @apply bg-[#c86a42] text-[#fff9ee]; }
+    .dash-chip.waiting { @apply bg-[#dce9df] text-[#3c6b4a]; }
+    .dash-chip.open { @apply bg-[#14201e] text-[#e1aa62]; }
+    .dash-chip.full { @apply bg-[#eeeae1] text-[#9da098]; }
+    .dash-stats { @apply relative z-[1] -mt-16 grid grid-cols-2 gap-3 lg:grid-cols-4; }
+    .dash-stat { @apply border border-[#d7d3c7] bg-[#faf8f2] p-5 shadow-[0_12px_30px_-18px_rgba(20,32,30,.5)] transition hover:-translate-y-1; }
+    .dash-stat span { @apply text-[10px] font-bold uppercase tracking-[1px] text-[#788078]; }
+    .dash-stat strong { @apply mt-2 block font-[Space_Grotesk] text-4xl tabular-nums; }
+    .dash-meter { @apply mt-3 block h-1.5 overflow-hidden rounded-full bg-[#e4e1d7]; }
+    .dash-meter > i { @apply block h-full rounded-full bg-[#c86a42]; width: var(--fill); animation: grow 1s ease-out; }
+    .dash-live { @apply mt-6 flex items-center gap-4 bg-[#c86a42] p-5 text-[#fff9ee] transition hover:-translate-y-0.5 hover:bg-[#b65c37]; }
+    .dash-live .eyebrow { @apply text-[#fff0d4]; }
+    .dash-live-dot { @apply relative h-3 w-3 shrink-0 rounded-full bg-white; animation: pulse-ring 1.6s ease-out infinite; }
+    .dash-live-teams { @apply mt-1 truncate font-[Space_Grotesk] text-lg uppercase; }
+    .dash-live-teams em { @apply px-1 font-sans text-sm normal-case not-italic text-[#fff0d4]; }
+    .dash-live-cta { @apply ml-auto hidden shrink-0 text-xs font-bold uppercase tracking-[1px] sm:block; }
+    .dash-grid { @apply mt-12 grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]; }
+    .dash-grid > *, .dash-stats > * { @apply min-w-0; }
+    .dash-section-head { @apply flex items-end justify-between gap-4 border-b border-[#d7d3c7] pb-3; }
+    .dash-section-head h2 { @apply mt-1 font-[Space_Grotesk] text-2xl font-bold uppercase; }
+    .dash-section-head > span { @apply text-xs font-bold text-[#788078]; }
+    .dash-event, .dash-result, .dash-booking { @apply flex items-center gap-4 border border-[#d7d3c7] bg-[#faf8f2] p-4 transition; }
+    .dash-event, .dash-result { @apply hover:-translate-y-0.5 hover:border-[#c86a42] hover:shadow-[0_10px_24px_-16px_rgba(20,32,30,.6)]; }
+    .dash-date { @apply flex h-14 w-14 shrink-0 flex-col items-center justify-center bg-[#14201e] text-[#f4f1e8]; }
+    .dash-date b { @apply font-[Space_Grotesk] text-xl leading-none; }
+    .dash-date small { @apply mt-1 text-[9px] font-bold uppercase tracking-[1px] text-[#e1aa62]; }
+    .dash-date-light { @apply bg-[#e4e1d7] text-[#14201e]; }
+    .dash-date-light small { @apply text-[#c86a42]; }
+    .dash-event-meta { @apply block text-[11px] text-[#788078]; }
+    .dash-event-title { @apply block font-[Space_Grotesk] text-lg font-bold uppercase leading-tight break-words; }
+    .dash-result-badge { @apply flex h-10 w-10 shrink-0 items-center justify-center font-[Space_Grotesk] text-lg font-bold; }
+    .dash-result.won .dash-result-badge { @apply bg-[#dce9df] text-[#3c6b4a]; }
+    .dash-result.lost .dash-result-badge { @apply bg-[#eeeae1] text-[#9da098]; }
+    .dash-result-score { @apply shrink-0 font-[Space_Grotesk] text-2xl font-bold tabular-nums; }
+    .dash-result-score i { @apply px-1 not-italic text-[#c9c6ba]; }
+    .dash-result.lost .dash-result-score { @apply text-[#9da098]; }
+    .dash-open-event { @apply block border border-[#d7d3c7] bg-[#faf8f2] p-4 transition hover:-translate-y-0.5 hover:border-[#c86a42]; }
     .admin-registration-list { @apply divide-y divide-[#e8e4da]; }
     .admin-registration-row { @apply grid gap-5 px-5 py-5 sm:grid-cols-[180px_1fr_auto] sm:items-center; }
     .admin-registration-row h3 { @apply mt-1 font-[Space_Grotesk] text-lg font-bold uppercase; }
@@ -313,6 +365,8 @@
     .auth-panel { padding: 2.5rem 1.5rem; }
 }
 
+@keyframes grow { from { width: 0; } }
+@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,.7); } 100% { box-shadow: 0 0 0 12px rgba(255,255,255,0); } }
 @keyframes fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes slide-in-left { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
 @keyframes slide-in-right { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
