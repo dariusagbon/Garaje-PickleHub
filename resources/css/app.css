@@ -288,6 +288,9 @@
     .admin-page { @apply min-h-screen bg-[#f4f1e8] text-[#14201e]; }
     .admin-topbar { @apply flex min-h-[76px] items-center justify-between border-b border-[#d7d3c7] bg-[#faf8f2] px-6 sm:px-10; }
     .admin-topbar-actions { @apply flex items-center gap-4; }
+    /* The logo style comes from the dark login page; on the light admin bar the text needs dark ink. */
+    .admin-topbar .auth-logo { @apply text-[#14201e]; }
+    .admin-topbar .auth-logo span span { @apply text-[#c86a42]; }
     .admin-user { @apply hidden text-xs text-[#59645e] sm:inline; }
     .admin-layout { @apply mx-auto flex max-w-7xl flex-col lg:flex-row; }
     .admin-sidebar { @apply border-b border-[#d7d3c7] px-6 py-6 lg:min-h-[calc(100vh-76px)] lg:w-56 lg:border-b-0 lg:border-r lg:px-7 lg:py-10; }
@@ -295,7 +298,10 @@
     .admin-nav a { @apply whitespace-nowrap px-3 py-2 text-xs font-bold uppercase tracking-[1px] text-[#59645e] transition hover:bg-[#e4e1d7] hover:text-[#14201e]; }
     .admin-nav a.active { @apply bg-[#14201e] text-[#f4f1e8]; }
     .admin-content { @apply min-w-0 flex-1 px-6 py-8 sm:px-10 lg:px-12 lg:py-12; }
-    .admin-heading { @apply flex flex-col justify-between gap-5 sm:flex-row sm:items-end; }
+    .admin-heading { @apply flex flex-col justify-between gap-5 lg:flex-row lg:items-end; }
+    .admin-heading > :first-child { @apply min-w-0; }
+    .admin-heading > :last-child:not(:first-child) { @apply shrink-0; }
+    .admin-heading-actions { @apply flex flex-wrap gap-2 lg:flex-nowrap; }
     .admin-title { @apply mt-2 font-[Space_Grotesk] text-4xl font-bold uppercase tracking-[-1px] sm:text-5xl; }
     .admin-subtitle { @apply mt-3 max-w-xl text-sm leading-6 text-[#59645e]; }
     .admin-stat-grid { @apply mt-8 grid gap-3 sm:grid-cols-3; }

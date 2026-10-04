@@ -16,7 +16,7 @@
         <h1 class="admin-title">Dashboard</h1>
         <p class="admin-subtitle">{{ now()->format('l, F j') }} · Here's what's happening at PickleHub.</p>
     </div>
-    <div class="flex flex-wrap gap-2">
+    <div class="admin-heading-actions">
         <a class="button button-outline" href="{{ route('admin.reports.monthly') }}">Monthly report</a>
         <a class="button button-outline" href="{{ route('admin.bookings.index') }}">Bookings</a>
         <a class="button button-dark" href="{{ route('admin.events.create') }}">
