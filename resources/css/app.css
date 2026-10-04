@@ -316,6 +316,50 @@
     .admin-actions .button { @apply px-3 py-2 text-[9px]; }
     .button-danger { @apply border border-[#c86a42] text-[#a04d32] hover:bg-[#f9e5da]; }
     .admin-alert { @apply mt-6 border p-4 text-sm; }
+    .admin-kpis { @apply mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4; }
+    .admin-kpi { @apply relative flex min-w-0 flex-col border border-[#d7d3c7] bg-[#faf8f2] p-5 transition hover:-translate-y-0.5 hover:border-[#c86a42] hover:shadow-[0_12px_28px_-18px_rgba(20,32,30,.55)]; }
+    .admin-kpi > span { @apply text-[10px] font-bold uppercase tracking-[1px] text-[#788078]; }
+    .admin-kpi strong { @apply mt-2 font-[Space_Grotesk] text-4xl tabular-nums; }
+    .admin-kpi strong small { @apply ml-1 font-sans text-sm font-bold text-[#788078]; }
+    .admin-kpi em { @apply mt-2 text-xs not-italic text-[#59645e]; }
+    .admin-kpi.is-live { @apply border-[#c86a42]; }
+    .admin-kpi.is-live::after { @apply absolute right-4 top-4 h-2.5 w-2.5 rounded-full bg-[#c86a42] content-['']; animation: pulse-dot 1.6s ease-out infinite; }
+    .chart-tip { @apply pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-max max-w-[200px] -translate-x-1/2 flex-col bg-[#14201e] px-3 py-2 text-left text-[11px] text-[#f4f1e8] shadow-lg; }
+    .chart-tip b { @apply text-[10px] uppercase tracking-[1px] text-[#e1aa62]; }
+    .chart-tip small { @apply text-[10px] text-[#c5cbc4]; }
+    .court-timeline { @apply mt-6 grid grid-cols-[repeat(17,minmax(0,1fr))] gap-[2px]; }
+    .court-hour { @apply relative flex cursor-default flex-col items-center outline-none; }
+    .court-hour-bar { @apply block h-12 w-full rounded-[4px] bg-[#dce9df] transition; }
+    .court-hour.booked .court-hour-bar { @apply bg-[#c86a42]; }
+    .court-hour.past .court-hour-bar { @apply opacity-45; }
+    .court-hour.now .court-hour-bar { @apply ring-2 ring-[#14201e] ring-offset-2 ring-offset-[#faf8f2]; }
+    .court-hour:hover .court-hour-bar, .court-hour:focus-visible .court-hour-bar { @apply -translate-y-0.5 brightness-95; }
+    .court-hour-label { @apply mt-2 hidden text-[9px] font-bold text-[#788078] sm:block; }
+    .court-hour:nth-child(4n+1) .court-hour-label { @apply block; }
+    .court-hour:hover .chart-tip, .court-hour:focus-visible .chart-tip, .bar-col:hover .chart-tip, .bar-col:focus-visible .chart-tip { @apply flex; }
+    .admin-dash-grid { @apply grid grid-cols-[minmax(0,1fr)] items-start gap-8 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]; }
+    .bar-chart { @apply mt-6 grid grid-cols-[32px_minmax(0,1fr)] gap-2; }
+    .bar-chart-axis { @apply flex h-44 flex-col justify-between text-right text-[9px] font-bold text-[#9da098]; }
+    .bar-chart-plot { @apply relative grid h-44 grid-cols-[repeat(14,minmax(0,1fr))] items-end gap-[2px] border-b border-[#c9c6ba]; background-image: linear-gradient(#e8e4da 1px, transparent 1px); background-size: 100% 50%; }
+    .bar-col { @apply relative flex h-full flex-col justify-end outline-none; }
+    .bar-col::before { @apply absolute inset-0 rounded-t-[4px] transition content-['']; }
+    .bar-col:hover::before, .bar-col:focus-visible::before { @apply bg-[#14201e]/5; }
+    .bar { @apply relative mx-auto block w-full max-w-7 rounded-t-[4px] bg-[#c86a42] transition-[height] duration-700; height: calc(var(--value) / var(--max) * 100%); min-height: 2px; animation: bar-rise .8s ease-out; }
+    .bar-col.is-today .bar { @apply bg-[#14201e]; }
+    .bar-value { @apply absolute left-1/2 -translate-x-1/2 text-[10px] font-bold text-[#14201e]; bottom: calc(var(--value) / var(--max) * 100% + 4px); }
+    .bar-label { @apply absolute left-1/2 top-full mt-1.5 flex -translate-x-1/2 flex-col items-center text-[9px] font-bold uppercase text-[#788078]; }
+    .bar-label small { @apply font-normal; }
+    .bar-col:nth-child(even) .bar-label { @apply hidden sm:flex; }
+    .bar-chart-table { @apply mt-12; }
+    .activity-list { @apply mt-2 divide-y divide-[#e8e4da]; }
+    .activity-item { @apply flex items-center gap-3 py-3 transition hover:bg-[#f4f1e8]; }
+    .activity-item strong { @apply block truncate text-sm; }
+    .activity-item span span, .activity-item > span:nth-child(2) > span { @apply block truncate text-xs text-[#788078]; }
+    .activity-item time { @apply shrink-0 text-[10px] font-bold uppercase text-[#9da098]; }
+    .activity-icon { @apply flex h-8 w-8 shrink-0 items-center justify-center text-sm; }
+    .activity-icon.booking { @apply bg-[#dce9df] text-[#3c6b4a]; }
+    .activity-icon.registration { @apply bg-[#fff4df] text-[#8f6c3c]; }
+    .activity-icon.cancelled { @apply bg-[#eeeae1] text-[#9da098]; }
     .admin-alert.success { @apply border-[#9eb3a2] bg-[#e4eee5] text-[#3c6b4a]; }
     .admin-alert.error { @apply border-[#c86a42] bg-[#f9e5da] text-[#8e452d]; }
     .admin-empty { @apply py-12 text-center text-sm text-[#788078]; }
@@ -365,6 +409,8 @@
     .auth-panel { padding: 2.5rem 1.5rem; }
 }
 
+@keyframes bar-rise { from { height: 0; } }
+@keyframes pulse-dot { 0% { box-shadow: 0 0 0 0 rgba(200,106,66,.6); } 100% { box-shadow: 0 0 0 10px rgba(200,106,66,0); } }
 @keyframes grow { from { width: 0; } }
 @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,.7); } 100% { box-shadow: 0 0 0 12px rgba(255,255,255,0); } }
 @keyframes fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

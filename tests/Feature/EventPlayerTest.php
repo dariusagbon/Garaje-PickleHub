@@ -240,4 +240,22 @@ class EventPlayerTest extends TestCase
         $this->actingAs(User::factory()->create(['is_admin' => true]))->get(route('dashboard'))
             ->assertRedirect(route('admin.dashboard'));
     }
+
+    public function test_admin_dashboard_shows_todays_court_and_activity(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $this->event(['title' => 'Tomorrow Social']);
+        \App\Models\Booking::create(['guest_name' => 'Morning Rally', 'guest_email' => 'rally@example.com', 'booking_date' => today()->toDateString(), 'court' => 'PickleHub Court', 'hour' => 9, 'status' => 'confirmed']);
+
+        $this->actingAs($admin)->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('1 of 17 hours booked today.')
+            ->assertSee('booked by Morning Rally')
+            ->assertSee('Tomorrow Social');
+    }
+
+    public function test_players_cannot_open_admin_dashboard(): void
+    {
+        $this->actingAs(User::factory()->create())->get(route('admin.dashboard'))->assertForbidden();
+    }
 }

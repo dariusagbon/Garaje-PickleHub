@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
-use App\Http\Controllers\{AuthController,BookingController,EventController,AdminBookingController,PlayerDashboardController};
+use App\Http\Controllers\{AuthController,BookingController,EventController,AdminBookingController,AdminDashboardController,PlayerDashboardController};
 
 Route::get('/', function () {
     $events = Schema::hasTable('events') ? \App\Models\Event::upcoming()->orderBy('date')->orderBy('time')->take(6)->get() : collect();
@@ -20,7 +20,7 @@ Route::get('/events/{event}',[EventController::class,'show'])->name('events.show
 Route::post('/events/{event}/register',[EventController::class,'register'])->middleware('auth')->name('events.register');
 Route::patch('/events/{event}/matches/{match}/score',[EventController::class,'score'])->name('events.matches.score');
 Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(function(){
- Route::get('/', fn() => redirect()->route('admin.events.index'))->name('dashboard');
+ Route::get('/', AdminDashboardController::class)->name('dashboard');
  Route::get('events/history',[EventController::class,'history'])->name('events.history');
  Route::resource('events',EventController::class)->except(['show']);
  Route::get('bookings',[AdminBookingController::class,'index'])->name('bookings.index');
