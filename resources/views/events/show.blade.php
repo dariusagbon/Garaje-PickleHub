@@ -2,6 +2,11 @@
 @use('Carbon\Carbon')
 @use('Illuminate\Support\Str')
 @php
+    // Privacy: only admins see who registered; logged-in users see counts and spots left;
+    // guests see neither. Names are left out of the HTML, not just hidden with CSS.
+    $isAdmin = (bool) auth()->user()?->is_admin;
+    $canSeeCounts = auth()->check();
+
     $myRegistration = $event->playerRegistrations->firstWhere('user_id', auth()->id());
 
     $registered = $event->playerRegistrations->count();
@@ -59,18 +64,25 @@
                 <dt>Start</dt>
                 <dd>{{ Carbon::parse($event->time)->format('g:i A') }}</dd>
             </div>
-            <div>
-                <dt>Players</dt>
-                <dd>{{ $registered }}<small>/ {{ $event->capacity }}</small></dd>
-            </div>
-            <div>
-                <dt>Spots left</dt>
-                <dd>{{ $event->isPast() ? '—' : $spotsLeft }}</dd>
-            </div>
-            <div class="ev-facts-meter">
-                <span class="ev-meter" aria-hidden="true"><i style="width: {{ $fill }}%"></i></span>
-                <small>{{ $fill }}% full</small>
-            </div>
+            @if ($canSeeCounts)
+                <div>
+                    <dt>Players</dt>
+                    <dd>{{ $registered }}<small>/ {{ $event->capacity }}</small></dd>
+                </div>
+                <div>
+                    <dt>Spots left</dt>
+                    <dd>{{ $event->isPast() ? '—' : $spotsLeft }}</dd>
+                </div>
+                <div class="ev-facts-meter">
+                    <span class="ev-meter" aria-hidden="true"><i style="width: {{ $fill }}%"></i></span>
+                    <small>{{ $fill }}% full</small>
+                </div>
+            @else
+                <div class="ev-facts-wide">
+                    <dt>Spots</dt>
+                    <dd class="ev-facts-login"><a href="{{ route('login') }}">Log in</a> to see availability</dd>
+                </div>
+            @endif
         </dl>
     </header>
 
@@ -95,25 +107,34 @@
                     <p class="eyebrow eyebrow-dark">Registration</p>
                     <h2>Join the event</h2>
                 </div>
-                <span @class(['ev-status', 'is-full' => ! $spotsLeft || $event->isPast()])>
-                    {{ $event->isPast() ? 'Closed' : ($spotsLeft ? 'Open' : 'Full') }}
-                </span>
+                @if ($event->isPast())
+                    <span class="ev-status is-full">Closed</span>
+                @elseif ($canSeeCounts)
+                    <span @class(['ev-status', 'is-full' => ! $spotsLeft])>{{ $spotsLeft ? 'Open' : 'Full' }}</span>
+                @endif
             </div>
 
-            <div class="ev-count">
-                <strong>{{ $registered }}</strong>
-                <span>of {{ $event->capacity }} players registered</span>
-            </div>
-            <span class="ev-meter ev-meter-lg" aria-hidden="true"><i style="width: {{ $fill }}%"></i></span>
+            @if ($canSeeCounts)
+                <div class="ev-count">
+                    <strong>{{ $spotsLeft }}</strong>
+                    <span>{{ Str::plural('spot', $spotsLeft) }} left · {{ $registered }} of {{ $event->capacity }} players registered</span>
+                </div>
+                <span class="ev-meter ev-meter-lg" aria-hidden="true"><i style="width: {{ $fill }}%"></i></span>
+            @endif
 
             @if ($event->isPast())
                 <p class="ev-note">This event has ended. Registration is closed.</p>
             @else
                 @auth
                     @if ($myRegistration)
+                        @php $myStats = $stats[$myRegistration->id]; @endphp
                         <p class="ev-joined">
                             <span aria-hidden="true">✓</span>
                             You're in as <strong>{{ $myRegistration->player_name }}</strong>
+                            <small>
+                                · {{ $myStats->games }} {{ Str::plural('game', $myStats->games) }}
+                                · {{ $myStats->active ? 'In a game' : 'Waiting for the next game' }}
+                            </small>
                         </p>
                     @endif
 
@@ -141,32 +162,37 @@
                 @endauth
             @endif
 
-            {{-- Registered players --}}
-            <h3 class="ev-subhead">Registered players <span>{{ $registered }}</span></h3>
-            @if ($event->playerRegistrations->isEmpty())
-                <div class="ev-empty">
-                    <span class="ev-empty-icon" aria-hidden="true">🏓</span>
-                    <p><strong>No players yet.</strong> Be the first to join!</p>
-                </div>
-            @else
-                <ul class="ev-players">
-                    @foreach ($event->playerRegistrations as $registration)
-                        @php $playerStats = $stats[$registration->id]; @endphp
-                        <li @class(['is-me' => $registration->is($myRegistration)])>
-                            <span class="ev-avatar" aria-hidden="true">{{ $initials($registration->player_name) }}</span>
-                            <span class="min-w-0 flex-1">
-                                <strong>{{ $registration->player_name }}</strong>
-                                <small>{{ $playerStats->games }} {{ Str::plural('game', $playerStats->games) }}</small>
-                            </span>
-                            <b class="queue-badge {{ $playerStats->active ? 'playing' : 'waiting' }}">
-                                {{ $playerStats->active ? 'In a game' : 'Waiting' }}
-                            </b>
-                        </li>
-                    @endforeach
-                </ul>
+            {{-- Registered players: admins only --}}
+            @if ($isAdmin)
+                <h3 class="ev-subhead">
+                    Registered players <span>{{ $registered }}</span>
+                    <small class="ev-admin-only">Visible to admins only</small>
+                </h3>
+                @if ($event->playerRegistrations->isEmpty())
+                    <div class="ev-empty">
+                        <span class="ev-empty-icon" aria-hidden="true">🏓</span>
+                        <p><strong>No players yet.</strong> Registrations will appear here.</p>
+                    </div>
+                @else
+                    <ul class="ev-players">
+                        @foreach ($event->playerRegistrations as $registration)
+                            @php $playerStats = $stats[$registration->id]; @endphp
+                            <li @class(['is-me' => $registration->is($myRegistration)])>
+                                <span class="ev-avatar" aria-hidden="true">{{ $initials($registration->player_name) }}</span>
+                                <span class="min-w-0 flex-1">
+                                    <strong>{{ $registration->player_name }}</strong>
+                                    <small>{{ $playerStats->games }} {{ Str::plural('game', $playerStats->games) }}</small>
+                                </span>
+                                <b class="queue-badge {{ $playerStats->active ? 'playing' : 'waiting' }}">
+                                    {{ $playerStats->active ? 'In a game' : 'Waiting' }}
+                                </b>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
             @endif
 
-            @if ($event->playerRegistrations->isNotEmpty() && ! $event->isPast())
+            @if ($canSeeCounts && $event->playerRegistrations->isNotEmpty() && ! $event->isPast())
                 <div class="queue-card">
                     <p class="eyebrow eyebrow-dark">Next game queue</p>
 
@@ -177,13 +203,15 @@
                             {{ $waiting->count() }} waiting{{ $needed ? " · needs $needed more ".Str::plural('player', $needed).' to start' : '' }}.
                             Players with the fewest games go first.
                         </p>
-                        <div class="queue-chips">
-                            @foreach ($waiting as $registration)
-                                <span class="admin-player-chip">
-                                    {{ $registration->player_name }} <small>{{ $stats[$registration->id]->games }}</small>
-                                </span>
-                            @endforeach
-                        </div>
+                        @if ($isAdmin)
+                            <div class="queue-chips">
+                                @foreach ($waiting as $registration)
+                                    <span class="admin-player-chip">
+                                        {{ $registration->player_name }} <small>{{ $stats[$registration->id]->games }}</small>
+                                    </span>
+                                @endforeach
+                            </div>
+                        @endif
                     @endif
                 </div>
             @endif
@@ -237,11 +265,18 @@
                                     @php
                                         $team = 'Team '.strtoupper($side);
                                         $inputId = "score-{$side}-{$match->id}";
+                                        $isMyTeam = $myRegistration && $players->contains('id', $myRegistration->id);
                                     @endphp
                                     <section class="score-team score-team-{{ $side }}">
                                         <p class="eyebrow eyebrow-dark">{{ $team }}</p>
                                         <p class="mt-2 min-h-10 text-sm font-bold text-[#59645e]">
-                                            {{ $players->pluck('player_name')->join(' & ') }}
+                                            @if ($isAdmin)
+                                                {{ $players->pluck('player_name')->join(' & ') }}
+                                            @elseif ($isMyTeam)
+                                                <span class="ev-your-team">Your team</span>
+                                            @else
+                                                {{ $players->count() }} {{ Str::plural('player', $players->count()) }}
+                                            @endif
                                         </p>
                                         <div class="event-score-number">
                                             <input id="{{ $inputId }}" type="number" min="0" name="score_{{ $side }}"
@@ -271,9 +306,17 @@
                     <div class="ev-first-game">
                         <div class="ev-seats" aria-hidden="true">
                             @for ($seat = 0; $seat < $perMatch; $seat++)
-                                @php $player = $event->playerRegistrations[$seat] ?? null; @endphp
+                                @php $player = $canSeeCounts ? ($event->playerRegistrations[$seat] ?? null) : null; @endphp
                                 <span @class(['ev-seat', 'is-filled' => $player])>
-                                    {{ $player ? $initials($player->player_name) : '?' }}
+                                    @if (! $player)
+                                        ?
+                                    @elseif ($isAdmin)
+                                        {{ $initials($player->player_name) }}
+                                    @elseif ($player->is($myRegistration))
+                                        You
+                                    @else
+                                        ✓
+                                    @endif
                                 </span>
                                 @if ($seat === 1)
                                     <em>vs</em>
@@ -285,7 +328,9 @@
                         </p>
                         @unless ($event->isPast())
                             <p class="ev-first-game-text">
-                                {{ min($registered, $perMatch) }} of {{ $perMatch }} players ready.
+                                @if ($canSeeCounts)
+                                    {{ min($registered, $perMatch) }} of {{ $perMatch }} players ready.
+                                @endif
                                 The first doubles game is drawn automatically once {{ $perMatch }} players register.
                             </p>
                         @endunless

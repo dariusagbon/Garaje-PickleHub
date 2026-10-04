@@ -154,9 +154,15 @@
                             </p>
                             <h3><a href="{{ route('events.show', $event) }}">{{ $event->title }}</a></h3>
                             <p>{{ $event->description }}</p>
-                            {{-- No whitespace between these two: the button sits directly after the count. --}}
-                            <span class="event-count">{{ $event->registrations() }} / {{ $event->capacity }} registered</span><a
-                               class="button button-outline mt-4" href="{{ route('events.show', $event) }}">View event & scoring</a>
+                            {{-- Registration counts are for logged-in users only. --}}
+                            {{-- No whitespace between the count and the button: the button sits directly after it. --}}
+                            @auth
+                                <span class="event-count">{{ max(0, $event->capacity - $event->registrations()) }} of {{ $event->capacity }} spots left</span><a
+                                   class="button button-outline mt-4" href="{{ route('events.show', $event) }}">View event & scoring</a>
+                            @else
+                                <span class="event-count">{{ $event->capacity }} player event</span><a
+                                   class="button button-outline mt-4" href="{{ route('events.show', $event) }}">View event & scoring</a>
+                            @endauth
                         </article>
                     @empty
                         <p>No upcoming events yet.</p>

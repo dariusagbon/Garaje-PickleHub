@@ -12,7 +12,8 @@
     $startsAt = fn ($event) => $event->date->format('Y-m-d').'T'.$time($event)->format('H:i:s');
     $dayLabel = fn ($date) => $date->isToday() ? 'Today' : ($date->isTomorrow() ? 'Tomorrow' : $date->format('l'));
     $hourText = fn ($hour) => Carbon::createFromTime($hour % 24)->format('g:i A');
-    $youAndPartners = fn ($game) => 'You'.($game->partners->isNotEmpty() ? ' & '.$game->partners->join(' & ') : '');
+    // Other players' names are admin-only, so games are described by team letter.
+    $teamLetter = fn ($game) => $game->my_team === 1 ? 'A' : 'B';
 
     // Collapse booked hours into ranges such as "9:00 AM – 11:00 AM".
     $hourRanges = function ($hours) use ($hourText) {
@@ -132,9 +133,8 @@
                 <div class="min-w-0">
                     <p class="eyebrow">You're on court · {{ $currentGame->event->title }}</p>
                     <p class="dash-live-teams">
-                        <strong>{{ $youAndPartners($currentGame) }}</strong>
-                        <em>vs</em>
-                        <strong>{{ $currentGame->opponents->join(' & ') }}</strong>
+                        <strong>You're on Team {{ $teamLetter($currentGame) }}</strong>
+                        <em>· Game {{ $currentGame->game_number }}</em>
                     </p>
                 </div>
                 <span class="dash-live-cta">Open game &#8594;</span>
@@ -203,9 +203,7 @@
                                 <span class="min-w-0 flex-1">
                                     <span class="dash-event-meta">{{ $game->event->title }} · {{ $game->event->date->format('M j') }}</span>
                                     <span class="block truncate text-sm">
-                                        {{ $youAndPartners($game) }}
-                                        <em class="text-[#9da098]">vs</em>
-                                        {{ $game->opponents->join(' & ') }}
+                                        Game {{ $game->game_number }} · You played on Team {{ $teamLetter($game) }}
                                     </span>
                                 </span>
                                 <span class="dash-result-score">{{ $game->my_score }}<i>–</i>{{ $game->their_score }}</span>

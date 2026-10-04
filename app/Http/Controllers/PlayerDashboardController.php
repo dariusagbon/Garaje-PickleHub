@@ -31,12 +31,10 @@ class PlayerDashboardController extends Controller
                 $me = $match->players->first(fn ($player) => $registrationIds->contains($player->id));
                 $myTeam = (int) $me->pivot->team;
                 $match->setAttribute('my_team', $myTeam);
-                $match->setAttribute('partners', $match->players
-                    ->filter(fn ($p) => $p->pivot->team == $myTeam && $p->id !== $me->id)
-                    ->pluck('player_name'));
-                $match->setAttribute('opponents', $match->players
-                    ->filter(fn ($p) => $p->pivot->team != $myTeam)
-                    ->pluck('player_name'));
+                // Game 1, 2, 3… within its event (other players' names are not shown to players).
+                $match->setAttribute('game_number', EventMatch::where('event_id', $match->event_id)
+                    ->where('id', '<=', $match->id)
+                    ->count());
 
                 $mine = $myTeam === 1 ? $match->score_a : $match->score_b;
                 $theirs = $myTeam === 1 ? $match->score_b : $match->score_a;

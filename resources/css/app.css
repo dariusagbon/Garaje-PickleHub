@@ -254,6 +254,12 @@
     .ev-facts dt { @apply text-[9px] font-bold uppercase tracking-[1px] text-[#c5cbc4]; }
     .ev-facts dd { @apply mt-1 font-[Space_Grotesk] text-xl font-bold; }
     .ev-facts dd small { @apply ml-1 font-sans text-xs text-[#c5cbc4]; }
+    .ev-facts .ev-facts-wide { @apply col-span-2; }
+    .ev-facts dd.ev-facts-login { @apply font-sans text-sm font-normal text-[#c5cbc4]; }
+    .ev-facts-login a { @apply font-bold text-[#e1aa62] underline; }
+    .ev-joined small { @apply text-xs text-[#59645e]; }
+    .ev-admin-only { @apply ml-auto bg-[#fff4df] px-2 py-0.5 text-[9px] text-[#8f6c3c]; }
+    .ev-your-team { @apply inline-block bg-[#14201e] px-2 py-1 text-[10px] uppercase tracking-[1px] text-[#e1aa62]; }
     .ev-facts .ev-facts-meter { @apply col-span-2 flex items-center gap-3 sm:col-span-4; }
     .ev-facts-meter small { @apply shrink-0 text-[10px] font-bold uppercase tracking-[1px] text-[#e1aa62]; }
     .ev-meter { @apply block h-1.5 w-full overflow-hidden rounded-full bg-white/15; }
