@@ -199,7 +199,7 @@
 
                 @if ($canReshuffle)
                     <form method="POST" action="{{ route('admin.events.matches.randomize', $event) }}"
-                          onsubmit="return confirm('Reshuffle all games that have no score yet? Scored games are kept.')">
+                          onsubmit="return confirm('Reshuffle games that have not started yet? Games in progress and finished games are kept.')">
                         @csrf
                         <button class="button button-outline">Reshuffle unplayed games</button>
                     </form>
@@ -214,20 +214,21 @@
 
             <div class="mt-6 space-y-6">
                 @forelse ($event->matches as $match)
-                    <article class="scoreboard-card">
+                    <article @class(['scoreboard-card', 'is-final' => $match->isComplete()])>
                         <div class="flex flex-col justify-between gap-4 border-b border-[#d7d3c7] pb-5 sm:flex-row sm:items-center">
                             <div>
                                 <p class="eyebrow eyebrow-dark">
-                                    Game {{ $loop->iteration }} · {{ $match->isComplete() ? 'Final' : 'Waiting for score' }}
+                                    Game {{ $loop->iteration }} · <span data-game-state>{{ $match->isComplete() ? 'Final' : 'Live' }}</span>
                                 </p>
                                 <p class="mt-2 text-sm font-bold text-[#59645e]">Single game · First to 11, win by 2</p>
                             </div>
-                            <div class="score-result {{ $match->isComplete() ? 'complete' : '' }}">
+                            <div @class(['score-result', 'complete' => $match->isComplete()]) data-game-result>
                                 {{ $match->winnerLabel() ?? 'In progress' }}
                             </div>
                         </div>
 
-                        <form class="score-form" method="POST" action="{{ route('events.matches.score', [$event, $match]) }}">
+                        {{-- Scores save automatically (resources/js/modules/live-score.js). --}}
+                        <form class="score-form" method="POST" action="{{ route('events.matches.score', [$event, $match]) }}" data-live-score>
                             @csrf
                             @method('PATCH')
 
@@ -254,14 +255,14 @@
                                 @endforeach
                             </div>
 
-                            <div class="mt-5 border-t border-[#e8e4da] pt-5">
-                                <div class="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
-                                    <label class="scoring-field" for="score-pin-{{ $match->id }}">
-                                        Scorekeeper PIN
-                                        <input id="score-pin-{{ $match->id }}" type="password" name="score_pin" minlength="4" maxlength="32" required>
-                                    </label>
-                                    <button class="score-point-button mt-0 min-h-12 sm:w-48" type="submit">Save live score</button>
-                                </div>
+                            <div class="score-save-bar">
+                                <p class="score-save-status" data-save-status role="status" aria-live="polite">
+                                    <span class="score-save-dot" aria-hidden="true"></span>
+                                    <span data-save-text>Scores save automatically</span>
+                                </p>
+                                <noscript>
+                                    <button class="button button-dark" type="submit">Save score</button>
+                                </noscript>
                             </div>
                         </form>
                     </article>

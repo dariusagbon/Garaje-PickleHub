@@ -144,6 +144,16 @@
     .score-result { @apply mt-1 text-[9px] font-bold uppercase tracking-[1px] text-[#9da098]; }
     .score-result.complete { @apply text-[#3c6b4a]; }
     .score-control { @apply mt-2 flex items-center; }
+    .score-save-bar { @apply mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#e8e4da] pt-4; }
+    .score-save-status { @apply flex items-center gap-2 text-xs font-bold text-[#788078]; }
+    .score-save-dot { @apply h-2 w-2 rounded-full bg-[#c9c6ba]; }
+    .score-save-status[data-state="pending"] .score-save-dot,
+    .score-save-status[data-state="saving"] .score-save-dot { @apply animate-pulse bg-[#e1aa62]; }
+    .score-save-status[data-state="saved"] { @apply text-[#3c6b4a]; }
+    .score-save-status[data-state="saved"] .score-save-dot { @apply bg-[#6f9d7d]; }
+    .score-save-status[data-state="error"] { @apply text-[#a04d32]; }
+    .score-save-status[data-state="error"] .score-save-dot { @apply bg-[#c86a42]; }
+    .scoreboard-card.is-final { @apply border-[#9eb3a2]; }
     .score-control button { @apply h-9 w-9 border border-[#d7d3c7] bg-[#e4e1d7] text-lg font-bold hover:border-[#c86a42] hover:text-[#c86a42]; }
     .score-control input { @apply h-9 w-14 border-y border-[#d7d3c7] bg-[#f4f1e8] text-center text-base font-bold; }
     .scoring-settings, .scoreboard-card { @apply border border-[#d7d3c7] bg-[#faf8f2] p-5 sm:p-8; }

@@ -36,7 +36,7 @@ class AdminDashboardController extends Controller
             ->withCount([
                 'playerRegistrations',
                 'matches',
-                'matches as live_matches_count' => fn ($q) => $q->whereNull('score_a'),
+                'matches as live_matches_count' => fn ($q) => $q->unfinished(),
             ])
             ->orderBy('date')
             ->orderBy('time')
@@ -74,7 +74,7 @@ class AdminDashboardController extends Controller
                 'week_rate' => round($weekHours / (count($hours) * 7) * 100),
                 'upcoming_events' => Event::upcoming()->count(),
                 'players' => EventRegistration::whereHas('event', fn ($q) => $q->upcoming())->count(),
-                'live_games' => EventMatch::whereNull('score_a')->whereHas('event', fn ($q) => $q->upcoming())->count(),
+                'live_games' => EventMatch::unfinished()->whereHas('event', fn ($q) => $q->upcoming())->count(),
                 'members' => User::where('is_admin', false)->count(),
             ],
         ]);

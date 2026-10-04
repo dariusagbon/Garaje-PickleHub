@@ -7,7 +7,6 @@ use App\Models\Event;
 use App\Models\EventMatch;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class EventPlayerTest extends TestCase
@@ -21,7 +20,6 @@ class EventPlayerTest extends TestCase
             'date' => now()->addDay(),
             'time' => '10:00',
             'capacity' => 8,
-            'score_pin' => Hash::make('2468'),
         ], $attributes));
     }
 
@@ -59,7 +57,7 @@ class EventPlayerTest extends TestCase
 
     private function finish(Event $event, EventMatch $match): void
     {
-        $this->patch(route('events.matches.score', [$event, $match]), ['score_pin' => '2468', 'score_a' => 11, 'score_b' => 5])
+        $this->patch(route('events.matches.score', [$event, $match]), ['score_a' => 11, 'score_b' => 5])
             ->assertSessionHasNoErrors();
     }
 
@@ -99,7 +97,7 @@ class EventPlayerTest extends TestCase
         $this->registerPlayers($event, 7);
 
         for ($round = 0; $round < 12; $round++) {
-            $this->finish($event, EventMatch::whereNull('score_a')->firstOrFail());
+            $this->finish($event, EventMatch::unfinished()->firstOrFail());
             $games = $this->gamesPlayed($event);
             $this->assertLessThanOrEqual(1, max($games) - min($games));
         }
@@ -134,31 +132,87 @@ class EventPlayerTest extends TestCase
         $this->actingAs(User::factory()->create())->post(route('admin.events.matches.randomize', $event))->assertForbidden();
     }
 
-    public function test_scores_must_reach_eleven_and_win_by_two(): void
+    public function test_live_scores_autosave_without_a_pin_and_keep_the_game_open(): void
     {
         $event = $this->event();
-        $admin = User::factory()->create(['is_admin' => true]);
         $match = $event->matches()->create();
 
-        $this->actingAs($admin)->patch(route('events.matches.score', [$event, $match]), ['score_pin' => '2468', 'score_a' => 11, 'score_b' => 10])
-            ->assertSessionHasErrors('score_a');
-        $this->assertDatabaseHas('event_matches', ['id' => $match->id, 'score_a' => null, 'score_b' => null]);
+        $this->patchJson(route('events.matches.score', [$event, $match]), ['score_a' => 3, 'score_b' => 2])
+            ->assertOk()
+            ->assertJson(['score_a' => 3, 'score_b' => 2, 'complete' => false, 'winner' => null]);
 
-        $this->actingAs($admin)->patch(route('events.matches.score', [$event, $match]), ['score_pin' => '2468', 'score_a' => 12, 'score_b' => 10])
-            ->assertSessionHasNoErrors();
-        $this->assertDatabaseHas('event_matches', ['id' => $match->id, 'score_a' => 12, 'score_b' => 10]);
+        $match->refresh();
+        $this->assertSame(3, $match->score_a);
+        $this->assertFalse($match->isComplete());
     }
 
-    public function test_guest_can_update_a_match_score(): void
+    public function test_a_game_is_final_once_a_team_reaches_eleven_with_a_two_point_lead(): void
+    {
+        $event = $this->event();
+        $match = $event->matches()->create();
+
+        // 11-10 is still live: no two-point lead yet.
+        $this->patchJson(route('events.matches.score', [$event, $match]), ['score_a' => 11, 'score_b' => 10])
+            ->assertOk()
+            ->assertJson(['complete' => false]);
+
+        $this->patchJson(route('events.matches.score', [$event, $match]), ['score_a' => 12, 'score_b' => 10])
+            ->assertOk()
+            ->assertJson(['complete' => true, 'winner' => 'Team A wins']);
+
+        $this->assertNotNull($match->refresh()->completed_at);
+    }
+
+    public function test_impossible_scores_are_rejected(): void
+    {
+        $event = $this->event();
+        $match = $event->matches()->create();
+
+        // The game would have ended at 11-5, so 13-5 cannot happen.
+        $this->patchJson(route('events.matches.score', [$event, $match]), ['score_a' => 13, 'score_b' => 5])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('score_a');
+
+        $this->assertNull($match->refresh()->score_a);
+    }
+
+    public function test_correcting_a_final_score_reopens_the_game(): void
+    {
+        $event = $this->event();
+        $match = $event->matches()->create(['score_a' => 11, 'score_b' => 4]);
+        $this->assertTrue($match->isComplete());
+
+        $this->patchJson(route('events.matches.score', [$event, $match]), ['score_a' => 10, 'score_b' => 4])
+            ->assertOk()
+            ->assertJson(['complete' => false]);
+
+        $this->assertFalse($match->refresh()->isComplete());
+    }
+
+    public function test_finishing_a_game_draws_the_next_one(): void
+    {
+        $event = $this->event();
+        $this->registerPlayers($event, 6);
+        $first = EventMatch::sole();
+
+        $this->patchJson(route('events.matches.score', [$event, $first]), ['score_a' => 7, 'score_b' => 3])
+            ->assertJson(['next_game_ready' => false]);
+        $this->assertSame(1, $event->matches()->count());
+
+        $this->patchJson(route('events.matches.score', [$event, $first]), ['score_a' => 11, 'score_b' => 3])
+            ->assertJson(['complete' => true, 'next_game_ready' => true]);
+        $this->assertSame(2, $event->matches()->count());
+    }
+
+    public function test_guest_can_update_a_match_score_without_javascript(): void
     {
         $event = $this->event();
         $match = $event->matches()->create();
 
         $this->patch(route('events.matches.score', [$event, $match]), [
-            'score_pin' => '2468',
             'score_a' => 11,
             'score_b' => 7,
-        ])->assertRedirect();
+        ])->assertRedirect()->assertSessionHas('message', 'Final score saved.');
 
         $this->assertDatabaseHas('event_matches', [
             'id' => $match->id,

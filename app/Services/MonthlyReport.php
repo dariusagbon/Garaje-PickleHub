@@ -135,9 +135,7 @@ class MonthlyReport
             ->withCount([
                 'playerRegistrations',
                 'matches',
-                'matches as completed_matches_count' => fn ($q) => $q
-                    ->whereNotNull('score_a')
-                    ->whereNotNull('score_b'),
+                'matches as completed_matches_count' => fn ($q) => $q->finished(),
             ])
             ->orderBy('date')
             ->orderBy('time')

@@ -4,7 +4,7 @@
     <div>
         <p class="eyebrow eyebrow-dark">Event setup</p>
         <h1 class="admin-title">{{ $event->exists ? 'Edit event' : 'New event' }}</h1>
-        <p class="admin-subtitle">Set the schedule, registration capacity, and scorekeeper access.</p>
+        <p class="admin-subtitle">Set the schedule and registration capacity.</p>
     </div>
     <a class="button button-outline" href="{{ route('admin.events.index') }}">&#8592; Events</a>
 </div>
@@ -47,14 +47,6 @@
         <label>
             Description
             <textarea name="description" rows="4">{{ old('description', $event->description) }}</textarea>
-        </label>
-
-        <label>
-            Scorekeeper PIN
-            <input name="score_pin" type="password" minlength="4" maxlength="32" @required(! $event->exists)>
-            <small>
-                {{ $event->exists ? 'Leave blank to keep the current PIN.' : 'Required. Share this PIN with the scorekeeper.' }}
-            </small>
         </label>
 
         <button class="button button-dark" type="submit">

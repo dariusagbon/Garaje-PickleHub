@@ -7,5 +7,5 @@ import './modules/booking.js';
 import './modules/reveal.js';
 import './modules/dashboard.js';
 import './modules/history-search.js';
-import './modules/event-score-buttons.js';
+import './modules/live-score.js';
 import './modules/scoreboard.js';
