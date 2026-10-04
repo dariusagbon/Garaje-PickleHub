@@ -226,7 +226,7 @@
     {{-- ============================== Footer ============================== --}}
     <footer id="contact" class="flex flex-col gap-5 bg-[#14201e] px-6 py-10 text-sm text-[#c5cbc4] sm:flex-row sm:items-center sm:justify-between sm:px-[7vw]">
         <span class="font-bold uppercase tracking-[2px] text-[#f4f1e8]">Pickle<span class="text-[#e1aa62]">Hub</span></span>
-        <span>J.P. Laurel Avenue · Davao City</span>
+        <span>Brgy. Mandug · Buhangin District · Davao City</span>
         <a class="text-[#e1aa62]" href="mailto:hello@picklehub.ph">hello@picklehub.ph</a>
     </footer>
 </body>
