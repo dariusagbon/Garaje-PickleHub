@@ -45,25 +45,31 @@
                     </p>
                 </div>
 
-                <div class="admin-booking-fields">
-                    <input name="guest_name" value="{{ $booking->guest_name }}" aria-label="Guest name">
-                    <input name="guest_email" type="email" value="{{ $booking->guest_email }}" aria-label="Guest email">
-                    <input name="booking_date" type="date" value="{{ $booking->booking_date->format('Y-m-d') }}" aria-label="Booking date">
-                    <input name="court" value="{{ $booking->court }}" readonly aria-label="Court">
-                    <input name="hour" type="number" min="7" max="23" value="{{ $booking->hour }}" aria-label="Booking hour">
-                    <select name="status" aria-label="Booking status">
-                        <option value="confirmed" @selected($booking->status === 'confirmed')>Confirmed</option>
-                        <option value="cancelled" @selected($booking->status === 'cancelled')>Cancelled</option>
-                    </select>
-                </div>
+                {{-- Edit fields stay folded away until needed, keeping the list short (especially on phones). --}}
+                <details class="admin-booking-edit" @if ($errors->any() && old('_booking') == $booking->id) open @endif>
+                    <summary>Edit</summary>
+                    <input type="hidden" name="_booking" value="{{ $booking->id }}">
 
-                <div class="admin-actions">
-                    <button class="button button-dark" type="submit">Save</button>
-                    {{-- Re-uses this form but sends it to the cancel (DELETE) route instead. --}}
-                    <button class="button button-danger" type="submit"
-                            formaction="{{ route('admin.bookings.destroy', $booking) }}" formmethod="POST"
-                            name="_method" value="DELETE">Cancel</button>
-                </div>
+                    <div class="admin-booking-fields">
+                        <input name="guest_name" value="{{ $booking->guest_name }}" aria-label="Guest name">
+                        <input name="guest_email" type="email" value="{{ $booking->guest_email }}" aria-label="Guest email">
+                        <input name="booking_date" type="date" value="{{ $booking->booking_date->format('Y-m-d') }}" aria-label="Booking date">
+                        <input name="court" value="{{ $booking->court }}" readonly aria-label="Court">
+                        <input name="hour" type="number" min="7" max="23" value="{{ $booking->hour }}" aria-label="Booking hour">
+                        <select name="status" aria-label="Booking status">
+                            <option value="confirmed" @selected($booking->status === 'confirmed')>Confirmed</option>
+                            <option value="cancelled" @selected($booking->status === 'cancelled')>Cancelled</option>
+                        </select>
+                    </div>
+
+                    <div class="admin-actions mt-3">
+                        <button class="button button-dark" type="submit">Save</button>
+                        {{-- Re-uses this form but sends it to the cancel (DELETE) route instead. --}}
+                        <button class="button button-danger" type="submit"
+                                formaction="{{ route('admin.bookings.destroy', $booking) }}" formmethod="POST"
+                                name="_method" value="DELETE">Cancel booking</button>
+                    </div>
+                </details>
             </form>
         @empty
             <div class="admin-empty">

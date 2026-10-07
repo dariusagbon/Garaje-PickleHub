@@ -429,7 +429,7 @@
     .admin-user { @apply hidden text-xs text-[#59645e] sm:inline; }
     .admin-layout { @apply mx-auto flex max-w-7xl flex-col lg:flex-row; }
     .admin-sidebar { @apply border-b border-[#d7d3c7] px-6 py-6 lg:min-h-[calc(100vh-76px)] lg:w-56 lg:border-b-0 lg:border-r lg:px-7 lg:py-10; }
-    .admin-nav { @apply mt-4 flex gap-2 overflow-x-auto lg:flex-col; }
+    .admin-nav { @apply mt-4 flex flex-wrap gap-1 sm:gap-2 lg:flex-col lg:flex-nowrap; }
     .admin-nav a { @apply whitespace-nowrap px-3 py-2 text-xs font-bold uppercase tracking-[1px] text-[#59645e] transition hover:bg-[#e4e1d7] hover:text-[#14201e]; }
     .admin-nav a.active { @apply bg-[#14201e] text-[#f4f1e8]; }
     .admin-content { @apply min-w-0 flex-1 px-6 py-8 sm:px-10 lg:px-12 lg:py-12; }
@@ -482,7 +482,7 @@
     .report-meta { @apply grid gap-1 text-xs; }
     .report-meta div { @apply flex gap-2; }
     .report-meta dt { @apply w-28 shrink-0 whitespace-nowrap font-bold uppercase tracking-[1px] text-[#788078]; }
-    .report-section { @apply mt-10; }
+    .report-section { @apply mt-10 min-w-0; }
     .report-keep-together { @apply break-inside-avoid-page; }
     .report-heading { @apply mb-4 border-b border-[#d7d3c7] pb-2 font-[Space_Grotesk] text-xl font-bold uppercase; }
     .report-heading small { @apply ml-2 font-sans text-xs font-bold normal-case text-[#788078]; }
@@ -494,8 +494,9 @@
     .report-kpis dt { @apply text-[9px] font-bold uppercase tracking-[1px] text-[#788078]; }
     .report-kpis dd { @apply mt-1 font-[Space_Grotesk] text-2xl font-bold tabular-nums; }
     .report-kpis dd small { @apply ml-1 font-sans text-xs text-[#788078]; }
-    .report-columns { @apply grid gap-x-8 lg:grid-cols-2; }
-    .report-table { @apply w-full border-collapse text-left text-xs; }
+    .report-columns { @apply grid grid-cols-[minmax(0,1fr)] gap-x-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]; }
+    .report-table-wrap { @apply overflow-x-auto; }
+    .report-table { @apply w-full min-w-[480px] border-collapse text-left text-xs; }
     .report-table th { @apply border-b-2 border-[#14201e] px-2 py-2 text-[9px] font-bold uppercase tracking-[1px] text-[#59645e]; }
     .report-table td { @apply border-b border-[#e8e4da] px-2 py-1.5 align-middle; }
     .report-table tr { @apply break-inside-avoid; }
@@ -563,7 +564,11 @@
     .admin-alert.success { @apply border-[#9eb3a2] bg-[#e4eee5] text-[#3c6b4a]; }
     .admin-alert.error { @apply border-[#c86a42] bg-[#f9e5da] text-[#8e452d]; }
     .admin-empty { @apply py-12 text-center text-sm text-[#788078]; }
-    .admin-booking-row { @apply flex flex-col gap-5 py-6; }
+    .admin-booking-row { @apply flex flex-col gap-3 py-5 sm:flex-row sm:items-start sm:justify-between; }
+    .admin-booking-edit { @apply sm:max-w-xl sm:flex-1; }
+    .admin-booking-edit > summary { @apply ml-auto w-max cursor-pointer list-none border border-[#d7d3c7] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[1px] text-[#59645e] transition hover:border-[#c86a42] hover:text-[#c86a42]; }
+    .admin-booking-edit > summary::-webkit-details-marker { display: none; }
+    .admin-booking-edit[open] > summary { @apply mb-3 border-[#14201e] bg-[#14201e] text-[#f4f1e8]; }
     .admin-booking-info { @apply sm:min-w-52; }
     .admin-status { @apply inline-block px-2 py-1 text-[9px] font-bold uppercase tracking-[1px]; }
     .admin-status.confirmed { @apply bg-[#dce9df] text-[#3c6b4a]; }
@@ -607,6 +612,19 @@
         padding-top: .95rem;
         padding-bottom: .95rem;
     }
+}
+
+/* Phones: keep both teams side by side while scoring, so both scores stay on screen. */
+@media (max-width: 639px) {
+    .scoreboard-teams .score-team { padding: .9rem .5rem; }
+    .scoreboard-teams .scoreboard-number { font-size: clamp(3.5rem, 22vw, 6rem); letter-spacing: -.04em; }
+    .scoreboard-teams .score-serve-label { min-height: 2.5rem; font-size: 9px; }
+    .scoreboard-teams .score-point-button,
+    .scoreboard-teams .rally-button { min-height: 3.75rem; padding: .5rem; font-size: 10px; letter-spacing: .5px; }
+    .scoreboard-teams .serve-badge { width: auto; max-width: 100%; white-space: normal; justify-content: center; padding: .2rem .4rem; font-size: 8px; }
+    .scoreboard-teams .eyebrow { font-size: 9px; }
+    .scoreboard-card { padding: 1rem; }
+    .score-call-bar .score-call-info { width: 100%; }
 }
 
 @media (max-width: 639px) {
@@ -677,6 +695,8 @@
     .report-section { margin-top: 1.5rem; }
     .report-page-break { break-before: page; }
     .report-table thead { display: table-header-group; }
+    .report-table-wrap { overflow: visible; }
+    .report-table { min-width: 0; }
     .report-table tfoot { display: table-row-group; } /* totals once, at the end */
     a { color: inherit; text-decoration: none; }
 }

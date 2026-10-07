@@ -275,7 +275,7 @@
                                 </span>
                             </div>
 
-                            <div class="scoreboard-teams mt-5 grid gap-4 md:grid-cols-2">
+                            <div class="scoreboard-teams mt-5 grid grid-cols-2 gap-2 sm:gap-4">
                                 @foreach (['a' => $match->teamA, 'b' => $match->teamB] as $side => $players)
                                     @php
                                         $team = 'Team '.strtoupper($side);

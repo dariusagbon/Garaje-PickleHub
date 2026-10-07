@@ -112,7 +112,8 @@
     {{-- ============================== Daily court usage ============================== --}}
     <section class="report-section">
         <h2 class="report-heading">Court usage by day</h2>
-        <table class="report-table">
+        <div class="report-table-wrap">
+<table class="report-table">
             <thead>
                 <tr>
                     <th>Date</th>
@@ -140,13 +141,15 @@
                 </tr>
             </tfoot>
         </table>
+</div>
     </section>
 
     {{-- ============================== Popular hours + top guests ============================== --}}
     <div class="report-columns">
         <section class="report-section">
             <h2 class="report-heading">Bookings by start time</h2>
-            <table class="report-table">
+            <div class="report-table-wrap">
+<table class="report-table">
                 <thead>
                     <tr>
                         <th>Hour</th>
@@ -164,6 +167,7 @@
                     @endforeach
                 </tbody>
             </table>
+</div>
         </section>
 
         <section class="report-section">
@@ -171,7 +175,8 @@
             @if ($topGuests->isEmpty())
                 <p class="report-empty">No confirmed bookings this month.</p>
             @else
-                <table class="report-table">
+                <div class="report-table-wrap">
+<table class="report-table">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -194,6 +199,7 @@
                         @endforeach
                     </tbody>
                 </table>
+</div>
             @endif
         </section>
     </div>
@@ -205,7 +211,8 @@
         @if ($events->isEmpty())
             <p class="report-empty">No events scheduled this month.</p>
         @else
-            <table class="report-table">
+            <div class="report-table-wrap">
+<table class="report-table">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -233,6 +240,7 @@
                     @endforeach
                 </tbody>
             </table>
+</div>
 
             <h3 class="report-subheading">Who joined</h3>
             <div class="report-rosters">
@@ -269,7 +277,8 @@
         @if ($bookings->isEmpty())
             <p class="report-empty">No bookings this month.</p>
         @else
-            <table class="report-table report-table-dense">
+            <div class="report-table-wrap">
+<table class="report-table report-table-dense">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -291,6 +300,7 @@
                     @endforeach
                 </tbody>
             </table>
+</div>
         @endif
     </section>
 

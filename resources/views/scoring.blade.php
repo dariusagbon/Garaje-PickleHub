@@ -108,7 +108,7 @@
 
             <div id="match-status" class="scoreboard-status mt-5" role="status">Team A serves first · Server 2</div>
 
-            <div class="scoreboard-teams mt-5 grid gap-4 md:grid-cols-2">
+            <div class="scoreboard-teams mt-5 grid grid-cols-2 gap-2 sm:gap-4">
                 <article class="score-team score-team-a">
                     <p id="score-team-a-label" class="eyebrow eyebrow-dark">Team A</p>
                     <strong id="score-team-a" class="scoreboard-number">0</strong>
