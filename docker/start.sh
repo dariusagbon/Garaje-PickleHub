@@ -5,6 +5,19 @@ set -e
 # Render tells the app its public address; use it unless APP_URL is set.
 export APP_URL="${APP_URL:-$RENDER_EXTERNAL_URL}"
 
+# Send errors to Render's Logs tab unless told otherwise.
+export LOG_CHANNEL="${LOG_CHANNEL:-stderr}"
+
+# Without a valid APP_KEY every page is a "500 Server Error": say so clearly.
+php -r '
+    $key = trim((string) getenv("APP_KEY"), " \t\n\r\x27\"");
+    $raw = str_starts_with($key, "base64:") ? base64_decode(substr($key, 7), true) : false;
+    if ($raw === false || strlen($raw) !== 32) {
+        fwrite(STDERR, "ERROR: APP_KEY is missing or invalid. Set it to the base64:... value from `php artisan key:generate --show`.\n");
+        exit(1);
+    }
+'
+
 echo "Running database migrations..."
 php artisan migrate --force
 
