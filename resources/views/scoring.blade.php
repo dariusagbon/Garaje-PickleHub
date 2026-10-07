@@ -123,7 +123,7 @@
                 </article>
             </div>
 
-            <div class="mt-6 grid gap-3 text-sm text-[#59645e] sm:grid-cols-3">
+            <div class="scoreboard-stats mt-6 grid gap-3 text-sm text-[#59645e] sm:grid-cols-3">
                 <div class="score-stat"><span>Games</span><strong id="games-score">0 - 0</strong></div>
                 <div class="score-stat"><span>Serve points</span><strong id="serve-stats">0 - 0</strong></div>
                 <div class="score-stat"><span>Return wins</span><strong id="return-stats">0 - 0</strong></div>
