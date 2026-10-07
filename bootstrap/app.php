@@ -13,6 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['admin' => AdminMiddleware::class]);
+
+        // Hosts like Render terminate HTTPS at a proxy in front of the app. Trusting
+        // it makes Laravel generate https:// URLs for pages and CSS/JS assets.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
