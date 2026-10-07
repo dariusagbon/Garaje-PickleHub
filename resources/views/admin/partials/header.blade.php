@@ -15,15 +15,28 @@
         </a>
         <div class="admin-topbar-actions">
             <span class="admin-user">{{ auth()->user()->name }}</span>
-            <form method="POST" action="{{ route('logout') }}">@csrf<button class="nav-link" type="submit">Log out</button></form>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button class="nav-link" type="submit">Log out</button>
+            </form>
         </div>
     </header>
     <div class="admin-layout">
         <aside class="admin-sidebar">
             <p class="eyebrow eyebrow-dark">Control center</p>
             <nav class="admin-nav" aria-label="Admin navigation">
-                <a class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Dashboard</a>
-                <a class="{{ request()->routeIs('admin.events.*') ? 'active' : '' }}" href="{{ route('admin.events.index') }}">Events</a>
+                <a @class(['active' => request()->routeIs('admin.dashboard')])
+                   href="{{ route('admin.dashboard') }}">Dashboard</a>
+                <a @class(['active' => request()->routeIs('admin.events.*') && ! request()->routeIs('admin.events.history')])
+                   href="{{ route('admin.events.index') }}">Events</a>
+                <a @class(['active' => request()->routeIs('admin.events.history')])
+                   href="{{ route('admin.events.history') }}">Event history</a>
+                <a @class(['active' => request()->routeIs('admin.bookings.*')])
+                   href="{{ route('admin.bookings.index') }}">Bookings</a>
+                <a @class(['active' => request()->routeIs('admin.announcements.*')])
+                   href="{{ route('admin.announcements.index') }}">Announcements</a>
+                <a @class(['active' => request()->routeIs('admin.reports.*')])
+                   href="{{ route('admin.reports.monthly') }}">Monthly report</a>
                 <a href="{{ url('/') }}">View website</a>
             </nav>
         </aside>

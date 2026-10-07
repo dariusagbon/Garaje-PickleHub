@@ -12,7 +12,7 @@ class AdminUserSeeder extends Seeder
         $email = env('ADMIN_EMAIL');
         $password = env('ADMIN_PASSWORD');
 
-        if (!$email || !$password) {
+        if (! $email || ! $password) {
             throw new \RuntimeException('Set ADMIN_EMAIL and ADMIN_PASSWORD before seeding an admin.');
         }
 

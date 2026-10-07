@@ -1,0 +1,47 @@
+# Render Blueprint: creates the PickleHub web service and a PostgreSQL database.
+# In Render: New + → Blueprint → pick this repository and branch.
+# You will be asked for the values marked "sync: false".
+
+databases:
+  - name: picklehub-db
+    plan: free
+    databaseName: picklehub
+    user: picklehub
+
+services:
+  - type: web
+    name: picklehub
+    runtime: docker
+    plan: free
+    healthCheckPath: /up
+    envVars:
+      # Generate locally with: php artisan key:generate --show   (paste the whole base64:... value)
+      - key: APP_KEY
+        sync: false
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_TIMEZONE
+        value: Asia/Manila
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: picklehub-db
+          property: connectionString
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
+      # The admin login, created/updated on every deploy.
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_NAME
+        value: Administrator
