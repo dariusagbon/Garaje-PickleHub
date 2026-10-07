@@ -418,6 +418,22 @@
     .button-danger { @apply border border-[#c86a42] text-[#a04d32] hover:bg-[#f9e5da]; }
     .admin-alert { @apply mt-6 border p-4 text-sm; }
 
+    /* ---------- Announcements ---------- */
+    .announcements { @apply space-y-2 bg-[#14201e] px-6 py-3 sm:px-[7vw]; }
+    .announcement { @apply mx-auto flex max-w-6xl items-start gap-3 border-l-4 border-[#e1aa62] bg-white/5 px-4 py-3 text-[#f4f1e8] transition duration-200; animation: fade-up .3s ease-out; }
+    .announcement.is-leaving { @apply -translate-y-1 opacity-0; }
+    .announcement-icon { @apply text-lg leading-6; }
+    .announcement-title { @apply font-[Space_Grotesk] text-base font-bold uppercase leading-6; }
+    .announcement-body { @apply mt-0.5 whitespace-pre-line text-sm leading-6 text-[#d9d6cc]; }
+    .announcement-meta { @apply mt-1 text-[10px] font-bold uppercase tracking-[1px] text-[#e1aa62]; }
+    .announcement-close { @apply -mr-1 flex h-8 w-8 shrink-0 items-center justify-center text-sm text-[#c5cbc4] transition hover:bg-white/10 hover:text-white; }
+    .admin-announcement { @apply flex flex-col gap-4 py-5 sm:flex-row sm:items-start; }
+    .admin-announcement h3 { @apply mt-1 font-[Space_Grotesk] text-lg font-bold uppercase; }
+    .admin-announcement-body { @apply mt-1 whitespace-pre-line text-sm text-[#59645e]; }
+    .admin-announcement.is-expired { @apply opacity-60; }
+    .admin-announcement.is-expired .eyebrow { @apply text-[#9da098]; }
+    .live-dot { @apply mr-1 inline-block h-2 w-2 rounded-full bg-[#c86a42] align-middle; animation: pulse-dot 1.6s ease-out infinite; }
+
     /* ---------- Monthly report ---------- */
     .report-toolbar { @apply mb-8 flex flex-wrap items-center justify-between gap-3 border border-[#d7d3c7] bg-[#faf8f2] p-3; }
     .report-month-input { @apply h-9 border border-[#d7d3c7] bg-[#f4f1e8] px-3 text-sm font-bold outline-none focus:border-[#c86a42]; }
@@ -517,7 +533,7 @@
     .admin-form-card { @apply max-w-3xl; }
     .admin-form { @apply space-y-5; }
     .admin-form label { @apply block text-[10px] font-bold uppercase tracking-[1px] text-[#59645e]; }
-    .admin-form input, .admin-form textarea { @apply mt-2 w-full border border-[#d7d3c7] bg-[#f4f1e8] p-3 text-sm outline-none focus:border-[#c86a42] focus:ring-1 focus:ring-[#c86a42]; }
+    .admin-form input, .admin-form textarea { @apply mt-2 w-full normal-case tracking-normal font-normal text-[#14201e] border border-[#d7d3c7] bg-[#f4f1e8] p-3 text-sm outline-none focus:border-[#c86a42] focus:ring-1 focus:ring-[#c86a42]; }
     .admin-form small { @apply mt-2 block text-xs font-normal normal-case tracking-normal text-[#788078]; }
     .admin-form-grid { @apply grid gap-5 sm:grid-cols-2; }
 }

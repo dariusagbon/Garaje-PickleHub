@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminBookingController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\EventController;
@@ -95,6 +96,12 @@ Route::middleware(['auth', 'admin'])
         Route::get('bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
         Route::patch('bookings/{booking}', [AdminBookingController::class, 'update'])->name('bookings.update');
         Route::delete('bookings/{booking}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy');
+
+        // Announcements (shown publicly for 24 hours)
+        Route::get('announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
+        Route::post('announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
+        Route::patch('announcements/{announcement}/expire', [AnnouncementController::class, 'expire'])->name('announcements.expire');
+        Route::delete('announcements/{announcement}', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
 
         // Reports
         Route::get('reports/monthly', MonthlyReportController::class)->name('reports.monthly');

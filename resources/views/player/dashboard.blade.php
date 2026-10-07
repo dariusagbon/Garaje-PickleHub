@@ -57,6 +57,8 @@
         </nav>
     </header>
 
+    @include('partials.announcements')
+
     {{-- ============================== Hero ============================== --}}
     <section class="dash-hero">
         <div class="dash-hero-inner">

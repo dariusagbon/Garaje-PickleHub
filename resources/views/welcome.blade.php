@@ -54,6 +54,8 @@
         </button>
     </header>
 
+    @include('partials.announcements')
+
     <main>
         {{-- ============================== Hero ============================== --}}
         <section id="home" class="hero relative overflow-hidden px-6 py-20 sm:px-[7vw] lg:min-h-[580px] lg:py-32">
