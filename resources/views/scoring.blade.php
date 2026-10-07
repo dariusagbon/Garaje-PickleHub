@@ -111,13 +111,13 @@
             <div class="scoreboard-teams mt-5 grid grid-cols-2 gap-2 sm:gap-4">
                 <article class="score-team score-team-a">
                     <p id="score-team-a-label" class="eyebrow eyebrow-dark">Team A</p>
-                    <strong id="score-team-a" class="scoreboard-number">0</strong>
+                    <div class="score-number-box"><strong id="score-team-a" class="scoreboard-number">0</strong></div>
                     <p id="serve-team-a" class="score-serve-label">Receiving</p>
                     <button class="score-point-button" data-score-team="A" type="button">Rally won by <span data-team-name="A">Team A</span></button>
                 </article>
                 <article class="score-team score-team-b">
                     <p id="score-team-b-label" class="eyebrow eyebrow-dark">Team B</p>
-                    <strong id="score-team-b" class="scoreboard-number">0</strong>
+                    <div class="score-number-box"><strong id="score-team-b" class="scoreboard-number">0</strong></div>
                     <p id="serve-team-b" class="score-serve-label">Serving · Server 2 · Right court</p>
                     <button class="score-point-button" data-score-team="B" type="button">Rally won by <span data-team-name="B">Team B</span></button>
                 </article>

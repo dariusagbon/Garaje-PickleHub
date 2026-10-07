@@ -205,18 +205,12 @@
     #scoreboard.is-fullscreen .score-team-a { @apply bg-[#24382e]; }
     #scoreboard.is-fullscreen .score-team-b { @apply bg-[#3d2a22]; }
     #scoreboard.is-fullscreen .score-team .eyebrow-dark { @apply text-base; }
-    #scoreboard.is-fullscreen .scoreboard-number { @apply text-[#f4f1e8]; font-size: clamp(6rem, 22vw, 20rem); letter-spacing: -.05em; }
+    #scoreboard.is-fullscreen .scoreboard-number { @apply text-[#f4f1e8]; letter-spacing: -.05em; }
     #scoreboard.is-fullscreen .score-serve-label { @apply text-sm text-[#e1aa62]; }
     #scoreboard.is-fullscreen .score-point-button { @apply bg-[#f4f1e8] text-base text-[#14201e] hover:bg-[#e1aa62]; min-height: 5rem; }
     #scoreboard.is-fullscreen .score-team.is-serving { @apply border-[#e1aa62]; }
     #scoreboard.is-fullscreen .score-stat { @apply border-white/10 bg-white/5 text-[#c5cbc4]; }
     #scoreboard.is-fullscreen .score-stat strong { @apply text-[#f4f1e8]; }
-
-    /* Full screen always fits one screen: the team panels share the height that is left. */
-    #scoreboard.is-fullscreen { height: 100vh; height: 100dvh; }
-    #scoreboard.is-fullscreen .scoreboard-teams { @apply min-h-0; }
-    #scoreboard.is-fullscreen .score-team { @apply min-h-0 justify-between; }
-    #scoreboard.is-fullscreen .scoreboard-number { line-height: 1; font-size: clamp(3rem, min(22vw, 26vh), 20rem); }
 
     /* ---------- Open scoreboard: between games ---------- */
     .game-flash { @apply fixed bottom-6 left-1/2 z-[60] w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 bg-[#e1aa62] px-5 py-3 text-center text-sm font-bold text-[#14201e] shadow-2xl; animation: fade-up .3s ease-out; }
@@ -631,7 +625,6 @@
     #scoreboard.is-fullscreen .scoreboard-teams { margin-top: .5rem; gap: .5rem; }
     #scoreboard.is-fullscreen .score-team { padding: .4rem .75rem; }
     #scoreboard.is-fullscreen .score-team .eyebrow-dark { font-size: .75rem; }
-    #scoreboard.is-fullscreen .scoreboard-number { margin-top: 0; font-size: clamp(2.5rem, 34vh, 12rem); }
     #scoreboard.is-fullscreen .score-serve-label { min-height: 0; margin-top: 0; font-size: 10px; }
     #scoreboard.is-fullscreen .score-point-button { min-height: 2.75rem; margin-top: .4rem; padding: .4rem; font-size: .8rem; }
     #scoreboard.is-fullscreen .scoreboard-stats { display: none; }
@@ -650,9 +643,31 @@
     .score-call-bar .score-call-info { width: 100%; }
 }
 
-/* Portrait phones in full screen: bigger scores (short landscape screens are handled above). */
+/*
+| Full screen always fits one screen. The board is exactly the screen's
+| height, the team panels take whatever room is left, and each score sits in
+| a size container so the digits shrink to fit it (cqh/cqw = % of that box).
+*/
+#scoreboard.is-fullscreen { height: 100vh; height: 100dvh; overflow: hidden; }
+#scoreboard.is-fullscreen .scoreboard-teams { min-height: 0; grid-template-rows: minmax(0, 1fr); }
+#scoreboard.is-fullscreen .score-team { display: flex; min-height: 0; flex-direction: column; overflow: hidden; }
+#scoreboard.is-fullscreen .score-number-box { display: flex; min-height: 0; flex: 1 1 0; align-items: center; justify-content: center; container-type: size; }
+#scoreboard.is-fullscreen .scoreboard-number { margin: 0; line-height: .9; font-size: clamp(1.5rem, min(100cqh, 75cqw), 20rem); }
+#scoreboard.is-fullscreen .scoreboard-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; margin-top: .75rem; }
+#scoreboard.is-fullscreen .score-stat { padding: .4rem .75rem; }
+
+/* Phones in portrait, full screen: compact header and stats so the scores get the room. */
 @media (max-width: 639px) and (min-height: 541px) {
-    #scoreboard.is-fullscreen .scoreboard-number { font-size: clamp(4rem, 30vw, 9rem); }
+    #scoreboard.is-fullscreen { padding: .75rem; }
+    #scoreboard.is-fullscreen > div:first-child { gap: .6rem; padding-bottom: .75rem; }
+    #scoreboard.is-fullscreen > div:first-child .button { padding: .55rem .8rem; font-size: 10px; }
+    #scoreboard.is-fullscreen .scoreboard-status { margin-top: .75rem; padding: .5rem .75rem; font-size: .9rem; }
+    #scoreboard.is-fullscreen .scoreboard-teams { margin-top: .75rem; }
+    #scoreboard.is-fullscreen .score-serve-label { min-height: 0; }
+    #scoreboard.is-fullscreen .score-point-button { min-height: 3.5rem; }
+    #scoreboard.is-fullscreen .score-stat { flex-direction: column; gap: .1rem; padding: .35rem .25rem; text-align: center; }
+    #scoreboard.is-fullscreen .score-stat span { font-size: 8px; letter-spacing: .5px; }
+    #scoreboard.is-fullscreen .score-stat strong { font-size: .95rem; }
 }
 
 @media (max-width: 639px) {
