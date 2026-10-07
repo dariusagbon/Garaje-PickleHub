@@ -98,7 +98,12 @@
                     <p id="match-progress" class="eyebrow eyebrow-dark">Game 1 · Best of 1</p>
                     <p id="score-call" class="mt-2 text-sm font-bold text-[#59645e]">Team A 0 - Team B 0</p>
                 </div>
-                <button id="undo-score" class="button button-outline" type="button" disabled>Undo last action</button>
+                <div class="flex flex-wrap gap-2">
+                    <button id="undo-score" class="button button-outline" type="button" disabled>Undo last action</button>
+                    <button id="fullscreen-toggle" class="button button-dark" type="button" aria-pressed="false">
+                        <span aria-hidden="true">⛶</span> <span data-fullscreen-label>Full screen</span>
+                    </button>
+                </div>
             </div>
 
             <div id="match-status" class="scoreboard-status mt-5" role="status">Team A serves first · Server 2</div>
@@ -108,13 +113,13 @@
                     <p id="score-team-a-label" class="eyebrow eyebrow-dark">Team A</p>
                     <strong id="score-team-a" class="scoreboard-number">0</strong>
                     <p id="serve-team-a" class="score-serve-label">Receiving</p>
-                    <button class="score-point-button" data-score-team="A" type="button">Point to Team A</button>
+                    <button class="score-point-button" data-score-team="A" type="button">Rally won by <span data-team-name="A">Team A</span></button>
                 </article>
                 <article class="score-team score-team-b">
                     <p id="score-team-b-label" class="eyebrow eyebrow-dark">Team B</p>
                     <strong id="score-team-b" class="scoreboard-number">0</strong>
                     <p id="serve-team-b" class="score-serve-label">Serving · Server 2 · Right court</p>
-                    <button class="score-point-button" data-score-team="B" type="button">Point to Team B</button>
+                    <button class="score-point-button" data-score-team="B" type="button">Rally won by <span data-team-name="B">Team B</span></button>
                 </article>
             </div>
 
@@ -125,6 +130,24 @@
             </div>
 
             <div id="winner-banner" class="winner-banner mt-5 hidden" role="status"></div>
+
+            {{-- Short message between games of a best-of-3/5 match --}}
+            <div id="game-flash" class="game-flash" role="status" aria-live="polite" hidden></div>
+
+            {{-- Match won: balloons + next-match options (resources/js/modules/scoreboard.js) --}}
+            <div id="celebration" class="celebration" role="dialog" aria-modal="true" aria-labelledby="celebration-title" hidden>
+                <div class="balloons" aria-hidden="true"></div>
+                <div class="celebration-card">
+                    <p class="eyebrow">Match over</p>
+                    <h2 id="celebration-title" class="celebration-title">🏆 Team A wins!</h2>
+                    <p id="celebration-score" class="celebration-score"></p>
+                    <div class="celebration-actions">
+                        <button id="rematch" class="button button-gold" type="button">Rematch <span aria-hidden="true">↻</span></button>
+                        <button id="new-match" class="button celebration-outline" type="button">New match</button>
+                    </div>
+                    <button id="celebration-undo" class="celebration-undo" type="button">↶ Oops, undo the last rally</button>
+                </div>
+            </div>
         </section>
 
         {{-- ============================== Rules ============================== --}}
