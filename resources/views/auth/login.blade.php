@@ -39,7 +39,10 @@
                     <label for="email">Email address</label>
                     <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" required autofocus>
                     <label for="password">Password</label>
-                    <input id="password" name="password" type="password" autocomplete="current-password" required>
+                    <div class="relative">
+                        <input id="password" name="password" type="password" autocomplete="current-password" required class="!pr-16">
+                        <button class="absolute inset-y-0 right-0 px-3 text-xs font-bold uppercase tracking-[1px] text-[#59645e] hover:text-[#c86a42] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#c86a42]" type="button" data-password-toggle aria-controls="password" aria-pressed="false" hidden>Show</button>
+                    </div>
                     <label class="auth-checkbox"><input type="checkbox" name="remember"> <span>Remember me</span></label>
                     <button class="button button-dark auth-submit" type="submit">Log in <span aria-hidden="true">&#8594;</span></button>
                 </form>

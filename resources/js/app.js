@@ -3,6 +3,7 @@ import './bootstrap';
 // Each module looks for its own elements and does nothing on pages without them.
 // They run in this order.
 import './modules/menu.js';
+import './modules/password-toggle.js';
 import './modules/announcements.js';
 import './modules/booking.js';
 import './modules/reveal.js';
