@@ -165,7 +165,7 @@ if (scoringBoard) {
         const box = celebration.querySelector('.balloons');
         box.innerHTML = '';
         if (reducedMotion) return;
-        const colours = ['#ff4d8d', '#ffc22e', '#10c98f', '#f5f3ff', '#ff6fa3', '#5fdcab'];
+        const colours = ['#d4685b', '#f4ada3', '#4c9a6a', '#f6efe2', '#ec9488', '#8cc98a'];
         for (let i = 0; i < 22; i += 1) {
             const balloon = document.createElement('span');
             balloon.className = 'balloon';

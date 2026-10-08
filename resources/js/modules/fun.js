@@ -10,7 +10,7 @@ const calm = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 |--------------------------------------------------------------------------
 */
 
-const COLOURS = ['#ff4d8d', '#ffc22e', '#10c98f', '#c8e05a', '#1b1840', '#f5f3ff'];
+const COLOURS = ['#d4685b', '#f4ada3', '#4c9a6a', '#cfe8c4', '#1f4d36', '#f6efe2'];
 
 export function confetti(pieces = 90) {
     if (calm()) return;

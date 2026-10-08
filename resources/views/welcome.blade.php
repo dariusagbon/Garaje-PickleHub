@@ -8,17 +8,17 @@
     <title>Garaje pickle Hub | Play Elevated</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-w-[320px] overflow-x-hidden bg-[#f5f3ff] font-sans text-[#1b1840]">
+<body class="min-w-[320px] overflow-x-hidden bg-[#f6efe2] font-sans text-[#1f4d36]">
 
     {{-- ============================== Header ============================== --}}
-    <header class="sticky top-0 z-20 flex h-[76px] items-center justify-between border-b border-[#ddd6fe] bg-[#f5f3ff]/95 px-6 backdrop-blur sm:px-[7vw]">
+    <header class="sticky top-0 z-20 flex h-[76px] items-center justify-between border-b border-[#e3d8c4] bg-[#f6efe2]/95 px-6 backdrop-blur sm:px-[7vw]">
         <a class="flex items-center gap-3" href="{{ url('/') }}" aria-label="PickleHub home">
             <img class="h-11 w-11 rounded-full object-cover" src="{{ asset('images/logo.jpeg') }}" alt="PickleHub logo">
-            <span class="text-sm font-bold uppercase tracking-[2px]">Pickle<span class="text-[#ff4d8d]">Hub</span></span>
+            <span class="text-sm font-bold uppercase tracking-[2px]">Pickle<span class="text-[#d4685b]">Hub</span></span>
         </a>
 
         <nav id="main-menu"
-             class="absolute left-0 top-[76px] hidden w-full border-b border-[#ddd6fe] bg-[#f5f3ff] px-6 py-5 md:static md:flex md:w-auto md:items-center md:gap-9 md:border-0 md:p-0"
+             class="absolute left-0 top-[76px] hidden w-full border-b border-[#e3d8c4] bg-[#f6efe2] px-6 py-5 md:static md:flex md:w-auto md:items-center md:gap-9 md:border-0 md:p-0"
              aria-label="Primary navigation">
             @guest
                 <a class="nav-link" href="#courts">Book a court</a>
@@ -59,14 +59,14 @@
     <main>
         {{-- ============================== Hero ============================== --}}
         <section id="home" class="hero relative overflow-hidden px-6 py-20 sm:px-[7vw] lg:min-h-[580px] lg:py-32">
-            <div class="hero-image absolute inset-0" style="background-image: linear-gradient(90deg, rgba(27,24,64, .45), rgba(27,24,64, .15)), url('{{ asset('images/background.jpg') }}');"></div>
+            <div class="hero-image absolute inset-0" style="background-image: linear-gradient(90deg, rgba(31,77,54, .45), rgba(31,77,54, .15)), url('{{ asset('images/background.jpg') }}');"></div>
 
             <div class="relative z-[1] max-w-3xl">
                 <p class="eyebrow">Davao's home for pickleball</p>
-                <h1 class="mt-4 max-w-2xl text-6xl font-bold uppercase leading-[.9] tracking-[-3px] text-[#faf9ff] sm:text-8xl">
-                    Play the<br><em class="font-normal text-[#ffc22e]">long game.</em>
+                <h1 class="mt-4 max-w-2xl text-6xl font-bold uppercase leading-[.9] tracking-[-3px] text-[#fbf6ec] sm:text-8xl">
+                    Play the<br><em class="font-normal text-[#f4ada3]">long game.</em>
                 </h1>
-                <p class="mt-7 max-w-md text-base leading-7 text-[#d8d1fb]">
+                <p class="mt-7 max-w-md text-base leading-7 text-[#dbcfbb]">
                     One pro court, live scoring, and a better reason to get outside today.
                 </p>
                 <a class="button button-gold mt-8" href="#courts">
@@ -74,10 +74,10 @@
                 </a>
             </div>
 
-            <div class="relative z-[1] mt-20 flex flex-wrap gap-8 border-t border-white/20 pt-5 text-[#d8d1fb] lg:absolute lg:bottom-10 lg:left-[7vw] lg:right-[7vw] lg:mt-0">
-                <span><strong class="block text-xl text-[#faf9ff]">01</strong> tournament court</span>
-                <span><strong class="block text-xl text-[#faf9ff]">07:00–00:00</strong> open daily</span>
-                <span><strong class="block text-xl text-[#faf9ff]">4.9 / 5</strong> player rating</span>
+            <div class="relative z-[1] mt-20 flex flex-wrap gap-8 border-t border-white/20 pt-5 text-[#dbcfbb] lg:absolute lg:bottom-10 lg:left-[7vw] lg:right-[7vw] lg:mt-0">
+                <span><strong class="block text-xl text-[#fbf6ec]">01</strong> tournament court</span>
+                <span><strong class="block text-xl text-[#fbf6ec]">07:00–00:00</strong> open daily</span>
+                <span><strong class="block text-xl text-[#fbf6ec]">4.9 / 5</strong> player rating</span>
             </div>
         </section>
 
@@ -87,7 +87,7 @@
                 <div>
                     <p class="eyebrow eyebrow-dark">Reserve your next rally</p>
                     <h2 class="section-title">Courts & availability</h2>
-                    <p class="mt-4 max-w-xl text-sm leading-6 text-[#57537a]">
+                    <p class="mt-4 max-w-xl text-sm leading-6 text-[#4f6357]">
                         Pick a day, tap the hours you want, and confirm in seconds.
                         Booking hours run from <strong>7:00 AM to 12:00 AM</strong>.
                     </p>
@@ -122,13 +122,13 @@
 
                 {{-- Hour picker for the selected day --}}
                 <div class="schedule-panel">
-                    <div class="flex flex-col justify-between gap-3 border-b border-[#ddd6fe] pb-5 sm:flex-row sm:items-center">
+                    <div class="flex flex-col justify-between gap-3 border-b border-[#e3d8c4] pb-5 sm:flex-row sm:items-center">
                         <div>
                             <p class="eyebrow eyebrow-dark">Daily schedule</p>
                             <h3 id="selected-date" class="mt-2 font-[Space_Grotesk] text-2xl font-bold uppercase"></h3>
                         </div>
                         <div class="flex flex-wrap items-center gap-3">
-                            <p id="availability-summary" class="text-sm text-[#57537a]"></p>
+                            <p id="availability-summary" class="text-sm text-[#4f6357]"></p>
                             <button id="review-booking" class="button button-dark" type="button" disabled>Review booking</button>
                         </div>
                     </div>
@@ -138,13 +138,13 @@
         </section>
 
         {{-- ============================== Events ============================== --}}
-        <section id="events" data-reveal class="border-y border-[#ddd6fe] bg-[#e6e1ff] px-6 py-20 sm:px-[7vw]">
+        <section id="events" data-reveal class="border-y border-[#e3d8c4] bg-[#e8dfcd] px-6 py-20 sm:px-[7vw]">
             <div class="mx-auto max-w-6xl">
                 <p class="eyebrow eyebrow-dark">Events & scoring</p>
                 <h2 class="section-title">
-                    Live matches.<br><em class="font-normal text-[#ff4d8d]">Real results.</em>
+                    Live matches.<br><em class="font-normal text-[#d4685b]">Real results.</em>
                 </h2>
-                <p class="mt-5 max-w-md leading-7 text-[#57537a]">
+                <p class="mt-5 max-w-md leading-7 text-[#4f6357]">
                     Register for an event, view randomized matchups, and follow the live score.
                 </p>
 
@@ -177,7 +177,7 @@
         <section id="book" data-reveal class="mx-auto max-w-3xl px-6 py-20 text-center sm:px-10">
             <p class="eyebrow eyebrow-dark">Ready when you are</p>
             <h2 class="section-title">Your next game<br>starts here.</h2>
-            <p class="mx-auto mt-5 max-w-md leading-7 text-[#57537a]">
+            <p class="mx-auto mt-5 max-w-md leading-7 text-[#4f6357]">
                 Select one or more available hours in the booking calendar, then review your reservation before confirming.
             </p>
             <div id="booking-confirmation" class="booking-confirmation mt-8 hidden" role="status"></div>
@@ -202,11 +202,11 @@
 
                     <label class="block text-left text-xs font-bold uppercase tracking-[1px]" for="guest-name">Your name</label>
                     <input id="guest-name" name="guest_name" required maxlength="120"
-                           class="w-full border border-[#ddd6fe] bg-[#f5f3ff] p-3" placeholder="Your name">
+                           class="w-full border border-[#e3d8c4] bg-[#f6efe2] p-3" placeholder="Your name">
 
                     <label class="block text-left text-xs font-bold uppercase tracking-[1px]" for="guest-email">Email address</label>
                     <input id="guest-email" name="guest_email" required type="email"
-                           class="w-full border border-[#ddd6fe] bg-[#f5f3ff] p-3" placeholder="Email address">
+                           class="w-full border border-[#e3d8c4] bg-[#f6efe2] p-3" placeholder="Email address">
 
                     <button id="booking-submit" class="button button-dark w-full" type="submit">
                         <span class="button-spinner" aria-hidden="true"></span>
@@ -232,10 +232,10 @@
     </main>
 
     {{-- ============================== Footer ============================== --}}
-    <footer id="contact" class="flex flex-col gap-5 bg-[#1b1840] px-6 py-10 text-sm text-[#cfcaf5] sm:flex-row sm:items-center sm:justify-between sm:px-[7vw]">
-        <span class="font-bold uppercase tracking-[2px] text-[#f5f3ff]">Pickle<span class="text-[#ffc22e]">Hub</span></span>
+    <footer id="contact" class="flex flex-col gap-5 bg-[#1f4d36] px-6 py-10 text-sm text-[#cfe3cf] sm:flex-row sm:items-center sm:justify-between sm:px-[7vw]">
+        <span class="font-bold uppercase tracking-[2px] text-[#f6efe2]">Pickle<span class="text-[#f4ada3]">Hub</span></span>
         <span>Brgy. Mandug · Buhangin District · Davao City</span>
-        <a class="text-[#ffc22e]" href="mailto:hello@picklehub.ph">hello@picklehub.ph</a>
+        <a class="text-[#f4ada3]" href="mailto:hello@picklehub.ph">hello@picklehub.ph</a>
     </footer>
 </body>
 </html>

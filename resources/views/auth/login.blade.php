@@ -7,7 +7,7 @@
     <title>Log in · PickleHub</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="auth-page min-h-screen bg-[#1b1840] text-[#1b1840]">
+<body class="auth-page min-h-screen bg-[#1f4d36] text-[#1f4d36]">
     <main class="auth-layout">
         <section class="auth-visual">
             <a class="auth-logo" href="{{ url('/') }}" aria-label="Back to PickleHub home">
@@ -41,7 +41,7 @@
                     <label for="password">Password</label>
                     <div class="relative">
                         <input id="password" name="password" type="password" autocomplete="current-password" required class="!pr-16">
-                        <button class="absolute inset-y-0 right-0 px-3 text-xs font-bold uppercase tracking-[1px] text-[#57537a] hover:text-[#ff4d8d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ff4d8d]" type="button" data-password-toggle aria-controls="password" aria-pressed="false" hidden>Show</button>
+                        <button class="absolute inset-y-0 right-0 px-3 text-xs font-bold uppercase tracking-[1px] text-[#4f6357] hover:text-[#d4685b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d4685b]" type="button" data-password-toggle aria-controls="password" aria-pressed="false" hidden>Show</button>
                     </div>
                     <label class="auth-checkbox"><input type="checkbox" name="remember"> <span>Remember me</span></label>
                     <button class="button button-dark auth-submit" type="submit">Log in <span aria-hidden="true">&#8594;</span></button>

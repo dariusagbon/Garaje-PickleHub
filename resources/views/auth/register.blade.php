@@ -7,7 +7,7 @@
     <title>Create account · PickleHub</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="auth-page min-h-screen bg-[#1b1840] text-[#1b1840]">
+<body class="auth-page min-h-screen bg-[#1f4d36] text-[#1f4d36]">
     <main class="auth-layout">
         <section class="auth-visual">
             <a class="auth-logo" href="{{ url('/') }}" aria-label="Back to PickleHub home">
