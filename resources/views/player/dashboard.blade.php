@@ -39,13 +39,13 @@
     <title>My dashboard · PickleHub</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen min-w-[320px] overflow-x-hidden bg-[#f4f1e8] font-sans text-[#14201e]">
+<body class="min-h-screen min-w-[320px] overflow-x-hidden bg-[#f5f3ff] font-sans text-[#1b1840]">
 
     {{-- ============================== Top bar ============================== --}}
     <header class="dash-topbar">
         <a class="flex items-center gap-3" href="{{ url('/') }}" aria-label="PickleHub home">
             <img class="h-10 w-10 rounded-full object-cover" src="{{ asset('images/logo.jpeg') }}" alt="PickleHub logo">
-            <span class="hidden text-sm font-bold uppercase tracking-[2px] sm:inline">Pickle<span class="text-[#c86a42]">Hub</span></span>
+            <span class="hidden text-sm font-bold uppercase tracking-[2px] sm:inline">Pickle<span class="text-[#ff4d8d]">Hub</span></span>
         </a>
         <nav class="flex items-center gap-5 sm:gap-8" aria-label="Dashboard navigation">
             <a class="nav-link hidden sm:block" href="{{ url('/') }}#courts">Book a court</a>
@@ -67,7 +67,7 @@
                 <div>
                     <p class="eyebrow" data-greeting>Welcome back</p>
                     <h1 class="dash-title">{{ $user->name }}</h1>
-                    <p class="mt-2 text-sm text-[#c5cbc4]">Your games, events and court time in one place.</p>
+                    <p class="mt-2 text-sm text-[#cfcaf5]">Your games, events and court time in one place.</p>
                 </div>
             </div>
 
@@ -77,7 +77,7 @@
                 @if ($nextEvent)
                     @php $status = $eventStatus[$nextEvent->id]; @endphp
                     <a class="dash-next-title" href="{{ route('events.show', $nextEvent) }}">{{ $nextEvent->title }}</a>
-                    <p class="text-sm text-[#c5cbc4]">
+                    <p class="text-sm text-[#cfcaf5]">
                         {{ $nextEvent->date->format('l, M j') }} · {{ $time($nextEvent)->format('g:i A') }}
                     </p>
 
@@ -90,15 +90,15 @@
                     </div>
                     <p class="dash-countdown-live hidden">Happening now — good luck out there!</p>
 
-                    <p class="mt-3 text-xs text-[#c5cbc4]">
-                        Playing as <strong class="text-[#f4f1e8]">{{ $status->player_name }}</strong> ·
+                    <p class="mt-3 text-xs text-[#cfcaf5]">
+                        Playing as <strong class="text-[#f5f3ff]">{{ $status->player_name }}</strong> ·
                         <span class="dash-chip {{ $status->active ? 'playing' : 'waiting' }}">
                             {{ $status->active ? 'In a game' : 'In the queue' }}
                         </span>
                     </p>
                 @else
                     <p class="dash-next-title">No events yet</p>
-                    <p class="text-sm text-[#c5cbc4]">Join an event below and you'll be drawn into games automatically.</p>
+                    <p class="text-sm text-[#cfcaf5]">Join an event below and you'll be drawn into games automatically.</p>
                     <a class="button button-gold mt-4" href="#open-events">Find an event &#8595;</a>
                 @endif
             </div>
@@ -180,7 +180,7 @@
                         @empty
                             <div class="player-empty">
                                 You haven't joined an upcoming event.
-                                <a class="font-bold text-[#c86a42] underline" href="#open-events">Browse open events</a>.
+                                <a class="font-bold text-[#ff4d8d] underline" href="#open-events">Browse open events</a>.
                             </div>
                         @endforelse
                     </div>
