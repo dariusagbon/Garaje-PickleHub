@@ -1,3 +1,5 @@
+/* Fonts must be imported before anything else or browsers ignore them. */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,600..900,100&family=Nunito:wght@400;600;700;800;900&display=swap');
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -6,10 +8,11 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'DM Sans', ui-sans-serif, sans-serif;
+    /* Body: friendly rounded sans. Headings and big numbers: chunky soft serif, like the Club Pickle sign. */
+    --font-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Fraunces', 'Cooper Black', Georgia, serif;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 @layer components {
     .button { @apply inline-flex items-center justify-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-[1px] transition hover:-translate-y-0.5; }
@@ -19,11 +22,11 @@
     .nav-link { @apply block text-xs font-bold uppercase tracking-[1px] text-[#43564a] transition hover:text-[#c25546]; }
     .eyebrow { @apply text-[10px] font-bold uppercase tracking-[2px] text-[#e8968b]; }
     .eyebrow-dark { @apply text-[#c25546]; }
-    .section-title { @apply mt-3 font-[Space_Grotesk] text-4xl font-bold uppercase leading-[.95] tracking-[-1.5px] sm:text-5xl; }
+    .section-title { @apply mt-3 font-display text-4xl font-bold uppercase leading-[.95] tracking-[-1.5px] sm:text-5xl; }
     .hero { background: #173d2a; }
     .hero-image { background-position: center; background-size: cover; background-repeat: no-repeat; }
     .court-card { @apply border border-[#d8cab1] bg-[#f8f0e2] p-5; }
-    .court-card h3, .event-card h3 { @apply mt-2 font-[Space_Grotesk] text-xl font-bold uppercase; }
+    .court-card h3, .event-card h3 { @apply mt-2 font-display text-xl font-bold uppercase; }
     .court-card-dark { @apply border-0 bg-[#173d2a] text-[#eee4d1]; }
     .court-status { @apply bg-[#e3d7c0] px-2 py-1 text-[9px] font-bold uppercase tracking-[1px] text-[#74471f]; }
     .court-status.open { @apply bg-[#c9e3c1] text-[#256544]; }
@@ -40,7 +43,7 @@
     .calendar-shell, .schedule-panel { @apply border border-[#d8cab1] bg-[#f8f0e2] p-5 sm:p-7; }
     .calendar-header { @apply flex items-center justify-between gap-4 border-b border-[#d8cab1] pb-5; }
     .calendar-arrow { @apply flex h-9 w-9 items-center justify-center border border-[#d8cab1] text-lg transition hover:border-[#c25546] hover:text-[#c25546]; }
-    .calendar-month { @apply mt-1 font-[Space_Grotesk] text-2xl font-bold uppercase sm:text-3xl; }
+    .calendar-month { @apply mt-1 font-display text-2xl font-bold uppercase sm:text-3xl; }
     .calendar-grid { @apply mt-5 grid grid-cols-7 gap-1 sm:gap-2; }
     .calendar-weekday { @apply py-2 text-center text-[9px] font-bold uppercase tracking-[1px] text-[#65776b]; }
     .calendar-day { @apply relative min-h-12 border border-transparent p-2 text-left text-xs font-bold transition sm:min-h-16 sm:p-3; }
@@ -113,7 +116,7 @@
     .slot-empty { @apply border border-dashed border-[#d8cab1] p-4 text-center text-sm text-[#65776b]; }
     .booking-bar { @apply fixed inset-x-3 bottom-3 z-40 mx-auto flex max-w-3xl translate-y-[140%] items-center justify-between gap-4 bg-[#173d2a] px-4 py-3 text-[#eee4d1] opacity-0 shadow-2xl transition duration-300 sm:px-6 sm:py-4; }
     .booking-bar.show { @apply translate-y-0 opacity-100; }
-    .booking-bar strong { @apply block font-[Space_Grotesk] text-lg uppercase text-[#e8968b]; }
+    .booking-bar strong { @apply block font-display text-lg uppercase text-[#e8968b]; }
     .booking-bar [data-bar-detail] { @apply block text-xs text-[#c3d9c3]; }
     .booking-bar-clear { @apply px-2 text-[10px] font-bold uppercase tracking-[1px] text-[#c3d9c3] transition hover:text-white; }
     .booking-modal { @apply flex items-center justify-center bg-[#173d2a]/70 p-5 opacity-0 backdrop-blur-sm transition-opacity duration-200; }
@@ -129,7 +132,7 @@
     .loading .button-spinner { @apply inline-block; }
     .button:disabled { @apply cursor-not-allowed opacity-50 hover:translate-y-0; }
     .booking-confirmation { @apply flex flex-col gap-1 border border-[#79b977] bg-[#cfe6c7] p-5 text-left text-[#256544]; animation: fade-up .4s ease-out; }
-    .booking-confirmation strong { @apply font-[Space_Grotesk] text-xl uppercase; }
+    .booking-confirmation strong { @apply font-display text-xl uppercase; }
     .booking-confirmation span { @apply text-sm font-bold text-[#173d2a]; }
     .booking-confirmation small { @apply text-xs; }
     .toast-stack { @apply fixed right-4 top-24 z-[60] flex flex-col gap-2; }
@@ -144,14 +147,14 @@
     .event-card-orange { @apply border-[#c25546] bg-[#c25546] text-[#f7efe0]; }
     .event-card-orange .eyebrow, .event-card-orange p:not(.eyebrow) { @apply text-[#f3d2c9]; }
     .event-count { @apply mt-8 inline-block text-[10px] font-bold uppercase tracking-[1px]; }
-    .score-display { @apply font-[Space_Grotesk] text-3xl font-bold tracking-[-1px]; }
+    .score-display { @apply font-display text-3xl font-bold tracking-[-1px]; }
     .score-display span { @apply px-1 text-[#ccbda2]; }
     .score-result { @apply mt-1 text-[9px] font-bold uppercase tracking-[1px] text-[#8f9a8c]; }
     .score-result.complete { @apply text-[#256544]; }
     .score-control { @apply mt-2 flex items-center; }
     .score-call-bar { @apply mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 bg-[#173d2a] px-4 py-3 text-[#eee4d1]; }
     .score-call-label { @apply text-[9px] font-bold uppercase tracking-[1.5px] text-[#c3d9c3]; }
-    .score-call { @apply font-[Space_Grotesk] text-2xl font-bold tracking-[1px] text-[#e8968b] tabular-nums; }
+    .score-call { @apply font-display text-2xl font-bold tracking-[1px] text-[#e8968b] tabular-nums; }
     .score-call-info { @apply text-xs text-[#c3d9c3]; }
     .score-team { @apply relative transition; }
     .score-team.is-serving { @apply border-2 border-[#173d2a] shadow-[0_10px_24px_-14px_rgba(23,61,42,.6)]; }
@@ -187,14 +190,14 @@
     .score-team { @apply border border-[#d8cab1] p-5 text-center sm:p-8; }
     .score-team-a { @apply bg-[#cfe6c7]; }
     .score-team-b { @apply bg-[#f0cbc3]; }
-    .scoreboard-number { @apply mt-3 block font-[Space_Grotesk] text-8xl font-bold leading-none tracking-[-5px] sm:text-9xl; }
-    .event-score-number input { @apply mt-3 w-full border-0 bg-transparent text-center font-[Space_Grotesk] text-7xl font-bold leading-none tracking-[-5px] outline-none sm:text-8xl; }
+    .scoreboard-number { @apply mt-3 block font-display text-8xl font-bold leading-none tracking-[-5px] sm:text-9xl; }
+    .event-score-number input { @apply mt-3 w-full border-0 bg-transparent text-center font-display text-7xl font-bold leading-none tracking-[-5px] outline-none sm:text-8xl; }
     .score-serve-label { @apply mt-3 min-h-5 text-[10px] font-bold uppercase tracking-[1px] text-[#43564a]; }
     .score-point-button { @apply mt-6 min-h-16 w-full bg-[#173d2a] px-4 py-4 text-sm font-bold uppercase tracking-[1px] text-[#eee4d1] transition hover:-translate-y-0.5 hover:bg-[#c25546] active:translate-y-0; }
     .score-point-button:disabled { @apply cursor-not-allowed bg-[#afa38d] text-[#e4d8c2]; }
     .score-stat { @apply flex items-center justify-between border border-[#e6dbc6] bg-[#eee4d1] px-4 py-3; }
     .score-stat span { @apply text-[9px] font-bold uppercase tracking-[1px]; }
-    .score-stat strong { @apply font-[Space_Grotesk] text-lg text-[#173d2a]; }
+    .score-stat strong { @apply font-display text-lg text-[#173d2a]; }
     /* ---------- Open scoreboard: full screen ---------- */
     #scoreboard:fullscreen, #scoreboard.is-pseudo-fullscreen { @apply m-0 flex flex-col overflow-y-auto border-0 bg-[#173d2a] p-4 text-[#eee4d1] sm:p-8; }
     #scoreboard:-webkit-full-screen { @apply m-0 flex flex-col overflow-y-auto border-0 bg-[#173d2a] p-4 text-[#eee4d1] sm:p-8; }
@@ -226,7 +229,7 @@
     .celebration[hidden] { display: none; }
     .celebration.is-visible { @apply opacity-100; }
     .celebration-card { @apply relative z-[1] w-full max-w-md bg-[#f8f0e2] p-8 text-center text-[#173d2a] shadow-2xl; animation: pop .45s ease-out; }
-    .celebration-title { @apply mt-3 font-[Space_Grotesk] text-4xl font-bold uppercase leading-none sm:text-5xl; }
+    .celebration-title { @apply mt-3 font-display text-4xl font-bold uppercase leading-none sm:text-5xl; }
     .celebration-score { @apply mt-3 text-sm font-bold text-[#43564a]; }
     .celebration-actions { @apply mt-7 grid gap-2 sm:grid-cols-2; }
     .celebration-outline { @apply border border-[#173d2a] text-[#173d2a]; }
@@ -235,31 +238,31 @@
     .balloon { @apply absolute bottom-0 block; left: var(--x); width: var(--size); height: calc(var(--size) * 1.2); border-radius: 50% 50% 48% 52% / 55% 55% 45% 45%; background: radial-gradient(circle at 32% 28%, rgba(255,255,255,.55) 0 12%, transparent 13%), var(--colour); box-shadow: inset -6px -8px 0 rgba(0,0,0,.12); transform: translateY(110%); animation: balloon-rise var(--duration) ease-in var(--delay) infinite; }
     .balloon::before { content: ''; position: absolute; left: 50%; bottom: -6px; width: 10px; height: 8px; transform: translateX(-50%); background: var(--colour); clip-path: polygon(50% 0, 0 100%, 100% 100%); }
     .balloon::after { content: ''; position: absolute; left: 50%; top: 100%; width: 1px; height: calc(var(--size) * 1.4); margin-top: 2px; background: rgba(238,228,209,.55); }
-    .winner-banner { @apply border border-[#3f855a] bg-[#c9e3c1] p-5 text-center font-[Space_Grotesk] text-xl font-bold uppercase text-[#256544]; }
+    .winner-banner { @apply border border-[#3f855a] bg-[#c9e3c1] p-5 text-center font-display text-xl font-bold uppercase text-[#256544]; }
     .nav-user { @apply text-xs font-bold text-[#173d2a]; }
     .player-action-card { @apply flex flex-col gap-3 border border-[#d8cab1] bg-[#f8f0e2] p-6 transition hover:-translate-y-0.5 hover:border-[#c25546]; }
-    .player-action-card strong { @apply flex items-center justify-between font-[Space_Grotesk] text-2xl font-bold uppercase; }
+    .player-action-card strong { @apply flex items-center justify-between font-display text-2xl font-bold uppercase; }
     .player-action-card small, .player-event-card small { @apply text-sm text-[#43564a]; }
     .player-action-card-dark { @apply border-[#173d2a] bg-[#173d2a] text-[#eee4d1]; }
     .player-action-card-dark small { @apply text-[#c3d9c3]; }
     .player-event-card { @apply flex flex-col gap-2 border border-[#d8cab1] bg-[#f8f0e2] p-5 transition hover:border-[#c25546]; }
-    .player-event-card strong { @apply font-[Space_Grotesk] text-xl font-bold uppercase; }
+    .player-event-card strong { @apply font-display text-xl font-bold uppercase; }
     .player-event-row { @apply grid gap-2 border-b border-[#d8cab1] py-4 text-sm transition hover:text-[#c25546] sm:grid-cols-[130px_1fr_auto]; }
     .player-event-row span:first-child { @apply text-[#43564a]; }
-    .player-event-row strong { @apply font-[Space_Grotesk] uppercase; }
+    .player-event-row strong { @apply font-display uppercase; }
     .player-empty { @apply border border-dashed border-[#ccbda2] p-5 text-sm text-[#43564a]; }
     .dash-topbar { @apply sticky top-0 z-20 flex h-[68px] items-center justify-between border-b border-white/10 bg-[#173d2a]/95 px-6 backdrop-blur sm:px-[7vw]; }
     .dash-topbar .nav-link { @apply text-[#c3d9c3] hover:text-[#e8968b]; }
     .dash-topbar span.text-sm { @apply text-[#eee4d1]; }
     .dash-hero { @apply relative overflow-hidden bg-[#173d2a] px-6 pb-28 pt-10 text-[#eee4d1] sm:px-10 sm:pt-14; background-image: radial-gradient(circle at 85% 20%, rgba(232,150,139,.18), transparent 45%), radial-gradient(circle at 10% 110%, rgba(194,85,70,.25), transparent 50%); }
     .dash-hero-inner { @apply mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_minmax(0,420px)] lg:items-center; }
-    .dash-avatar { @apply flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#e8968b] font-[Space_Grotesk] text-2xl font-bold text-[#173d2a] shadow-[0_0_0_6px_rgba(232,150,139,.18)] sm:h-20 sm:w-20 sm:text-3xl; }
-    .dash-title { @apply mt-1 font-[Space_Grotesk] text-3xl font-bold uppercase leading-none tracking-[-1px] sm:text-5xl; }
+    .dash-avatar { @apply flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#e8968b] font-display text-2xl font-bold text-[#173d2a] shadow-[0_0_0_6px_rgba(232,150,139,.18)] sm:h-20 sm:w-20 sm:text-3xl; }
+    .dash-title { @apply mt-1 font-display text-3xl font-bold uppercase leading-none tracking-[-1px] sm:text-5xl; }
     .dash-next { @apply border border-white/15 bg-white/5 p-5 backdrop-blur sm:p-6; }
-    .dash-next-title { @apply mt-2 block font-[Space_Grotesk] text-2xl font-bold uppercase leading-tight transition hover:text-[#e8968b]; }
+    .dash-next-title { @apply mt-2 block font-display text-2xl font-bold uppercase leading-tight transition hover:text-[#e8968b]; }
     .dash-countdown { @apply mt-4 grid grid-cols-4 gap-2; }
     .dash-countdown span { @apply flex flex-col items-center bg-white/10 py-2; }
-    .dash-countdown b { @apply font-[Space_Grotesk] text-2xl tabular-nums text-[#e8968b]; }
+    .dash-countdown b { @apply font-display text-2xl tabular-nums text-[#e8968b]; }
     .dash-countdown small { @apply text-[9px] font-bold uppercase tracking-[1px] text-[#c3d9c3]; }
     .dash-countdown-live { @apply mt-4 bg-[#c25546] px-3 py-2 text-sm font-bold; }
     .dash-chip { @apply inline-block shrink-0 px-2 py-1 text-[9px] font-bold uppercase tracking-[1px]; }
@@ -270,51 +273,51 @@
     .dash-stats { @apply relative z-[1] -mt-16 grid grid-cols-2 gap-3 lg:grid-cols-4; }
     .dash-stat { @apply border border-[#d8cab1] bg-[#f8f0e2] p-5 shadow-[0_12px_30px_-18px_rgba(23,61,42,.5)] transition hover:-translate-y-1; }
     .dash-stat span { @apply text-[10px] font-bold uppercase tracking-[1px] text-[#65776b]; }
-    .dash-stat strong { @apply mt-2 block font-[Space_Grotesk] text-4xl tabular-nums; }
+    .dash-stat strong { @apply mt-2 block font-display text-4xl tabular-nums; }
     .dash-meter { @apply mt-3 block h-1.5 overflow-hidden rounded-full bg-[#ddd0b9]; }
     .dash-meter > i { @apply block h-full rounded-full bg-[#c25546]; width: var(--fill); animation: grow 1s ease-out; }
     .dash-live { @apply mt-6 flex items-center gap-4 bg-[#c25546] p-5 text-[#f7efe0] transition hover:-translate-y-0.5 hover:bg-[#c25a4d]; }
     .dash-live .eyebrow { @apply text-[#f3d2c9]; }
     .dash-live-dot { @apply relative h-3 w-3 shrink-0 rounded-full bg-white; animation: pulse-ring 1.6s ease-out infinite; }
-    .dash-live-teams { @apply mt-1 truncate font-[Space_Grotesk] text-lg uppercase; }
+    .dash-live-teams { @apply mt-1 truncate font-display text-lg uppercase; }
     .dash-live-teams em { @apply px-1 font-sans text-sm normal-case not-italic text-[#f3d2c9]; }
     .dash-live-cta { @apply ml-auto hidden shrink-0 text-xs font-bold uppercase tracking-[1px] sm:block; }
     .dash-grid { @apply mt-12 grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]; }
     .dash-grid > *, .dash-stats > * { @apply min-w-0; }
     .dash-section-head { @apply flex items-end justify-between gap-4 border-b border-[#d8cab1] pb-3; }
-    .dash-section-head h2 { @apply mt-1 font-[Space_Grotesk] text-2xl font-bold uppercase; }
+    .dash-section-head h2 { @apply mt-1 font-display text-2xl font-bold uppercase; }
     .dash-section-head > span { @apply text-xs font-bold text-[#65776b]; }
     .dash-event, .dash-result, .dash-booking { @apply flex items-center gap-4 border border-[#d8cab1] bg-[#f8f0e2] p-4 transition; }
     .dash-event, .dash-result { @apply hover:-translate-y-0.5 hover:border-[#c25546] hover:shadow-[0_10px_24px_-16px_rgba(23,61,42,.6)]; }
     .dash-date { @apply flex h-14 w-14 shrink-0 flex-col items-center justify-center bg-[#173d2a] text-[#eee4d1]; }
-    .dash-date b { @apply font-[Space_Grotesk] text-xl leading-none; }
+    .dash-date b { @apply font-display text-xl leading-none; }
     .dash-date small { @apply mt-1 text-[9px] font-bold uppercase tracking-[1px] text-[#e8968b]; }
     .dash-date-light { @apply bg-[#ddd0b9] text-[#173d2a]; }
     .dash-date-light small { @apply text-[#c25546]; }
     .dash-event-meta { @apply block text-[11px] text-[#65776b]; }
-    .dash-event-title { @apply block font-[Space_Grotesk] text-lg font-bold uppercase leading-tight break-words; }
-    .dash-result-badge { @apply flex h-10 w-10 shrink-0 items-center justify-center font-[Space_Grotesk] text-lg font-bold; }
+    .dash-event-title { @apply block font-display text-lg font-bold uppercase leading-tight break-words; }
+    .dash-result-badge { @apply flex h-10 w-10 shrink-0 items-center justify-center font-display text-lg font-bold; }
     .dash-result.won .dash-result-badge { @apply bg-[#c9e3c1] text-[#256544]; }
     .dash-result.lost .dash-result-badge { @apply bg-[#e4d8c2] text-[#8f9a8c]; }
-    .dash-result-score { @apply shrink-0 font-[Space_Grotesk] text-2xl font-bold tabular-nums; }
+    .dash-result-score { @apply shrink-0 font-display text-2xl font-bold tabular-nums; }
     .dash-result-score i { @apply px-1 not-italic text-[#ccbda2]; }
     .dash-result.lost .dash-result-score { @apply text-[#8f9a8c]; }
     .dash-open-event { @apply block border border-[#d8cab1] bg-[#f8f0e2] p-4 transition hover:-translate-y-0.5 hover:border-[#c25546]; }
     .admin-registration-list { @apply divide-y divide-[#e6dbc6]; }
     .admin-registration-row { @apply grid gap-5 px-5 py-5 sm:grid-cols-[180px_1fr_auto] sm:items-center; }
-    .admin-registration-row h3 { @apply mt-1 font-[Space_Grotesk] text-lg font-bold uppercase; }
+    .admin-registration-row h3 { @apply mt-1 font-display text-lg font-bold uppercase; }
     .admin-registration-row p:not(.eyebrow) { @apply mt-1 text-xs text-[#43564a]; }
     .admin-player-list { @apply flex flex-wrap gap-2; }
     .admin-player-chip { @apply border border-[#ccbda2] bg-[#eee4d1] px-3 py-2 text-xs font-bold; }
     .admin-muted { @apply text-xs text-[#65776b]; }
     /* ---------- Event page ---------- */
     .ev-hero { @apply relative mt-6 grid gap-8 overflow-hidden bg-[#173d2a] p-6 text-[#eee4d1] sm:p-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end; background-image: radial-gradient(circle at 90% 10%, rgba(232,150,139,.2), transparent 45%), radial-gradient(circle at 0% 120%, rgba(194,85,70,.3), transparent 50%); }
-    .ev-hero-title { @apply mt-3 font-[Space_Grotesk] text-4xl font-bold uppercase leading-[.95] tracking-[-1px] sm:text-6xl; }
+    .ev-hero-title { @apply mt-3 font-display text-4xl font-bold uppercase leading-[.95] tracking-[-1px] sm:text-6xl; }
     .ev-hero-description { @apply mt-4 max-w-xl text-sm leading-6 text-[#c3d9c3]; }
     .ev-facts { @apply grid grid-cols-2 gap-px self-end border border-white/15 bg-white/15 sm:grid-cols-4 lg:min-w-[420px]; }
     .ev-facts > div { @apply bg-[#173d2a]/90 px-4 py-3; }
     .ev-facts dt { @apply text-[9px] font-bold uppercase tracking-[1px] text-[#c3d9c3]; }
-    .ev-facts dd { @apply mt-1 font-[Space_Grotesk] text-xl font-bold; }
+    .ev-facts dd { @apply mt-1 font-display text-xl font-bold; }
     .ev-facts dd small { @apply ml-1 font-sans text-xs text-[#c3d9c3]; }
     .ev-facts .ev-facts-wide { @apply col-span-2; }
     .ev-facts dd.ev-facts-login { @apply font-sans text-sm font-normal text-[#c3d9c3]; }
@@ -334,11 +337,11 @@
     .ev-alert-error { @apply border-[#c25546] bg-[#f0cbc3] text-[#963d32]; }
     .ev-panel { @apply border border-[#d8cab1] bg-[#f8f0e2] p-5 sm:p-7; }
     .ev-panel-head { @apply flex flex-wrap items-start justify-between gap-3 border-b border-[#e6dbc6] pb-4; }
-    .ev-panel-head h2 { @apply mt-1 font-[Space_Grotesk] text-2xl font-bold uppercase; }
+    .ev-panel-head h2 { @apply mt-1 font-display text-2xl font-bold uppercase; }
     .ev-status { @apply bg-[#c9e3c1] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[1px] text-[#256544]; }
     .ev-status.is-full { @apply bg-[#e4d8c2] text-[#8f9a8c]; }
     .ev-count { @apply mt-5 flex items-baseline gap-2; }
-    .ev-count strong { @apply font-[Space_Grotesk] text-5xl font-bold leading-none tabular-nums; }
+    .ev-count strong { @apply font-display text-5xl font-bold leading-none tabular-nums; }
     .ev-count span { @apply text-sm text-[#43564a]; }
     .ev-note { @apply mt-5 border border-dashed border-[#d8cab1] p-4 text-sm text-[#43564a]; }
     .ev-joined { @apply mt-5 flex items-center gap-2 bg-[#cfe6c7] px-4 py-3 text-sm text-[#256544]; }
@@ -369,7 +372,7 @@
     .ev-seats em { @apply px-1 text-xs font-bold uppercase not-italic text-[#8f9a8c]; }
     .ev-seat { @apply flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-[#ccbda2] text-sm font-bold text-[#ccbda2]; }
     .ev-seat.is-filled { @apply border-solid border-[#173d2a] bg-[#173d2a] text-[#e8968b]; animation: pop .3s ease-out; }
-    .ev-first-game-title { @apply mt-5 font-[Space_Grotesk] text-lg font-bold uppercase; }
+    .ev-first-game-title { @apply mt-5 font-display text-lg font-bold uppercase; }
     .ev-first-game-text { @apply mx-auto mt-2 max-w-sm text-sm text-[#43564a]; }
     .player-queue-row { @apply flex items-center justify-between gap-3 border-b border-[#d8cab1] py-2 text-sm; }
     .player-queue-meta { @apply flex items-center gap-2 text-xs text-[#65776b]; }
@@ -384,7 +387,7 @@
     .admin-history-list { @apply divide-y divide-[#e6dbc6]; }
     .history-event summary { @apply flex cursor-pointer list-none items-center gap-5 px-2 py-5 transition hover:bg-[#eee4d1]; }
     .history-event summary::-webkit-details-marker { display: none; }
-    .history-event summary h3 { @apply mt-1 font-[Space_Grotesk] text-lg font-bold uppercase; }
+    .history-event summary h3 { @apply mt-1 font-display text-lg font-bold uppercase; }
     .history-event summary p:not(.eyebrow) { @apply mt-1 text-xs text-[#65776b]; }
     .history-toggle { @apply ml-auto text-[#65776b] transition-transform duration-200; }
     .history-event[open] .history-toggle { @apply rotate-180 text-[#c25546]; }
@@ -407,14 +410,14 @@
     .auth-logo img { @apply h-11 w-11 rounded-full object-cover; }
     .auth-logo span span { @apply text-[#e8968b]; }
     .auth-visual-copy { @apply relative z-[1] max-w-md; }
-    .auth-visual-copy h1 { @apply mt-4 font-[Space_Grotesk] text-5xl font-bold uppercase leading-[.92] tracking-[-2px] sm:text-7xl; }
+    .auth-visual-copy h1 { @apply mt-4 font-display text-5xl font-bold uppercase leading-[.92] tracking-[-2px] sm:text-7xl; }
     .auth-visual-copy h1 em { @apply font-normal text-[#e8968b]; }
     .auth-visual-copy > p:last-child { @apply mt-6 max-w-sm leading-7 text-[#c3d9c3]; }
     .auth-visual-mark { @apply relative z-[1] text-[10px] font-bold uppercase tracking-[3px] text-[#43564a]; }
     .auth-panel { @apply flex items-center bg-[#eee4d1] px-6 py-12 sm:px-12 lg:px-20; }
     .auth-form-wrap { @apply mx-auto w-full max-w-md; }
     .auth-back { @apply inline-block; }
-    .auth-title { @apply mt-3 font-[Space_Grotesk] text-4xl font-bold uppercase tracking-[-1px] sm:text-5xl; }
+    .auth-title { @apply mt-3 font-display text-4xl font-bold uppercase tracking-[-1px] sm:text-5xl; }
     .auth-intro { @apply mt-4 text-sm leading-6 text-[#43564a]; }
     .auth-alert { @apply mt-6 border border-[#c25546] bg-[#f0cbc3] p-4 text-sm leading-6 text-[#963d32]; }
     .auth-form { @apply mt-8 space-y-3; }
@@ -442,21 +445,21 @@
     .admin-heading > :first-child { @apply min-w-0; }
     .admin-heading > :last-child:not(:first-child) { @apply shrink-0; }
     .admin-heading-actions { @apply flex flex-wrap gap-2 lg:flex-nowrap; }
-    .admin-title { @apply mt-2 font-[Space_Grotesk] text-4xl font-bold uppercase tracking-[-1px] sm:text-5xl; }
+    .admin-title { @apply mt-2 font-display text-4xl font-bold uppercase tracking-[-1px] sm:text-5xl; }
     .admin-subtitle { @apply mt-3 max-w-xl text-sm leading-6 text-[#43564a]; }
     .admin-stat-grid { @apply mt-8 grid gap-3 sm:grid-cols-3; }
     .admin-stat { @apply border border-[#d8cab1] bg-[#f8f0e2] p-5; }
     .admin-stat span { @apply text-[10px] font-bold uppercase tracking-[1px] text-[#65776b]; }
-    .admin-stat strong { @apply mt-2 block font-[Space_Grotesk] text-3xl; }
+    .admin-stat strong { @apply mt-2 block font-display text-3xl; }
     .admin-card { @apply border border-[#d8cab1] bg-[#f8f0e2] p-5 sm:p-7; }
     .admin-card-heading { @apply flex flex-col justify-between gap-3 border-b border-[#e6dbc6] pb-5 sm:flex-row sm:items-end; }
-    .admin-card-heading h2 { @apply mt-2 font-[Space_Grotesk] text-xl font-bold uppercase; }
+    .admin-card-heading h2 { @apply mt-2 font-display text-xl font-bold uppercase; }
     .admin-event-list, .admin-booking-list { @apply divide-y divide-[#e6dbc6]; }
     .admin-event-row { @apply flex flex-col gap-4 py-5 sm:flex-row sm:items-center; }
     .admin-event-date { @apply flex h-14 w-14 shrink-0 flex-col items-center justify-center bg-[#ddd0b9] text-center; }
-    .admin-event-date strong { @apply font-[Space_Grotesk] text-xl; }
+    .admin-event-date strong { @apply font-display text-xl; }
     .admin-event-date span { @apply text-[8px] font-bold uppercase tracking-[1px] text-[#65776b]; }
-    .admin-event-row h3, .admin-booking-info h3 { @apply mt-1 font-[Space_Grotesk] text-lg font-bold uppercase; }
+    .admin-event-row h3, .admin-booking-info h3 { @apply mt-1 font-display text-lg font-bold uppercase; }
     .admin-event-row p:last-child, .admin-booking-info p { @apply mt-1 text-xs text-[#65776b]; }
     .admin-actions { @apply flex flex-wrap gap-2 sm:ml-auto; }
     .admin-actions .button { @apply px-3 py-2 text-[9px]; }
@@ -468,12 +471,12 @@
     .announcement { @apply mx-auto flex max-w-6xl items-start gap-3 border-l-4 border-[#e8968b] bg-white/5 px-4 py-3 text-[#eee4d1] transition duration-200; animation: fade-up .3s ease-out; }
     .announcement.is-leaving { @apply -translate-y-1 opacity-0; }
     .announcement-icon { @apply text-lg leading-6; }
-    .announcement-title { @apply font-[Space_Grotesk] text-base font-bold uppercase leading-6; }
+    .announcement-title { @apply font-display text-base font-bold uppercase leading-6; }
     .announcement-body { @apply mt-0.5 whitespace-pre-line text-sm leading-6 text-[#cfc1a8]; }
     .announcement-meta { @apply mt-1 text-[10px] font-bold uppercase tracking-[1px] text-[#e8968b]; }
     .announcement-close { @apply -mr-1 flex h-8 w-8 shrink-0 items-center justify-center text-sm text-[#c3d9c3] transition hover:bg-white/10 hover:text-white; }
     .admin-announcement { @apply flex flex-col gap-4 py-5 sm:flex-row sm:items-start; }
-    .admin-announcement h3 { @apply mt-1 font-[Space_Grotesk] text-lg font-bold uppercase; }
+    .admin-announcement h3 { @apply mt-1 font-display text-lg font-bold uppercase; }
     .admin-announcement-body { @apply mt-1 whitespace-pre-line text-sm text-[#43564a]; }
     .admin-announcement.is-expired { @apply opacity-60; }
     .admin-announcement.is-expired .eyebrow { @apply text-[#8f9a8c]; }
@@ -489,7 +492,7 @@
     .report-meta dt { @apply w-28 shrink-0 whitespace-nowrap font-bold uppercase tracking-[1px] text-[#65776b]; }
     .report-section { @apply mt-10 min-w-0; }
     .report-keep-together { @apply break-inside-avoid-page; }
-    .report-heading { @apply mb-4 border-b border-[#d8cab1] pb-2 font-[Space_Grotesk] text-xl font-bold uppercase; }
+    .report-heading { @apply mb-4 border-b border-[#d8cab1] pb-2 font-display text-xl font-bold uppercase; }
     .report-heading small { @apply ml-2 font-sans text-xs font-bold normal-case text-[#65776b]; }
     .report-subheading { @apply mb-3 mt-8 text-xs font-bold uppercase tracking-[1px] text-[#43564a]; }
     .report-summary { @apply grid gap-6 lg:grid-cols-2; }
@@ -497,7 +500,7 @@
     .report-kpis { @apply grid grid-cols-2 gap-px border border-[#d8cab1] bg-[#d8cab1] sm:grid-cols-3; }
     .report-kpis div { @apply bg-white p-3; }
     .report-kpis dt { @apply text-[9px] font-bold uppercase tracking-[1px] text-[#65776b]; }
-    .report-kpis dd { @apply mt-1 font-[Space_Grotesk] text-2xl font-bold tabular-nums; }
+    .report-kpis dd { @apply mt-1 font-display text-2xl font-bold tabular-nums; }
     .report-kpis dd small { @apply ml-1 font-sans text-xs text-[#65776b]; }
     .report-columns { @apply grid grid-cols-[minmax(0,1fr)] gap-x-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]; }
     .report-table-wrap { @apply overflow-x-auto; }
@@ -516,7 +519,7 @@
     .report-empty { @apply border border-dashed border-[#d8cab1] p-4 text-center text-xs text-[#65776b]; }
     .report-rosters { @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-3; }
     .report-roster { @apply break-inside-avoid border border-[#e6dbc6] p-3; }
-    .report-roster h4 { @apply font-[Space_Grotesk] text-sm font-bold uppercase; }
+    .report-roster h4 { @apply font-display text-sm font-bold uppercase; }
     .report-roster h4 small { @apply block font-sans text-[10px] font-normal normal-case text-[#65776b]; }
     .report-roster ol { @apply mt-2 list-decimal pl-5 text-xs leading-5; }
     .report-roster ol small { @apply text-[#65776b]; }
@@ -525,7 +528,7 @@
     .admin-kpis { @apply mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4; }
     .admin-kpi { @apply relative flex min-w-0 flex-col border border-[#d8cab1] bg-[#f8f0e2] p-5 transition hover:-translate-y-0.5 hover:border-[#c25546] hover:shadow-[0_12px_28px_-18px_rgba(23,61,42,.55)]; }
     .admin-kpi > span { @apply text-[10px] font-bold uppercase tracking-[1px] text-[#65776b]; }
-    .admin-kpi strong { @apply mt-2 font-[Space_Grotesk] text-4xl tabular-nums; }
+    .admin-kpi strong { @apply mt-2 font-display text-4xl tabular-nums; }
     .admin-kpi strong small { @apply ml-1 font-sans text-sm font-bold text-[#65776b]; }
     .admin-kpi em { @apply mt-2 text-xs not-italic text-[#43564a]; }
     .admin-kpi.is-live { @apply border-[#c25546]; }
@@ -821,6 +824,10 @@ input[type="checkbox"] { border-radius: 4px; }
     .calendar-day.selected { box-shadow: 0 10px 24px -10px rgba(191,220,178, .8); }
     .slot-chip.is-selected { box-shadow: 0 10px 22px -12px rgba(194,85,70, .9); }
 }
+
+/* Headings use the chunky display font with its softest, roundest shapes. */
+h1, h2, h3, .section-title, .font-display { font-family: var(--font-display); font-variation-settings: 'SOFT' 100; }
+h1, h2, .section-title { font-weight: 900; }
 
 /* Eyebrow labels start with a little pickleball. */
 @media screen {

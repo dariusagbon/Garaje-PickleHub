@@ -125,7 +125,7 @@
                     <div class="flex flex-col justify-between gap-3 border-b border-[#d8cab1] pb-5 sm:flex-row sm:items-center">
                         <div>
                             <p class="eyebrow eyebrow-dark">Daily schedule</p>
-                            <h3 id="selected-date" class="mt-2 font-[Space_Grotesk] text-2xl font-bold uppercase"></h3>
+                            <h3 id="selected-date" class="mt-2 font-display text-2xl font-bold uppercase"></h3>
                         </div>
                         <div class="flex flex-wrap items-center gap-3">
                             <p id="availability-summary" class="text-sm text-[#43564a]"></p>
@@ -190,7 +190,7 @@
                 <div class="flex items-start justify-between gap-4">
                     <div>
                         <p class="eyebrow eyebrow-dark">Review reservation</p>
-                        <h2 id="booking-modal-title" class="mt-2 font-[Space_Grotesk] text-2xl font-bold uppercase">Confirm your hours</h2>
+                        <h2 id="booking-modal-title" class="mt-2 font-display text-2xl font-bold uppercase">Confirm your hours</h2>
                     </div>
                     <button id="close-booking-modal" class="calendar-arrow" type="button" aria-label="Close booking dialog">&times;</button>
                 </div>

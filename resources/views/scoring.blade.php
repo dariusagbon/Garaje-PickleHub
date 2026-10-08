@@ -47,7 +47,7 @@
             <div class="flex items-center justify-between gap-4">
                 <div>
                     <p class="eyebrow eyebrow-dark">Match setup</p>
-                    <h2 id="scoring-settings-title" class="mt-2 font-[Space_Grotesk] text-2xl font-bold uppercase">Choose your game</h2>
+                    <h2 id="scoring-settings-title" class="mt-2 font-display text-2xl font-bold uppercase">Choose your game</h2>
                 </div>
                 <span class="scorekeeper-badge">No login needed</span>
             </div>
