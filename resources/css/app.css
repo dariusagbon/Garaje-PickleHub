@@ -19,7 +19,7 @@
     .button-dark { @apply bg-[#173d2a] text-[#eee4d1]; }
     .button-gold { @apply bg-[#e8968b] text-[#173d2a]; }
     .button-outline { @apply border border-[#173d2a] text-[#173d2a]; }
-    .nav-link { @apply block text-xs font-bold uppercase tracking-[1px] text-[#43564a] transition hover:text-[#c25546]; }
+    .nav-link { @apply block whitespace-nowrap text-xs font-bold uppercase tracking-[1px] text-[#43564a] transition hover:text-[#c25546]; }
     .eyebrow { @apply text-[10px] font-bold uppercase tracking-[2px] text-[#e8968b]; }
     .eyebrow-dark { @apply text-[#c25546]; }
     .section-title { @apply mt-3 font-display text-4xl font-bold uppercase leading-[.95] tracking-[-1.5px] sm:text-5xl; }
@@ -239,7 +239,7 @@
     .balloon::before { content: ''; position: absolute; left: 50%; bottom: -6px; width: 10px; height: 8px; transform: translateX(-50%); background: var(--colour); clip-path: polygon(50% 0, 0 100%, 100% 100%); }
     .balloon::after { content: ''; position: absolute; left: 50%; top: 100%; width: 1px; height: calc(var(--size) * 1.4); margin-top: 2px; background: rgba(238,228,209,.55); }
     .winner-banner { @apply border border-[#3f855a] bg-[#c9e3c1] p-5 text-center font-display text-xl font-bold uppercase text-[#256544]; }
-    .nav-user { @apply text-xs font-bold text-[#173d2a]; }
+    .nav-user { @apply whitespace-nowrap text-xs font-bold text-[#173d2a]; }
     .player-action-card { @apply flex flex-col gap-3 border border-[#d8cab1] bg-[#f8f0e2] p-6 transition hover:-translate-y-0.5 hover:border-[#c25546]; }
     .player-action-card strong { @apply flex items-center justify-between font-display text-2xl font-bold uppercase; }
     .player-action-card small, .player-event-card small { @apply text-sm text-[#43564a]; }
@@ -591,8 +591,8 @@
     .admin-form-grid { @apply grid gap-5 sm:grid-cols-2; }
 }
 
-/* Mobile dropdown menu (public header): full-width, easy-to-tap rows. */
-@media (max-width: 767px) {
+/* Dropdown menu (public header) on phones and tablets: full-width, easy-to-tap rows. */
+@media (max-width: 1023px) {
     #main-menu:not(.hidden) {
         display: flex;
         flex-direction: column;

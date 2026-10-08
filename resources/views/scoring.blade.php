@@ -11,13 +11,13 @@
 
     {{-- ============================== Header ============================== --}}
     <header class="sticky top-0 z-20 flex h-[76px] items-center justify-between border-b border-[#d8cab1] bg-[#eee4d1]/95 px-6 backdrop-blur sm:px-[7vw]">
-        <a class="flex items-center gap-3" href="{{ url('/') }}" aria-label="PickleHub home">
+        <a class="flex shrink-0 items-center gap-3" href="{{ url('/') }}" aria-label="PickleHub home">
             <img class="h-11 w-11 rounded-full object-cover" src="{{ asset('images/logo.jpeg') }}" alt="PickleHub logo">
             <span class="text-sm font-bold uppercase tracking-[2px]">Pickle<span class="text-[#c25546]">Hub</span></span>
         </a>
 
         <nav id="main-menu"
-             class="absolute left-0 top-[76px] hidden w-full border-b border-[#d8cab1] bg-[#eee4d1] px-6 py-5 md:static md:flex md:w-auto md:items-center md:gap-9 md:border-0 md:p-0"
+             class="absolute left-0 top-[76px] hidden w-full border-b border-[#d8cab1] bg-[#eee4d1] px-6 py-5 lg:static lg:flex lg:w-auto lg:items-center lg:gap-6 lg:border-0 lg:p-0 xl:gap-8"
              aria-label="Primary navigation">
             <a class="nav-link" href="{{ url('/') }}#courts">Book a court</a>
             <a class="nav-link" href="{{ route('scoring') }}">Open scoreboard</a>
@@ -25,7 +25,7 @@
             <a class="nav-link" href="{{ url('/') }}#contact">Visit us</a>
         </nav>
 
-        <button id="menu-toggle" class="border-0 bg-transparent p-2 md:hidden" type="button" aria-label="Open menu" aria-expanded="false">
+        <button id="menu-toggle" class="border-0 bg-transparent p-2 lg:hidden" type="button" aria-label="Open menu" aria-expanded="false">
             <span class="menu-line"></span>
             <span class="menu-line"></span>
             <span class="menu-line"></span>
