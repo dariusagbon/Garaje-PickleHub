@@ -44,7 +44,7 @@
     .calendar-grid { @apply mt-5 grid grid-cols-7 gap-1 sm:gap-2; }
     .calendar-weekday { @apply py-2 text-center text-[9px] font-bold uppercase tracking-[1px] text-[#788078]; }
     .calendar-day { @apply relative min-h-12 border border-transparent p-2 text-left text-xs font-bold transition sm:min-h-16 sm:p-3; }
-    .calendar-day:not(.empty):not(.disabled) { @apply border-[#d7d3c7] bg-[#f4f1e8] hover:border-[#c86a42]; }
+    .calendar-day:not(.empty):not(.disabled):not(.is-full) { @apply border-[#d7d3c7] bg-[#f4f1e8] hover:border-[#c86a42]; }
     .calendar-day.empty, .calendar-day.disabled { @apply cursor-not-allowed text-[#c7c4ba]; }
     .calendar-day.selected:not(.empty):not(.disabled) { @apply border-[#14201e] bg-[#14201e] text-[#f4f1e8]; }
     .calendar-day.today::after { @apply absolute bottom-1 right-1 h-1.5 w-1.5 rounded-full bg-[#c86a42] content-['']; }
@@ -72,10 +72,15 @@
     .legend-dot.selected { @apply bg-[#c86a42]; }
     .booking-layout { @apply grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start; }
     .booking-layout .schedule-panel { @apply lg:sticky lg:top-24; }
+    .schedule-panel { scroll-margin-top: 5.5rem; } /* clear the sticky header when scrolled to on phones */
     .calendar-arrow:disabled { @apply cursor-not-allowed opacity-30 hover:border-[#d7d3c7] hover:text-inherit; }
-    .calendar-day:not(.empty):not(.disabled) { @apply hover:-translate-y-0.5 hover:shadow-[0_6px_16px_-8px_rgba(20,32,30,.45)] active:translate-y-0; }
+    .calendar-day:not(.empty):not(.disabled):not(.is-full) { @apply hover:-translate-y-0.5 hover:shadow-[0_6px_16px_-8px_rgba(20,32,30,.45)] active:translate-y-0; }
     .calendar-day.disabled { @apply border-transparent bg-transparent line-through decoration-[#d7d3c7]; }
     .calendar-day.level-full:not(.selected) { @apply bg-[#eeeae1] text-[#9da098]; }
+    /* Fully booked: shown but can't be picked. */
+    .calendar-day.is-full { @apply cursor-not-allowed border border-[#e4e1d7] bg-[#eeeae1] text-[#9da098] opacity-80; }
+    .calendar-day.is-full .calendar-day-status { @apply font-bold text-[#b0573a]; }
+    .calendar-day.is-full .calendar-day-meter i { @apply bg-[#9da098]; }
     .calendar-day.selected { @apply scale-[1.03] shadow-[0_10px_24px_-10px_rgba(20,32,30,.7)]; }
     .calendar-day-number { @apply block; }
     .calendar-day-meter { @apply absolute inset-x-2 bottom-1.5 hidden h-1 overflow-hidden rounded-full bg-[#dce9df] sm:block; }
