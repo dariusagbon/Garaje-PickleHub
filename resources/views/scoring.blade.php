@@ -7,17 +7,17 @@
     <title>Open scoreboard | PickleHub</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-w-[320px] overflow-x-hidden bg-[#f6efe2] font-sans text-[#1f4d36]">
+<body class="min-w-[320px] overflow-x-hidden bg-[#eee4d1] font-sans text-[#173d2a]">
 
     {{-- ============================== Header ============================== --}}
-    <header class="sticky top-0 z-20 flex h-[76px] items-center justify-between border-b border-[#e3d8c4] bg-[#f6efe2]/95 px-6 backdrop-blur sm:px-[7vw]">
+    <header class="sticky top-0 z-20 flex h-[76px] items-center justify-between border-b border-[#d8cab1] bg-[#eee4d1]/95 px-6 backdrop-blur sm:px-[7vw]">
         <a class="flex items-center gap-3" href="{{ url('/') }}" aria-label="PickleHub home">
             <img class="h-11 w-11 rounded-full object-cover" src="{{ asset('images/logo.jpeg') }}" alt="PickleHub logo">
-            <span class="text-sm font-bold uppercase tracking-[2px]">Pickle<span class="text-[#d4685b]">Hub</span></span>
+            <span class="text-sm font-bold uppercase tracking-[2px]">Pickle<span class="text-[#c25546]">Hub</span></span>
         </a>
 
         <nav id="main-menu"
-             class="absolute left-0 top-[76px] hidden w-full border-b border-[#e3d8c4] bg-[#f6efe2] px-6 py-5 md:static md:flex md:w-auto md:items-center md:gap-9 md:border-0 md:p-0"
+             class="absolute left-0 top-[76px] hidden w-full border-b border-[#d8cab1] bg-[#eee4d1] px-6 py-5 md:static md:flex md:w-auto md:items-center md:gap-9 md:border-0 md:p-0"
              aria-label="Primary navigation">
             <a class="nav-link" href="{{ url('/') }}#courts">Book a court</a>
             <a class="nav-link" href="{{ route('scoring') }}">Open scoreboard</a>
@@ -36,7 +36,7 @@
         <div class="max-w-2xl">
             <p class="eyebrow eyebrow-dark">Courtside scoring</p>
             <h1 class="section-title">Open scoreboard.</h1>
-            <p class="mt-5 leading-7 text-[#4f6357]">
+            <p class="mt-5 leading-7 text-[#43564a]">
                 A simple side-out scoring board for games outside an event.
                 Set the format, enter team names, and keep the phone courtside.
             </p>
@@ -93,10 +93,10 @@
 
         {{-- ============================== Scoreboard ============================== --}}
         <section id="scoreboard" class="scoreboard-card mt-6" aria-live="polite">
-            <div class="flex flex-col justify-between gap-4 border-b border-[#e3d8c4] pb-5 sm:flex-row sm:items-center">
+            <div class="flex flex-col justify-between gap-4 border-b border-[#d8cab1] pb-5 sm:flex-row sm:items-center">
                 <div>
                     <p id="match-progress" class="eyebrow eyebrow-dark">Game 1 · Best of 1</p>
-                    <p id="score-call" class="mt-2 text-sm font-bold text-[#4f6357]">Team A 0 - Team B 0</p>
+                    <p id="score-call" class="mt-2 text-sm font-bold text-[#43564a]">Team A 0 - Team B 0</p>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <button id="undo-score" class="button button-outline" type="button" disabled>Undo last action</button>
@@ -123,7 +123,7 @@
                 </article>
             </div>
 
-            <div class="scoreboard-stats mt-6 grid gap-3 text-sm text-[#4f6357] sm:grid-cols-3">
+            <div class="scoreboard-stats mt-6 grid gap-3 text-sm text-[#43564a] sm:grid-cols-3">
                 <div class="score-stat"><span>Games</span><strong id="games-score">0 - 0</strong></div>
                 <div class="score-stat"><span>Serve points</span><strong id="serve-stats">0 - 0</strong></div>
                 <div class="score-stat"><span>Return wins</span><strong id="return-stats">0 - 0</strong></div>
@@ -151,9 +151,9 @@
         </section>
 
         {{-- ============================== Rules ============================== --}}
-        <section class="mt-8 border-t border-[#e3d8c4] pt-6">
+        <section class="mt-8 border-t border-[#d8cab1] pt-6">
             <p class="eyebrow eyebrow-dark">Scoring guide</p>
-            <p class="mt-3 max-w-3xl text-sm leading-6 text-[#4f6357]">
+            <p class="mt-3 max-w-3xl text-sm leading-6 text-[#43564a]">
                 Traditional side-out scoring: only the serving side scores.
                 If the receiving side wins the rally, serve passes over with no score.
                 In doubles, the first serving side starts with Server 2, then both servers rotate on side-outs.

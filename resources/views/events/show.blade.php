@@ -39,7 +39,7 @@
     <title>{{ $event->title }} · PickleHub</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-[#f6efe2] text-[#1f4d36]">
+<body class="min-h-screen bg-[#eee4d1] text-[#173d2a]">
 <main class="mx-auto max-w-6xl px-6 py-10 sm:px-10 sm:py-12">
     <a class="nav-link" href="{{ url('/') }}">← Back to PickleHub</a>
 
@@ -248,12 +248,12 @@
                         $canStartChoice = empty($match->rallies) && ! $state['complete'] && ! $match->score_a && ! $match->score_b;
                     @endphp
                     <article @class(['scoreboard-card', 'is-final' => $state['complete']])>
-                        <div class="flex flex-col justify-between gap-4 border-b border-[#e3d8c4] pb-5 sm:flex-row sm:items-center">
+                        <div class="flex flex-col justify-between gap-4 border-b border-[#d8cab1] pb-5 sm:flex-row sm:items-center">
                             <div>
                                 <p class="eyebrow eyebrow-dark">
                                     Game {{ $loop->iteration }} · <span data-game-state>{{ $state['complete'] ? 'Final' : 'Live' }}</span>
                                 </p>
-                                <p class="mt-2 text-sm font-bold text-[#4f6357]">Side-out scoring · First to 11, win by 2</p>
+                                <p class="mt-2 text-sm font-bold text-[#43564a]">Side-out scoring · First to 11, win by 2</p>
                             </div>
                             <div @class(['score-result', 'complete' => $state['complete']]) data-game-result>
                                 {{ $match->winnerLabel() ?? 'In progress' }}
@@ -284,7 +284,7 @@
                                     @endphp
                                     <section @class(['score-team', "score-team-{$side}", 'is-serving' => $isServing]) data-team="{{ strtoupper($side) }}">
                                         <p class="eyebrow eyebrow-dark">{{ $team }}</p>
-                                        <p class="mt-2 min-h-10 text-sm font-bold text-[#4f6357]">
+                                        <p class="mt-2 min-h-10 text-sm font-bold text-[#43564a]">
                                             @if ($isAdmin)
                                                 {{ $players->pluck('player_name')->join(' & ') }}
                                             @elseif ($isMyTeam)
