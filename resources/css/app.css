@@ -727,6 +727,154 @@
     [data-reveal] { opacity: 1; transform: none; }
 }
 
+/*
+|--------------------------------------------------------------------------
+| Playful layer: 12px corners, springy motion, pickleball touches.
+| Unlayered so it wins over the component styles above. Motion only runs
+| for people who haven't asked their device to reduce it.
+|--------------------------------------------------------------------------
+*/
+
+:root {
+    --radius: 12px;
+    --pop: cubic-bezier(.34, 1.56, .64, 1);
+    --lime: #c8e05a;
+}
+
+/* ---------- 12px corners ---------- */
+.button, .calendar-arrow, .calendar-day, .slot-chip, .slot-skeleton, .calendar-day-skeleton,
+.court-card, .event-card, .calendar-shell, .schedule-panel, .booking-steps > *, .booking-modal-card, .booking-summary,
+.booking-confirmation, .booking-bar, .toast, .announcement, .celebration-card, .game-flash, .winner-banner,
+.player-action-card, .player-event-card, .player-event-row, .dash-stat, .dash-event, .dash-result, .dash-next, .dash-open-event,
+.dash-live, .dash-countdown > *, .admin-stat, .admin-card, .admin-kpi, .admin-form-card, .admin-alert, .admin-event-row,
+.admin-booking-row, .admin-announcement, .admin-event-date, .history-event, .history-search, .report-toolbar,
+.ev-panel, .ev-hero, .ev-first-game, .ev-alert, .ev-facts, .ev-rules > *, .ev-empty, .queue-card, .ev-joined,
+.scoreboard-card, .scoring-settings, .score-card, .score-team, .score-stat, .scoreboard-status, .score-call-bar,
+.score-point-button, .rally-button, .first-serve-option, .undo-rally, .court-status, .auth-alert, .player-empty, .admin-empty,
+.dash-date, .ev-avatar:not([class*="rounded-full"]), .chart-tip, .slot-empty, .report-month-input {
+    border-radius: var(--radius);
+}
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea { border-radius: var(--radius); }
+input[type="checkbox"] { border-radius: 4px; }
+.admin-nav a, .admin-sidebar a { border-radius: 10px; }
+.calendar-day-meter, .ev-meter, .dash-meter { border-radius: 999px; }
+.court-hour-bar { border-radius: 8px; }
+.bar { border-radius: 8px 8px 3px 3px; }
+
+/* Small labels become friendly pills. */
+.dash-chip, .ev-status, .ev-admin-only, .scorekeeper-badge, .serve-badge, .queue-badge, .admin-status, .live-dot,
+.admin-player-chip { border-radius: 999px; }
+.dash-result-badge { border-radius: 50%; }
+
+/* Rounded panels need their own background to clip anything inside. */
+.score-team, .scoreboard-card, .booking-modal-card, .celebration-card { overflow: hidden; }
+.booking-modal-card { overflow-y: auto; }
+
+/* Eyebrow labels start with a little pickleball. */
+@media screen {
+    .eyebrow::before {
+        content: '';
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        margin-right: 8px;
+        vertical-align: middle;
+        border-radius: 50%;
+        background: var(--lime);
+    }
+}
+
+/* Ripple left by a tap (see fun.js). */
+.ripple { position: absolute; border-radius: 50%; pointer-events: none; background: currentColor; opacity: .22; transform: scale(0); animation: ripple .6s ease-out forwards; }
+
+/* Confetti pieces (see fun.js). */
+.confetti-layer { position: fixed; inset: 0; z-index: 90; pointer-events: none; overflow: hidden; }
+.confetti-piece { position: absolute; top: -12px; width: 10px; height: 14px; border-radius: 3px; background: var(--colour); animation: confetti-fall var(--duration) cubic-bezier(.2, .6, .4, 1) var(--delay) forwards; }
+.confetti-piece.is-ball { width: 12px; height: 12px; border-radius: 50%; }
+
+/* A pickleball bouncing in the home page hero. */
+.hero::after {
+    content: '';
+    position: absolute;
+    right: 8%;
+    bottom: 14%;
+    z-index: 1;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 30% 28%, #8fa83a 0 7%, transparent 8%),
+        radial-gradient(circle at 62% 24%, #8fa83a 0 7%, transparent 8%),
+        radial-gradient(circle at 46% 52%, #8fa83a 0 7%, transparent 8%),
+        radial-gradient(circle at 24% 66%, #8fa83a 0 7%, transparent 8%),
+        radial-gradient(circle at 72% 62%, #8fa83a 0 7%, transparent 8%),
+        radial-gradient(circle at 50% 84%, #8fa83a 0 7%, transparent 8%),
+        radial-gradient(circle at 35% 30%, #eaf7a0, var(--lime) 55%, #a9c23f);
+    box-shadow: 0 18px 30px -12px rgba(0, 0, 0, .55);
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+    /* Buttons spring up on hover and squish when pressed. */
+    .button, .calendar-arrow, .score-point-button, .rally-button, .first-serve-option {
+        transition: transform .28s var(--pop), box-shadow .28s ease, background-color .2s ease, color .2s ease, border-color .2s ease;
+    }
+    .button:hover, .calendar-arrow:not(:disabled):hover, .score-point-button:not(:disabled):hover, .rally-button:not(:disabled):hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 12px 22px -12px rgba(20, 32, 30, .6);
+    }
+    .button:active, .calendar-arrow:active, .score-point-button:not(:disabled):active, .rally-button:not(:disabled):active, .first-serve-option:active {
+        transform: translateY(0) scale(.94);
+        box-shadow: none;
+        transition-duration: .08s;
+    }
+
+    /* Cards lift and tilt a little. */
+    .event-card, .court-card, .player-action-card, .player-event-card, .dash-stat, .admin-stat, .dash-event, .dash-open-event, .admin-event-row, .history-event {
+        transition: transform .35s var(--pop), box-shadow .35s ease, border-color .2s ease;
+    }
+    .event-card:hover, .court-card:hover, .player-action-card:hover, .player-event-card:hover, .dash-stat:hover, .admin-stat:hover, .dash-open-event:hover {
+        transform: translateY(-6px) rotate(-.6deg);
+        box-shadow: 0 22px 36px -22px rgba(20, 32, 30, .55);
+    }
+    .dash-event:hover, .admin-event-row:hover, .history-event:hover { transform: translateX(4px); }
+
+    /* Calendar days and hour chips bounce; the one you pick pops. */
+    .calendar-day, .slot-chip { transition: transform .3s var(--pop), box-shadow .3s ease, background-color .2s ease, border-color .2s ease, color .2s ease; }
+    .calendar-day:not(.empty):not(.disabled):not(.is-full):not(.selected):hover { transform: translateY(-4px) scale(1.07) rotate(-2deg); }
+    .slot-chip:not(:disabled):hover { transform: translateY(-3px) scale(1.03); }
+    .just-picked { animation: picked .5s var(--pop); }
+    .slot-chip.is-selected .slot-chip-state { display: inline-block; animation: picked .45s var(--pop); }
+
+    /* Pop-in for dialogs, toasts and the booking bar. */
+    .booking-bar { transition-timing-function: var(--pop); transition-duration: .45s; }
+    .toast { transition-timing-function: var(--pop); }
+    .booking-modal.open .booking-modal-card { transition-timing-function: var(--pop); transition-duration: .35s; }
+
+    /* The hero ball bounces, squashing as it lands. */
+    .hero::after { animation: ball-bounce 1.6s cubic-bezier(.5, 0, .5, 1) infinite; transform-origin: 50% 100%; }
+
+    .eyebrow::before { animation: ping 2.4s ease-out infinite; }
+}
+
+@media (max-width: 639px) {
+    .hero::after { width: 54px; height: 54px; right: 7%; bottom: 7%; }
+}
+
+@keyframes ripple { to { transform: scale(2.6); opacity: 0; } }
+@keyframes picked { 0% { transform: scale(.85); } 55% { transform: scale(1.12) rotate(2deg); } 100% { transform: scale(1); } }
+@keyframes confetti-fall {
+    0% { transform: translate3d(0, 0, 0) rotate(0); opacity: 1; }
+    100% { transform: translate3d(var(--drift), 105vh, 0) rotate(var(--spin)); opacity: .9; }
+}
+@keyframes ball-bounce {
+    0%, 100% { transform: translateY(0) scale(1.12, .86); }
+    12% { transform: translateY(-6px) scale(.96, 1.04); }
+    50% { transform: translateY(-120px) scale(1); }
+    88% { transform: translateY(-6px) scale(.96, 1.04); }
+}
+@keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(200, 224, 90, .7); } 70%, 100% { box-shadow: 0 0 0 8px rgba(200, 224, 90, 0); } }
+
 /* Printing: only the report itself, on plain white A4 pages. */
 @page {
     size: A4;

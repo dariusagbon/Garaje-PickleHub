@@ -3,6 +3,7 @@
 // Only runs when the page has a #calendar-grid.
 
 import { showToast } from './toast.js';
+import { confetti } from './fun.js';
 
 const calendarGrid = document.querySelector('#calendar-grid');
 const scheduleGrid = document.querySelector('#schedule-grid');
@@ -138,6 +139,7 @@ function renderCalendar() {
             selectedHours = [];
             lastClickedHour = null;
             renderCalendar();
+            calendarGrid.querySelector(`[data-date="${button.dataset.date}"]`)?.classList.add('just-picked');
             renderSchedule(true);
             revealSchedule();
         });
@@ -199,7 +201,9 @@ function renderSchedule(animate = false) {
             }
             lastClickedHour = hour;
             renderSchedule();
-            scheduleGrid.querySelector(`[data-hour="${hour}"]`)?.focus();
+            const picked = scheduleGrid.querySelector(`[data-hour="${hour}"]`);
+            picked?.focus();
+            if (picked?.classList.contains('is-selected')) picked.classList.add('just-picked');
         });
     });
     renderBookingBar();
@@ -315,6 +319,7 @@ bookingFormElement?.addEventListener('submit', async (event) => {
             confirmation.classList.remove('hidden');
         }
         showToast(result.message);
+        confetti();
         await loadBookings();
     } catch {
         if (bookingError) {

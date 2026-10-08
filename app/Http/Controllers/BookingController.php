@@ -55,7 +55,7 @@ class BookingController extends Controller
         }
 
         return response()->json([
-            'message' => count($data['hours']).' booking hours confirmed.',
+            'message' => count($data['hours']) === 1 ? '1 court hour confirmed.' : count($data['hours']).' court hours confirmed.',
             'bookings' => $bookings,
         ], 201);
     }
