@@ -23,22 +23,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Email verification
+    | Email check
     |--------------------------------------------------------------------------
     |
-    | Before a booking is accepted, a 6-digit code is emailed to the address
-    | given. "check_dns" also rejects addresses whose domain cannot receive mail.
+    | Reject booking emails whose domain doesn't exist or can't receive mail
+    | ("The email does not exist."). Needs internet access to look up the domain.
     |
     */
-
-    'code_minutes' => 10,
-
-    'code_attempts' => 5,
-
-    'resend_seconds' => 60,
-
-    // Once an address is verified, it stays verified in that browser for this long.
-    'verified_for_hours' => 3,
 
     'check_dns' => (bool) env('BOOKING_EMAIL_DNS_CHECK', true),
 

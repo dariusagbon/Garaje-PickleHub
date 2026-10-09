@@ -754,7 +754,7 @@
 .ev-panel, .ev-hero, .ev-first-game, .ev-alert, .ev-facts, .ev-rules > *, .ev-empty, .queue-card, .ev-joined,
 .scoreboard-card, .scoring-settings, .score-card, .score-team, .score-stat, .scoreboard-status, .score-call-bar,
 .score-point-button, .rally-button, .first-serve-option, .undo-rally, .court-status, .auth-alert, .player-empty, .admin-empty,
-.dash-date, .ev-avatar:not([class*="rounded-full"]), .chart-tip, .slot-empty, .report-month-input {
+.dash-date, .ev-avatar:not([class*="rounded-full"]), .chart-tip, .slot-empty, .report-month-input, .booking-error {
     border-radius: var(--radius);
 }
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea { border-radius: var(--radius); }
@@ -951,13 +951,7 @@ h1, h2, .section-title { font-weight: 900; }
 .booking-summary .booking-total { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #e3f0dd; padding: .7rem 1rem; font-size: .85rem; font-weight: 800; }
 .booking-summary .booking-total span { display: inline; background: none; padding: 0; }
 .booking-summary .booking-total strong { font-family: var(--font-display); font-size: 1.6rem; line-height: 1; color: #c25546; }
-.code-step { display: grid; gap: .6rem; border-radius: 12px; background: #e3f0dd; padding: 1rem; animation: fade-up .25s ease-out; }
-.code-step.hidden { display: none; }
-.code-message { font-size: .85rem; color: #256544; text-align: left; }
-.code-input { text-align: center; font-family: var(--font-display); font-size: 1.6rem; letter-spacing: .6em; }
-.code-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; }
-.code-link { font-size: .75rem; font-weight: 800; color: #c25546; text-decoration: underline; text-underline-offset: 3px; }
-.code-link:disabled { color: #8f9a8c; text-decoration: none; cursor: not-allowed; }
+#guest-email.is-invalid { border-color: #c25546; background: #f9e3dd; }
 
 /* ---------- Booking receipt page ---------- */
 .receipt-page { max-width: 46rem; margin: 0 auto; padding: 2rem 1rem 3rem; }
