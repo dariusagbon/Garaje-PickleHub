@@ -934,6 +934,64 @@ h1, h2, .section-title { font-weight: 900; }
 }
 @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(191,220,178, .7); } 70%, 100% { box-shadow: 0 0 0 8px rgba(191,220,178, 0); } }
 
+/* ---------- Court rates and email code step ---------- */
+.rate-cards { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1rem; }
+.rate-card { display: inline-flex; align-items: baseline; gap: .45rem; border-radius: 12px; background: #c9e3c1; padding: .55rem .9rem; color: #173d2a; }
+.rate-card-evening { background: #f0cbc3; }
+.rate-card i { font-style: normal; }
+.rate-card b { font-family: var(--font-display); font-size: 1.15rem; font-weight: 900; }
+.rate-card small { font-size: .7rem; font-weight: 700; color: #43564a; }
+.slot-chip-price { position: absolute; top: .45rem; right: .55rem; font-size: 10px; font-weight: 800; color: #43564a; }
+.slot-chip.is-selected .slot-chip-price { color: #f7efe0; }
+.slot-chip.is-booked .slot-chip-price, .slot-chip.is-past .slot-chip-price { display: none; }
+/* Price breakdown inside the booking summary (overrides the summary's row styling). */
+.booking-summary .booking-lines { display: grid; gap: .15rem; background: #eee4d1; padding: .6rem 1rem; }
+.booking-summary .booking-lines span { display: flex; flex-direction: row; justify-content: space-between; gap: 1rem; background: none; padding: .15rem 0; font-size: .8rem; font-weight: 600; color: #43564a; }
+.booking-summary .booking-lines b { color: #173d2a; }
+.booking-summary .booking-total { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #e3f0dd; padding: .7rem 1rem; font-size: .85rem; font-weight: 800; }
+.booking-summary .booking-total span { display: inline; background: none; padding: 0; }
+.booking-summary .booking-total strong { font-family: var(--font-display); font-size: 1.6rem; line-height: 1; color: #c25546; }
+.code-step { display: grid; gap: .6rem; border-radius: 12px; background: #e3f0dd; padding: 1rem; animation: fade-up .25s ease-out; }
+.code-step.hidden { display: none; }
+.code-message { font-size: .85rem; color: #256544; text-align: left; }
+.code-input { text-align: center; font-family: var(--font-display); font-size: 1.6rem; letter-spacing: .6em; }
+.code-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; }
+.code-link { font-size: .75rem; font-weight: 800; color: #c25546; text-decoration: underline; text-underline-offset: 3px; }
+.code-link:disabled { color: #8f9a8c; text-decoration: none; cursor: not-allowed; }
+
+/* ---------- Booking receipt page ---------- */
+.receipt-page { max-width: 46rem; margin: 0 auto; padding: 2rem 1rem 3rem; }
+.receipt-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+.receipt-card { background: #f8f0e2; border: 1px solid #d8cab1; border-radius: 12px; padding: 1.75rem; box-shadow: 0 20px 40px -28px rgba(23,61,42,.55); }
+.receipt-header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1.25rem; border-bottom: 2px solid #173d2a; padding-bottom: 1.25rem; }
+.receipt-brand { font-size: .8rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+.receipt-brand span { color: #c25546; }
+.receipt-header h1 { margin-top: .5rem; font-family: var(--font-display); font-size: 2rem; font-weight: 900; line-height: 1; }
+.receipt-note { margin-top: .5rem; font-size: .85rem; color: #43564a; }
+.receipt-reference { text-align: right; }
+.receipt-reference small { display: block; font-size: .65rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #65776b; }
+.receipt-reference strong { display: block; margin-top: .2rem; font-family: var(--font-display); font-size: 1.5rem; letter-spacing: 1px; }
+.receipt-status { display: inline-block; margin-top: .5rem; border-radius: 999px; background: #c9e3c1; padding: .2rem .7rem; font-size: .65rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #256544; }
+.receipt-status.is-cancelled { background: #f0cbc3; color: #963d32; }
+.receipt-details { display: grid; gap: .75rem 1.5rem; margin: 1.25rem 0; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+.receipt-details dt { font-size: .65rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #65776b; }
+.receipt-details dd { margin-top: .15rem; font-weight: 700; word-break: break-word; }
+.receipt-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.receipt-table th { background: #173d2a; color: #eee4d1; padding: .6rem .75rem; text-align: left; font-size: .7rem; letter-spacing: 1px; text-transform: uppercase; }
+.receipt-table th:first-child { border-radius: 8px 0 0 8px; }
+.receipt-table th:last-child { border-radius: 0 8px 8px 0; }
+.receipt-table td { padding: .7rem .75rem; border-bottom: 1px solid #d8cab1; }
+.receipt-table .text-right { text-align: right; }
+.receipt-table tr.is-cancelled td { color: #8f9a8c; text-decoration: line-through; }
+.receipt-table small { font-size: .7rem; }
+.receipt-table tfoot td { border-bottom: 0; padding-top: 1rem; font-weight: 800; font-size: 1rem; }
+.receipt-table tfoot td:last-child { font-family: var(--font-display); font-size: 1.6rem; color: #c25546; }
+.receipt-footnote { margin-top: 1.25rem; font-size: .75rem; line-height: 1.6; color: #43564a; }
+@media print {
+    .receipt-page { padding: 0; }
+    .receipt-card { box-shadow: none; border: 0; }
+}
+
 /* Printing: only the report itself, on plain white A4 pages. */
 @page {
     size: A4;

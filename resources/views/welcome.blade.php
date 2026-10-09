@@ -91,6 +91,10 @@
                         Pick a day, tap the hours you want, and confirm in seconds.
                         Booking hours run from <strong>7:00 AM to 12:00 AM</strong>.
                     </p>
+                    <div class="rate-cards" aria-label="Court rates">
+                        <span class="rate-card"><i aria-hidden="true">☀</i><b>{{ \App\Models\Booking::peso(config('booking.day_rate')) }}</b><small>per hour · 8 AM – 5 PM</small></span>
+                        <span class="rate-card rate-card-evening"><i aria-hidden="true">☾</i><b>{{ \App\Models\Booking::peso(config('booking.evening_rate')) }}</b><small>per hour · 6 PM onwards</small></span>
+                    </div>
                     <ol class="booking-steps" aria-label="How booking works">
                         <li><b>1</b>Pick a day</li>
                         <li><b>2</b>Choose hours</li>
@@ -116,7 +120,10 @@
                         </div>
                         <button id="next-month" class="calendar-arrow" type="button" aria-label="Next month">&#8594;</button>
                     </div>
-                    <div id="calendar-grid" class="calendar-grid" role="grid" aria-label="Booking calendar"></div>
+                    <div id="calendar-grid" class="calendar-grid" role="grid" aria-label="Booking calendar"
+                         data-day-rate="{{ config('booking.day_rate') }}"
+                         data-evening-rate="{{ config('booking.evening_rate') }}"
+                         data-evening-starts="{{ config('booking.evening_starts_at') }}"></div>
                     <p class="calendar-tip">Tip: hold <kbd>Shift</kbd> and click two hours to select the whole range.</p>
                 </div>
 
@@ -205,12 +212,26 @@
                            class="w-full border border-[#d8cab1] bg-[#eee4d1] p-3" placeholder="Your name">
 
                     <label class="block text-left text-xs font-bold uppercase tracking-[1px]" for="guest-email">Email address</label>
-                    <input id="guest-email" name="guest_email" required type="email"
+                    <input id="guest-email" name="guest_email" required type="email" autocomplete="email"
                            class="w-full border border-[#d8cab1] bg-[#eee4d1] p-3" placeholder="Email address">
+                    <p class="text-left text-xs text-[#65776b]">We'll email you a code to confirm it's yours, then your receipt.</p>
+
+                    {{-- Step 2: shown once a verification code has been emailed --}}
+                    <div id="code-step" class="code-step hidden">
+                        <p id="code-message" class="code-message" role="status"></p>
+                        <label class="block text-left text-xs font-bold uppercase tracking-[1px]" for="verification-code">6-digit code</label>
+                        <input id="verification-code" name="verification_code" inputmode="numeric" autocomplete="one-time-code"
+                               maxlength="6" pattern="[0-9]{6}" class="code-input w-full border border-[#d8cab1] bg-[#eee4d1] p-3"
+                               placeholder="••••••">
+                        <div class="code-links">
+                            <button id="resend-code" class="code-link" type="button">Send a new code</button>
+                            <button id="change-email" class="code-link" type="button">Use a different email</button>
+                        </div>
+                    </div>
 
                     <button id="booking-submit" class="button button-dark w-full" type="submit">
                         <span class="button-spinner" aria-hidden="true"></span>
-                        <span class="button-label">Confirm booking</span>
+                        <span class="button-label">Email me a code</span>
                     </button>
                 </form>
             </div>

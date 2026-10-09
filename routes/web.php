@@ -35,7 +35,15 @@ Route::view('/scoring', 'scoring')->name('scoring');
 */
 
 Route::get('/api/bookings', [BookingController::class, 'availability']);
-Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+Route::post('/bookings/verify-email', [BookingController::class, 'verifyEmail'])
+    ->middleware('throttle:6,1')
+    ->name('bookings.verify-email');
+Route::post('/bookings', [BookingController::class, 'store'])
+    ->middleware('throttle:20,1')
+    ->name('bookings.store');
+Route::get('/bookings/receipt/{reference}', [BookingController::class, 'receipt'])
+    ->middleware('signed')
+    ->name('bookings.receipt');
 
 /*
 |--------------------------------------------------------------------------
