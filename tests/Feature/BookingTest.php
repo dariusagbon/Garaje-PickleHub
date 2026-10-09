@@ -11,17 +11,6 @@ class BookingTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        // These tests are about booking rules; treat their addresses as already verified.
-        // (Email verification itself is covered in BookingVerificationTest.)
-        $this->withSession(['booking.verified_emails' => collect(['player@example.com', 'first@example.com', 'second@example.com', 'rally@example.com'])
-            ->mapWithKeys(fn ($email) => [sha1($email) => now()->timestamp])
-            ->all()]);
-    }
-
     public function test_guest_can_book_an_available_court_slot(): void
     {
         $response = $this->postJson(route('bookings.store'), [

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Mail\BookingReceipt;
 use App\Models\Booking;
-use App\Services\BookingEmailVerifier;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -16,8 +15,6 @@ use Throwable;
 
 class BookingController extends Controller
 {
-    public function __construct(private BookingEmailVerifier $verifier) {}
-
     /** Confirmed slots, used by the calendar to grey out booked hours. */
     public function availability(Request $request)
     {
@@ -29,49 +26,7 @@ class BookingController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | Step 1: verify the email address
-    |--------------------------------------------------------------------------
-    */
-
-    /** Email a 6-digit code (or say the address is already verified in this browser). */
-    public function verifyEmail(Request $request)
-    {
-        $data = $request->validate([
-            'guest_name' => 'required|string|max:120',
-            'guest_email' => $this->emailRules(),
-        ]);
-
-        if ($this->verifier->isVerified($data['guest_email'])) {
-            return response()->json(['verified' => true]);
-        }
-
-        try {
-            $wait = $this->verifier->sendCode($data['guest_email'], $data['guest_name']);
-        } catch (Throwable $e) {
-            report($e);
-
-            return response()->json([
-                'message' => 'We could not send a code to that address. Please check it and try again.',
-            ], 503);
-        }
-
-        if ($wait) {
-            return response()->json([
-                'message' => "A code was just sent. You can ask for a new one in {$wait} seconds.",
-                'code_sent' => true,
-                'retry_after' => $wait,
-            ], 429);
-        }
-
-        return response()->json([
-            'code_sent' => true,
-            'message' => "We sent a 6-digit code to {$data['guest_email']}. It expires in ".config('booking.code_minutes').' minutes.',
-        ]);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Step 2: book the hours
+    | Booking
     |--------------------------------------------------------------------------
     */
 
@@ -89,17 +44,10 @@ class BookingController extends Controller
             'court' => ['required', Rule::in(['PickleHub Court'])],
             'hours' => 'required|array|min:1',
             'hours.*' => 'required|integer|between:7,23',
-            'verification_code' => 'nullable|string|max:12',
+        ], [
+            'guest_email.email' => 'The email does not exist.',
         ]);
         $data['hours'] = collect($data['hours'])->unique()->sort()->values()->all();
-
-        if (! $this->verifier->isVerified($data['guest_email'])
-            && ! $this->verifier->check($data['guest_email'], $data['verification_code'] ?? null)) {
-            return response()->json([
-                'message' => 'Please enter the 6-digit code we emailed you.',
-                'errors' => ['verification_code' => ['That code is incorrect or has expired. Check your email or request a new code.']],
-            ], 422);
-        }
 
         $conflict = Booking::whereDate('booking_date', $data['booking_date'])
             ->where('court', $data['court'])
@@ -184,7 +132,10 @@ class BookingController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    /** A well-formed address whose domain can receive mail (DNS check can be turned off). */
+    /**
+     * A well-formed address whose domain exists and accepts mail. Catches typos such as
+     * "gmial.com" and made-up domains; a mail server won't reveal whether one inbox exists.
+     */
     private function emailRules(): array
     {
         return ['required', 'max:255', config('booking.check_dns') ? 'email:rfc,dns' : 'email:rfc'];

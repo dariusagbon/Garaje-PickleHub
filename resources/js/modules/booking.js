@@ -290,28 +290,11 @@ document.addEventListener('keydown', (event) => {
 
 /*
 |--------------------------------------------------------------------------
-| Confirming: email code first, then the booking itself
+| Confirming the booking
 |--------------------------------------------------------------------------
 */
 
-const codeStep = document.querySelector('#code-step');
-const codeMessage = document.querySelector('#code-message');
-const codeInput = document.querySelector('#verification-code');
-const resendCode = document.querySelector('#resend-code');
 const emailInput = document.querySelector('#guest-email');
-let codeSent = false;
-let resendTimer = null;
-
-const csrfHeaders = () => ({
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-});
-
-function setSubmitLabel(text) {
-    const label = bookingSubmit?.querySelector('.button-label');
-    if (label) label.textContent = text;
-}
 
 function showBookingError(message) {
     if (!bookingError) return;
@@ -323,59 +306,15 @@ function firstError(result, fallback) {
     return (result.errors && Object.values(result.errors)[0]?.[0]) || result.message || fallback;
 }
 
-// "Send a new code" stays disabled for a minute after each code.
-function startResendCountdown(seconds = 60) {
-    if (!resendCode) return;
-    clearInterval(resendTimer);
-    let left = seconds;
-    resendCode.disabled = true;
-    resendCode.textContent = `Send a new code (${left}s)`;
-    resendTimer = setInterval(() => {
-        left -= 1;
-        resendCode.textContent = left > 0 ? `Send a new code (${left}s)` : 'Send a new code';
-        if (left <= 0) {
-            clearInterval(resendTimer);
-            resendCode.disabled = false;
-        }
-    }, 1000);
-}
-
-function resetCodeStep() {
-    codeSent = false;
-    codeStep?.classList.add('hidden');
-    if (codeInput) codeInput.value = '';
-    clearInterval(resendTimer);
-    setSubmitLabel('Email me a code');
-}
-
-async function requestCode() {
-    const data = Object.fromEntries(new FormData(bookingFormElement));
-    const response = await fetch('/bookings/verify-email', {
-        method: 'POST',
-        headers: csrfHeaders(),
-        body: JSON.stringify({ guest_name: data.guest_name, guest_email: data.guest_email }),
-    });
-    const result = await response.json();
-
-    if (response.ok && result.verified) return 'verified';
-    if (result.code_sent) {
-        codeSent = true;
-        codeStep?.classList.remove('hidden');
-        if (codeMessage) codeMessage.textContent = result.message;
-        setSubmitLabel('Confirm booking');
-        startResendCountdown(result.retry_after || 60);
-        codeInput?.focus();
-        return 'sent';
-    }
-    showBookingError(firstError(result, 'We could not send a code to that email.'));
-    return 'error';
-}
-
 async function submitBooking() {
     const data = Object.fromEntries(new FormData(bookingFormElement));
     const response = await fetch('/bookings', {
         method: 'POST',
-        headers: csrfHeaders(),
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+        },
         body: JSON.stringify({
             ...data,
             booking_date: dateKey(selectedDate),
@@ -386,8 +325,12 @@ async function submitBooking() {
     const result = await response.json();
 
     if (!response.ok) {
+        // e.g. "The email does not exist." — shown at the bottom of the form, by the button.
         showBookingError(firstError(result, 'Unable to book these hours.'));
-        if (result.errors?.verification_code) codeInput?.select();
+        if (result.errors?.guest_email) {
+            emailInput?.classList.add('is-invalid');
+            emailInput?.focus();
+        }
         if (response.status === 409) await loadBookings();
         return;
     }
@@ -397,7 +340,6 @@ async function submitBooking() {
     hideBookingModal();
     selectedHours = [];
     bookingFormElement.reset();
-    resetCodeStep();
     const confirmation = document.querySelector('#booking-confirmation');
     if (confirmation) {
         confirmation.innerHTML = `
@@ -421,12 +363,7 @@ bookingFormElement?.addEventListener('submit', async (event) => {
     bookingSubmit?.classList.add('loading');
     if (bookingSubmit) bookingSubmit.disabled = true;
     try {
-        if (!codeSent) {
-            // First press: check the email and send a code (skipped if already verified here).
-            if ((await requestCode()) === 'verified') await submitBooking();
-        } else {
-            await submitBooking();
-        }
+        await submitBooking();
     } catch {
         showBookingError('Network error — please try again.');
     } finally {
@@ -435,24 +372,10 @@ bookingFormElement?.addEventListener('submit', async (event) => {
     }
 });
 
-resendCode?.addEventListener('click', async () => {
-    bookingError?.classList.add('hidden');
-    try {
-        await requestCode();
-    } catch {
-        showBookingError('Network error — please try again.');
-    }
-});
-
-document.querySelector('#change-email')?.addEventListener('click', () => {
-    resetCodeStep();
-    emailInput?.focus();
-    emailInput?.select();
-});
-
-// A different address needs its own code.
+// Clear the "does not exist" message as soon as the email is edited.
 emailInput?.addEventListener('input', () => {
-    if (codeSent) resetCodeStep();
+    emailInput.classList.remove('is-invalid');
+    bookingError?.classList.add('hidden');
 });
 
 document.querySelector('#previous-month')?.addEventListener('click', () => changeMonth(-1));
