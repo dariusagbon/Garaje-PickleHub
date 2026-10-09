@@ -3,6 +3,7 @@
 // Only runs when the page has a #calendar-grid.
 
 import { showToast } from './toast.js';
+import { confetti } from './fun.js';
 
 const calendarGrid = document.querySelector('#calendar-grid');
 const scheduleGrid = document.querySelector('#schedule-grid');
@@ -10,6 +11,7 @@ const calendarMonth = document.querySelector('#calendar-month');
 const selectedDateLabel = document.querySelector('#selected-date');
 const availabilitySummary = document.querySelector('#availability-summary');
 const reviewBooking = document.querySelector('#review-booking');
+const schedulePanel = document.querySelector('.schedule-panel');
 const bookingModal = document.querySelector('#booking-modal');
 const closeBookingModal = document.querySelector('#close-booking-modal');
 const bookingFormElement = document.querySelector('#guest-booking-form');
@@ -31,6 +33,16 @@ let selectedHours = [];
 let lastClickedHour = null;
 let loaded = false;
 
+// Court rates come from config/booking.php via data attributes on the calendar.
+const rates = {
+    day: Number(calendarGrid?.dataset.dayRate || 200),
+    evening: Number(calendarGrid?.dataset.eveningRate || 250),
+    eveningStarts: Number(calendarGrid?.dataset.eveningStarts || 18),
+};
+const priceFor = (hour) => (hour >= rates.eveningStarts ? rates.evening : rates.day);
+const peso = (amount) => `₱${amount.toLocaleString('en-PH')}`;
+const totalFor = (list) => list.reduce((sum, hour) => sum + priceFor(hour), 0);
+
 const pad = (value) => String(value).padStart(2, '0');
 const dateKey = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 const hourText = (hour) => `${hour % 12 || 12}:00 ${hour >= 12 && hour < 24 ? 'PM' : 'AM'}`;
@@ -42,6 +54,32 @@ const isPastHour = (date, hour) => {
     return hour <= new Date().getHours();
 };
 const isOpen = (date, hour) => !isBooked(date, hour) && !isPastHour(date, hour);
+const openHours = (date) => hours.filter((hour) => isOpen(date, hour)).length;
+// A day with no open hours left can't be picked (only known once bookings have loaded).
+const isFullDay = (date) => loaded && !isPastDay(date) && openHours(date) === 0;
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// If the selected day is fully booked, move to the next day in the month that still has open hours.
+function skipFullDay() {
+    if (!isFullDay(selectedDate)) return;
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
+    const last = new Date(year, month + 1, 0).getDate();
+    for (let day = selectedDate.getDate() + 1; day <= last; day += 1) {
+        const date = new Date(year, month, day);
+        if (!isFullDay(date)) {
+            selectedDate = date;
+            return;
+        }
+    }
+}
+
+// On phones the hours are listed below the calendar: bring them into view after a day is picked.
+function revealSchedule() {
+    if (!schedulePanel || !calendarGrid) return;
+    const stacked = schedulePanel.getBoundingClientRect().top >= calendarGrid.getBoundingClientRect().bottom;
+    if (stacked) schedulePanel.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
+}
 
 // Collapse [9, 10, 11, 15] into "9:00 AM – 12:00 PM, 3:00 PM – 4:00 PM".
 function hourRanges(list) {
@@ -64,6 +102,7 @@ async function loadBookings() {
         showToast('Could not load live availability. Please refresh.', 'error');
     }
     loaded = true;
+    skipFullDay();
     renderCalendar();
     renderSchedule();
 }
@@ -83,18 +122,20 @@ function renderCalendar() {
     for (let day = 1; day <= daysInMonth; day += 1) {
         const date = new Date(year, month, day);
         const past = isPastDay(date);
-        const open = hours.filter((hour) => isOpen(date, hour)).length;
+        const full = isFullDay(date);
+        const open = openHours(date);
         const bookedCount = hours.filter((hour) => isBooked(date, hour)).length;
         const level = past ? '' : open === 0 ? 'full' : bookedCount / hours.length > 0.5 ? 'busy' : 'open';
         const classes = ['calendar-day', level && `level-${level}`,
             past && 'disabled',
+            full && 'is-full',
             dateKey(date) === dateKey(selectedDate) && 'selected',
             dateKey(date) === dateKey(today) && 'today'].filter(Boolean).join(' ');
         const status = !loaded ? '<span class="calendar-day-skeleton"></span>'
             : past ? '' : open ? `${open} open` : 'Full';
         calendarGrid.insertAdjacentHTML('beforeend', `
-            <button class="${classes}" type="button" data-date="${dateKey(date)}" ${past ? 'disabled' : ''}
-                aria-label="${date.toDateString()}${past ? '' : `, ${open} open slots`}" style="--fill:${Math.round((bookedCount / hours.length) * 100)}%">
+            <button class="${classes}" type="button" data-date="${dateKey(date)}" ${past || full ? 'disabled' : ''}
+                aria-label="${date.toDateString()}${past ? '' : full ? ', fully booked' : `, ${open} open slots`}" style="--fill:${Math.round((bookedCount / hours.length) * 100)}%">
                 <span class="calendar-day-number">${day}</span>
                 <span class="calendar-day-status${open ? '' : ' full'}">${status}</span>
                 ${past || !loaded ? '' : '<span class="calendar-day-meter"><i></i></span>'}
@@ -108,7 +149,9 @@ function renderCalendar() {
             selectedHours = [];
             lastClickedHour = null;
             renderCalendar();
+            calendarGrid.querySelector(`[data-date="${button.dataset.date}"]`)?.classList.add('just-picked');
             renderSchedule(true);
+            revealSchedule();
         });
     });
 }
@@ -121,6 +164,7 @@ function slotButton(hour) {
     const label = { booked: 'Booked', past: 'Passed', selected: 'Selected', open: 'Available' }[state];
     return `<button type="button" class="slot-chip is-${state}" data-hour="${hour}" ${state === 'booked' || state === 'past' ? 'disabled' : ''}
         aria-pressed="${selected}" aria-label="${hourText(hour)} ${label}">
+        <span class="slot-chip-price">${peso(priceFor(hour))}</span>
         <span class="slot-chip-time">${hourText(hour)}</span>
         <span class="slot-chip-state">${selected ? '✓ ' : ''}${label}</span>
     </button>`;
@@ -168,7 +212,9 @@ function renderSchedule(animate = false) {
             }
             lastClickedHour = hour;
             renderSchedule();
-            scheduleGrid.querySelector(`[data-hour="${hour}"]`)?.focus();
+            const picked = scheduleGrid.querySelector(`[data-hour="${hour}"]`);
+            picked?.focus();
+            if (picked?.classList.contains('is-selected')) picked.classList.add('just-picked');
         });
     });
     renderBookingBar();
@@ -181,7 +227,7 @@ function renderBookingBar() {
     bookingBar.classList.toggle('show', visible);
     bookingBar.setAttribute('aria-hidden', String(!visible));
     if (!visible) return;
-    bookingBar.querySelector('[data-bar-count]').textContent = `${selectedHours.length} hour${selectedHours.length > 1 ? 's' : ''}`;
+    bookingBar.querySelector('[data-bar-count]').textContent = `${selectedHours.length} hour${selectedHours.length > 1 ? 's' : ''} · ${peso(totalFor(selectedHours))}`;
     const shortDate = selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     bookingBar.querySelector('[data-bar-detail]').textContent = `${shortDate} · ${hourRanges(selectedHours)}`;
 }
@@ -192,7 +238,9 @@ function updateModalSummary() {
     summary.innerHTML = `
         <span><small>Date</small>${selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
         <span><small>Time</small>${hourRanges(selectedHours)}</span>
-        <span><small>Duration</small>${selectedHours.length} hour${selectedHours.length > 1 ? 's' : ''} · ${courts[0]}</span>`;
+        <span><small>Duration</small>${selectedHours.length} hour${selectedHours.length > 1 ? 's' : ''} · ${courts[0]}</span>
+        <div class="booking-lines">${selectedHours.map((hour) => `<span>${hourText(hour)} · ${hour >= rates.eveningStarts ? 'Evening' : 'Day'} rate<b>${peso(priceFor(hour))}</b></span>`).join('')}</div>
+        <div class="booking-total"><span>Total to pay at the court</span><strong>${peso(totalFor(selectedHours))}</strong></div>`;
 }
 
 function openBookingModal() {
@@ -216,6 +264,7 @@ function hideBookingModal() {
 function changeMonth(offset) {
     visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + offset, 1);
     selectedDate = visibleMonth < today ? new Date(today) : new Date(visibleMonth);
+    skipFullDay();
     selectedHours = [];
     lastClickedHour = null;
     calendarGrid?.classList.remove('slide-left', 'slide-right');
@@ -238,61 +287,172 @@ bookingModal?.addEventListener('click', (event) => {
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && bookingModal?.classList.contains('open')) hideBookingModal();
 });
+
+/*
+|--------------------------------------------------------------------------
+| Confirming: email code first, then the booking itself
+|--------------------------------------------------------------------------
+*/
+
+const codeStep = document.querySelector('#code-step');
+const codeMessage = document.querySelector('#code-message');
+const codeInput = document.querySelector('#verification-code');
+const resendCode = document.querySelector('#resend-code');
+const emailInput = document.querySelector('#guest-email');
+let codeSent = false;
+let resendTimer = null;
+
+const csrfHeaders = () => ({
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+});
+
+function setSubmitLabel(text) {
+    const label = bookingSubmit?.querySelector('.button-label');
+    if (label) label.textContent = text;
+}
+
+function showBookingError(message) {
+    if (!bookingError) return;
+    bookingError.textContent = message;
+    bookingError.classList.remove('hidden');
+}
+
+function firstError(result, fallback) {
+    return (result.errors && Object.values(result.errors)[0]?.[0]) || result.message || fallback;
+}
+
+// "Send a new code" stays disabled for a minute after each code.
+function startResendCountdown(seconds = 60) {
+    if (!resendCode) return;
+    clearInterval(resendTimer);
+    let left = seconds;
+    resendCode.disabled = true;
+    resendCode.textContent = `Send a new code (${left}s)`;
+    resendTimer = setInterval(() => {
+        left -= 1;
+        resendCode.textContent = left > 0 ? `Send a new code (${left}s)` : 'Send a new code';
+        if (left <= 0) {
+            clearInterval(resendTimer);
+            resendCode.disabled = false;
+        }
+    }, 1000);
+}
+
+function resetCodeStep() {
+    codeSent = false;
+    codeStep?.classList.add('hidden');
+    if (codeInput) codeInput.value = '';
+    clearInterval(resendTimer);
+    setSubmitLabel('Email me a code');
+}
+
+async function requestCode() {
+    const data = Object.fromEntries(new FormData(bookingFormElement));
+    const response = await fetch('/bookings/verify-email', {
+        method: 'POST',
+        headers: csrfHeaders(),
+        body: JSON.stringify({ guest_name: data.guest_name, guest_email: data.guest_email }),
+    });
+    const result = await response.json();
+
+    if (response.ok && result.verified) return 'verified';
+    if (result.code_sent) {
+        codeSent = true;
+        codeStep?.classList.remove('hidden');
+        if (codeMessage) codeMessage.textContent = result.message;
+        setSubmitLabel('Confirm booking');
+        startResendCountdown(result.retry_after || 60);
+        codeInput?.focus();
+        return 'sent';
+    }
+    showBookingError(firstError(result, 'We could not send a code to that email.'));
+    return 'error';
+}
+
+async function submitBooking() {
+    const data = Object.fromEntries(new FormData(bookingFormElement));
+    const response = await fetch('/bookings', {
+        method: 'POST',
+        headers: csrfHeaders(),
+        body: JSON.stringify({
+            ...data,
+            booking_date: dateKey(selectedDate),
+            court: courts[0],
+            hours: selectedHours,
+        }),
+    });
+    const result = await response.json();
+
+    if (!response.ok) {
+        showBookingError(firstError(result, 'Unable to book these hours.'));
+        if (result.errors?.verification_code) codeInput?.select();
+        if (response.status === 409) await loadBookings();
+        return;
+    }
+
+    const longDate = selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    const summary = `${longDate} · ${hourRanges(selectedHours)}`;
+    hideBookingModal();
+    selectedHours = [];
+    bookingFormElement.reset();
+    resetCodeStep();
+    const confirmation = document.querySelector('#booking-confirmation');
+    if (confirmation) {
+        confirmation.innerHTML = `
+            <strong>✓ You're booked! Reference ${result.reference}</strong>
+            <span>${summary} · Total to pay: <b>${result.total_label}</b></span>
+            <small>${result.receipt_emailed
+                ? `Your receipt was emailed to ${data.guest_email}. Show it at the court as proof of booking.`
+                : 'Keep your receipt link below as proof of booking.'}</small>
+            <a class="button button-dark mt-3 w-max" href="${result.receipt_url}" target="_blank" rel="noopener">View receipt</a>`;
+        confirmation.classList.remove('hidden');
+        confirmation.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    showToast(result.message);
+    confetti();
+    await loadBookings();
+}
+
 bookingFormElement?.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const data = Object.fromEntries(new FormData(bookingFormElement));
     bookingError?.classList.add('hidden');
     bookingSubmit?.classList.add('loading');
     if (bookingSubmit) bookingSubmit.disabled = true;
     try {
-        const response = await fetch('/bookings', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-            },
-            body: JSON.stringify({
-                ...data,
-                booking_date: dateKey(selectedDate),
-                court: courts[0],
-                hours: selectedHours,
-            }),
-        });
-        const result = await response.json();
-        if (!response.ok) {
-            const firstError = result.errors && Object.values(result.errors)[0]?.[0];
-            if (bookingError) {
-                bookingError.textContent = firstError || result.message || 'Unable to book these hours.';
-                bookingError.classList.remove('hidden');
-            }
-            if (response.status === 409) await loadBookings();
-            return;
+        if (!codeSent) {
+            // First press: check the email and send a code (skipped if already verified here).
+            if ((await requestCode()) === 'verified') await submitBooking();
+        } else {
+            await submitBooking();
         }
-        const longDate = selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-        const summary = `${longDate} · ${hourRanges(selectedHours)}`;
-        hideBookingModal();
-        selectedHours = [];
-        bookingFormElement.reset();
-        const confirmation = document.querySelector('#booking-confirmation');
-        if (confirmation) {
-            confirmation.innerHTML = `
-                <strong>✓ You're booked!</strong>
-                <span>${summary}</span>
-                <small>See you on the court, ${data.guest_name}.</small>`;
-            confirmation.classList.remove('hidden');
-        }
-        showToast(result.message);
-        await loadBookings();
     } catch {
-        if (bookingError) {
-            bookingError.textContent = 'Network error — please try again.';
-            bookingError.classList.remove('hidden');
-        }
+        showBookingError('Network error — please try again.');
     } finally {
         bookingSubmit?.classList.remove('loading');
         if (bookingSubmit) bookingSubmit.disabled = false;
     }
+});
+
+resendCode?.addEventListener('click', async () => {
+    bookingError?.classList.add('hidden');
+    try {
+        await requestCode();
+    } catch {
+        showBookingError('Network error — please try again.');
+    }
+});
+
+document.querySelector('#change-email')?.addEventListener('click', () => {
+    resetCodeStep();
+    emailInput?.focus();
+    emailInput?.select();
+});
+
+// A different address needs its own code.
+emailInput?.addEventListener('input', () => {
+    if (codeSent) resetCodeStep();
 });
 
 document.querySelector('#previous-month')?.addEventListener('click', () => changeMonth(-1));

@@ -95,7 +95,7 @@
         @endforeach
     </div>
 
-    <p class="mt-4 text-xs text-[#788078]">
+    <p class="mt-4 text-xs text-[#65776b]">
         {{ $stats['today_hours'] ? $stats['today_hours'].' of '.$capacity.' hours booked today.' : 'No bookings today yet.' }}
         Hover or tab through an hour to see who booked it.
     </p>
@@ -145,7 +145,7 @@
             </div>
         </div>
 
-        <details class="bar-chart-table text-xs text-[#59645e]">
+        <details class="bar-chart-table text-xs text-[#43564a]">
             <summary class="cursor-pointer font-bold uppercase tracking-[1px]">View as table</summary>
             <table class="history-table mt-3 min-w-0">
                 <thead>
@@ -229,7 +229,7 @@
                         {{ $event->player_registrations_count }} / {{ $event->capacity }} players
                         · {{ $event->matches_count }} {{ Str::plural('game', $event->matches_count) }}
                         @if ($event->live_matches_count)
-                            · <span class="font-bold text-[#c86a42]">{{ $event->live_matches_count }} waiting for a score</span>
+                            · <span class="font-bold text-[#c25546]">{{ $event->live_matches_count }} waiting for a score</span>
                         @endif
                     </p>
                 </div>

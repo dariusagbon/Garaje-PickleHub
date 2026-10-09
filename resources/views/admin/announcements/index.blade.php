@@ -41,7 +41,7 @@
                    placeholder="e.g. Court closed tomorrow morning for resurfacing">
         </label>
         <label>
-            Message <span class="normal-case tracking-normal text-[#9da098]">(optional)</span>
+            Message <span class="normal-case tracking-normal text-[#8f9a8c]">(optional)</span>
             <textarea name="body" rows="3" maxlength="1000"
                       placeholder="Add details players should know.">{{ old('body') }}</textarea>
         </label>

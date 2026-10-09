@@ -191,7 +191,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>
                                     <strong>{{ $guest['name'] }}</strong>
-                                    <small class="block text-[#788078]">{{ $guest['email'] }}</small>
+                                    <small class="block text-[#65776b]">{{ $guest['email'] }}</small>
                                 </td>
                                 <td class="text-right tabular-nums">{{ $guest['hours'] }}</td>
                                 <td class="text-right tabular-nums">{{ $guest['days'] }}</td>
@@ -234,7 +234,7 @@
                                 {{ $event->capacity ? round($event->player_registrations_count / $event->capacity * 100) : 0 }}%
                             </td>
                             <td class="text-right tabular-nums">
-                                {{ $event->completed_matches_count }}@if ($event->matches_count > $event->completed_matches_count)<small class="text-[#788078]"> / {{ $event->matches_count }} drawn</small>@endif
+                                {{ $event->completed_matches_count }}@if ($event->matches_count > $event->completed_matches_count)<small class="text-[#65776b]"> / {{ $event->matches_count }} drawn</small>@endif
                             </td>
                         </tr>
                     @endforeach
