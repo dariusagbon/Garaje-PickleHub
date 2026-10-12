@@ -61,6 +61,12 @@ Route::get('/events/{event}', [EventController::class, 'show'])->name('events.sh
 Route::post('/events/{event}/register', [EventController::class, 'register'])
     ->middleware('auth')
     ->name('events.register');
+Route::patch('/events/{event}/players/{registration}', [EventController::class, 'renamePlayer'])
+    ->middleware('auth')
+    ->name('events.players.update');
+Route::delete('/events/{event}/players/{registration}', [EventController::class, 'removePlayer'])
+    ->middleware('auth')
+    ->name('events.players.destroy');
 Route::patch('/events/{event}/matches/{match}/score', [EventController::class, 'score'])
     ->name('events.matches.score');
 

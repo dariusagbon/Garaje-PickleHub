@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\EventMatch;
+use App\Models\EventRegistration;
 use App\Services\Matchmaker;
 use Illuminate\Http\Request;
 
@@ -23,6 +24,7 @@ class EventController extends Controller
         return view('events.show', compact('event', 'stats'));
     }
 
+    /** Adds a player to the event. One account can register several players (friends, family). */
     public function register(Request $request, Event $event, Matchmaker $matchmaker)
     {
         if ($event->isPast()) {
@@ -32,31 +34,75 @@ class EventController extends Controller
         $data = $request->validate([
             'player_name' => 'required|string|max:100',
         ]);
-
+        $name = trim($data['player_name']);
         $userId = $request->user()->id;
-        $registration = $event->playerRegistrations()
-            ->where('user_id', $userId)
-            ->first();
 
-        if (! $registration && $event->playerRegistrations()->count() >= $event->capacity) {
+        $alreadyAdded = $event->playerRegistrations()
+            ->where('user_id', $userId)
+            ->where('player_name', $name)
+            ->exists();
+        if ($alreadyAdded) {
+            return back()->withErrors(['player_name' => "You already registered $name for this event."]);
+        }
+
+        if ($event->playerRegistrations()->count() >= $event->capacity) {
             return back()->withErrors(['event' => 'This event is full.']);
         }
 
-        $event->playerRegistrations()->updateOrCreate(
-            ['user_id' => $userId],
-            ['player_name' => $data['player_name']],
-        );
+        $event->playerRegistrations()->create(['user_id' => $userId, 'player_name' => $name]);
         $event->users()->syncWithoutDetaching([$userId]);
-
-        if ($registration) {
-            return back()->with('message', 'Your player name was updated.');
-        }
 
         $created = $matchmaker->fill($event);
 
         return back()->with('message', $created
-            ? 'You are registered and a new game is ready!'
-            : 'You are registered! You will be placed in the next game.');
+            ? "$name is registered and a new game is ready!"
+            : "$name is registered and will be placed in the next game.");
+    }
+
+    /** Renames one of the account's players. */
+    public function renamePlayer(Request $request, Event $event, EventRegistration $registration)
+    {
+        $this->authorizeRegistration($request, $event, $registration);
+
+        if ($event->isPast()) {
+            return back()->withErrors(['event' => 'This event has already ended.']);
+        }
+
+        $data = $request->validate([
+            'player_name' => 'required|string|max:100',
+        ]);
+        $registration->update(['player_name' => trim($data['player_name'])]);
+
+        return back()->with('message', 'Player name updated.');
+    }
+
+    /** Removes one of the account's players, as long as they have not been drawn into a game. */
+    public function removePlayer(Request $request, Event $event, EventRegistration $registration)
+    {
+        $this->authorizeRegistration($request, $event, $registration);
+
+        if ($event->isPast()) {
+            return back()->withErrors(['event' => 'This event has already ended.']);
+        }
+
+        if ($registration->matches()->exists()) {
+            return back()->withErrors(['event' => "{$registration->player_name} has already been drawn into a game and can't be removed."]);
+        }
+
+        $registration->delete();
+
+        $userId = $request->user()->id;
+        if (! $event->playerRegistrations()->where('user_id', $userId)->exists()) {
+            $event->users()->detach($userId);
+        }
+
+        return back()->with('message', "{$registration->player_name} was removed from the event.");
+    }
+
+    private function authorizeRegistration(Request $request, Event $event, EventRegistration $registration): void
+    {
+        abort_unless($registration->event_id === $event->id, 404);
+        abort_unless($registration->user_id === $request->user()->id, 403);
     }
 
     /**
