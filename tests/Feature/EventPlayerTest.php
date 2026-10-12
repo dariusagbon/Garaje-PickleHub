@@ -59,6 +59,17 @@ class EventPlayerTest extends TestCase
             ->assertSee('Add another player');
     }
 
+    public function test_each_game_has_a_full_screen_button(): void
+    {
+        $event = $this->event();
+        $event->matches()->create();
+
+        $this->get(route('events.show', $event))
+            ->assertOk()
+            ->assertSee('data-fullscreen-toggle', false)
+            ->assertSee('Full screen');
+    }
+
     public function test_the_same_player_name_cannot_be_added_twice_by_one_account(): void
     {
         $event = $this->event();

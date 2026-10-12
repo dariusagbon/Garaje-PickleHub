@@ -273,7 +273,7 @@
                         $servingSide = strtolower($state['serving_team']);
                         $canStartChoice = empty($match->rallies) && ! $state['complete'] && ! $match->score_a && ! $match->score_b;
                     @endphp
-                    <article @class(['scoreboard-card', 'is-final' => $state['complete']])>
+                    <article @class(['scoreboard-card', 'ev-game', 'is-final' => $state['complete']])>
                         <div class="flex flex-col justify-between gap-4 border-b border-[#d8cab1] pb-5 sm:flex-row sm:items-center">
                             <div>
                                 <p class="eyebrow eyebrow-dark">
@@ -281,8 +281,14 @@
                                 </p>
                                 <p class="mt-2 text-sm font-bold text-[#43564a]">Side-out scoring · First to 11, win by 2</p>
                             </div>
-                            <div @class(['score-result', 'complete' => $state['complete']]) data-game-result>
-                                {{ $match->winnerLabel() ?? 'In progress' }}
+                            <div class="ev-game-actions">
+                                <div @class(['score-result', 'complete' => $state['complete']]) data-game-result>
+                                    {{ $match->winnerLabel() ?? 'In progress' }}
+                                </div>
+                                {{-- Full screen for courtside scoring (resources/js/modules/live-score.js). --}}
+                                <button class="button button-dark ev-fullscreen-toggle" type="button" data-fullscreen-toggle aria-pressed="false">
+                                    <span aria-hidden="true">⛶</span> <span data-fullscreen-label>Full screen</span>
+                                </button>
                             </div>
                         </div>
 
@@ -320,7 +326,9 @@
                                             @endif
                                         </p>
 
-                                        <strong class="scoreboard-number" data-score>{{ $state['score_'.$side] }}</strong>
+                                        <div class="score-number-box">
+                                            <strong class="scoreboard-number" data-score>{{ $state['score_'.$side] }}</strong>
+                                        </div>
 
                                         <p class="serve-badge" data-serve-badge @unless ($isServing) hidden @endunless>
                                             <span class="serve-badge-dot" aria-hidden="true">●</span>
