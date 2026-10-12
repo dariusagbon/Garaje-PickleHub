@@ -23,18 +23,101 @@ class EventPlayerTest extends TestCase
         ], $attributes));
     }
 
-    public function test_authenticated_player_can_register_and_update_their_display_name(): void
+    public function test_authenticated_player_can_register_and_rename_their_player(): void
     {
         $event = $this->event();
         $user = User::factory()->create();
 
         $this->actingAs($user)->post(route('events.register', $event), ['player_name' => 'Ace Player'])
             ->assertRedirect();
-        $this->assertDatabaseHas('event_registrations', ['event_id' => $event->id, 'user_id' => $user->id, 'player_name' => 'Ace Player']);
+        $registration = $event->playerRegistrations()->sole();
+        $this->assertSame('Ace Player', $registration->player_name);
 
-        $this->actingAs($user)->post(route('events.register', $event), ['player_name' => 'Updated Name'])
+        $this->actingAs($user)->patch(route('events.players.update', [$event, $registration]), ['player_name' => 'Updated Name'])
             ->assertRedirect();
-        $this->assertDatabaseHas('event_registrations', ['event_id' => $event->id, 'user_id' => $user->id, 'player_name' => 'Updated Name']);
+        $this->assertDatabaseHas('event_registrations', ['id' => $registration->id, 'user_id' => $user->id, 'player_name' => 'Updated Name']);
+    }
+
+    public function test_one_account_can_register_many_players(): void
+    {
+        $event = $this->event();
+        $user = User::factory()->create();
+
+        foreach (['Me', 'My Partner', 'My Kid', 'My Neighbour'] as $name) {
+            $this->actingAs($user)->post(route('events.register', $event), ['player_name' => $name])
+                ->assertSessionHasNoErrors();
+        }
+
+        $this->assertSame(4, $event->playerRegistrations()->where('user_id', $user->id)->count());
+        // Four players from one account are enough to draw the first game.
+        $this->assertCount(4, EventMatch::sole()->players);
+
+        $this->actingAs($user)->get(route('events.show', $event))
+            ->assertOk()
+            ->assertSee('Your players')
+            ->assertSee('My Neighbour')
+            ->assertSee('Add another player');
+    }
+
+    public function test_the_same_player_name_cannot_be_added_twice_by_one_account(): void
+    {
+        $event = $this->event();
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('events.register', $event), ['player_name' => 'Ace']);
+        $this->actingAs($user)->post(route('events.register', $event), ['player_name' => 'Ace'])
+            ->assertSessionHasErrors('player_name');
+
+        $this->assertSame(1, $event->playerRegistrations()->count());
+    }
+
+    public function test_extra_players_count_toward_capacity(): void
+    {
+        $event = $this->event(['capacity' => 2]);
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('events.register', $event), ['player_name' => 'One']);
+        $this->actingAs($user)->post(route('events.register', $event), ['player_name' => 'Two']);
+        $this->actingAs($user)->post(route('events.register', $event), ['player_name' => 'Three'])
+            ->assertSessionHasErrors('event');
+
+        $this->assertSame(2, $event->playerRegistrations()->count());
+    }
+
+    public function test_players_can_only_change_their_own_players(): void
+    {
+        $event = $this->event();
+        $owner = User::factory()->create();
+        $registration = $event->playerRegistrations()->create(['user_id' => $owner->id, 'player_name' => 'Mine']);
+        $other = User::factory()->create();
+
+        $this->actingAs($other)->patch(route('events.players.update', [$event, $registration]), ['player_name' => 'Stolen'])
+            ->assertForbidden();
+        $this->actingAs($other)->delete(route('events.players.destroy', [$event, $registration]))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('event_registrations', ['id' => $registration->id, 'player_name' => 'Mine']);
+    }
+
+    public function test_a_player_can_be_removed_only_before_they_are_drawn_into_a_game(): void
+    {
+        $event = $this->event();
+        $user = User::factory()->create();
+        foreach (['A', 'B', 'C'] as $name) {
+            $this->actingAs($user)->post(route('events.register', $event), ['player_name' => $name]);
+        }
+        $c = $event->playerRegistrations()->where('player_name', 'C')->sole();
+
+        $this->actingAs($user)->delete(route('events.players.destroy', [$event, $c]))->assertSessionHasNoErrors();
+        $this->assertModelMissing($c);
+
+        foreach (['C', 'D'] as $name) {
+            $this->actingAs($user)->post(route('events.register', $event), ['player_name' => $name]);
+        }
+        $drawn = EventMatch::sole()->players->first();
+
+        $this->actingAs($user)->delete(route('events.players.destroy', [$event, $drawn]))->assertSessionHasErrors('event');
+        $this->assertModelExists($drawn);
     }
 
     private function registerPlayers(Event $event, int $count): array
@@ -324,6 +407,20 @@ class EventPlayerTest extends TestCase
             ->assertSee('9:00 AM – 11:00 AM')
             ->assertSee('100%')
             ->assertSee('11<i>–</i>4', false);
+    }
+
+    public function test_dashboard_lists_an_event_once_when_an_account_has_several_players(): void
+    {
+        $event = $this->event(['title' => 'Family Social']);
+        $user = User::factory()->create();
+        foreach (['Parent', 'Child'] as $name) {
+            $this->actingAs($user)->post(route('events.register', $event), ['player_name' => $name]);
+        }
+
+        $this->actingAs($user)->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('1 joined')
+            ->assertSee('Parent &amp; Child', false);
     }
 
     public function test_admin_is_redirected_from_player_dashboard(): void

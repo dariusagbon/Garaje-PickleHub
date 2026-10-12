@@ -7,7 +7,11 @@
     $isAdmin = (bool) auth()->user()?->is_admin;
     $canSeeCounts = auth()->check();
 
-    $myRegistration = $event->playerRegistrations->firstWhere('user_id', auth()->id());
+    // One account can register several players; these are the ones this account added.
+    $myRegistrations = auth()->check()
+        ? $event->playerRegistrations->where('user_id', auth()->id())->values()
+        : collect();
+    $myIds = $myRegistrations->pluck('id');
 
     $registered = $event->playerRegistrations->count();
     $spotsLeft = max(0, $event->capacity - $registered);
@@ -126,27 +130,49 @@
                 <p class="ev-note">This event has ended. Registration is closed.</p>
             @else
                 @auth
-                    @if ($myRegistration)
-                        @php $myStats = $stats[$myRegistration->id]; @endphp
-                        <p class="ev-joined">
-                            <span aria-hidden="true">✓</span>
-                            You're in as <strong>{{ $myRegistration->player_name }}</strong>
-                            <small>
-                                · {{ $myStats->games }} {{ Str::plural('game', $myStats->games) }}
-                                · {{ $myStats->active ? 'In a game' : 'Waiting for the next game' }}
-                            </small>
-                        </p>
+                    @if ($myRegistrations->isNotEmpty())
+                        <h3 class="ev-subhead">Your players <span>{{ $myRegistrations->count() }}</span></h3>
+                        <ul class="ev-my-players">
+                            @foreach ($myRegistrations as $registration)
+                                @php $myStats = $stats[$registration->id]; @endphp
+                                <li>
+                                    <form class="ev-my-player-form" method="POST"
+                                          action="{{ route('events.players.update', [$event, $registration]) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <label class="sr-only" for="player_name_{{ $registration->id }}">Player name</label>
+                                        <input id="player_name_{{ $registration->id }}" name="player_name" maxlength="100" required
+                                               value="{{ $registration->player_name }}">
+                                        <button class="button button-outline">Save</button>
+                                    </form>
+                                    <small>
+                                        {{ $myStats->games }} {{ Str::plural('game', $myStats->games) }}
+                                        · {{ $myStats->active ? 'In a game' : 'Waiting for the next game' }}
+                                    </small>
+                                    @unless ($myStats->games)
+                                        <form method="POST" action="{{ route('events.players.destroy', [$event, $registration]) }}"
+                                              onsubmit="return confirm(@js('Remove '.$registration->player_name.' from this event?'))">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="ev-remove-player">Remove</button>
+                                        </form>
+                                    @endunless
+                                </li>
+                            @endforeach
+                        </ul>
                     @endif
 
-                    @if ($myRegistration || $spotsLeft)
+                    @if ($spotsLeft)
                         <form class="ev-join-form" method="POST" action="{{ route('events.register', $event) }}">
                             @csrf
-                            <label for="player_name">{{ $myRegistration ? 'Change your player name' : 'Your player name' }}</label>
+                            <label for="player_name">{{ $myRegistrations->isNotEmpty() ? 'Add another player' : 'Your player name' }}</label>
                             <div class="ev-join-row">
                                 <input id="player_name" name="player_name" maxlength="100" required
-                                       value="{{ old('player_name', $myRegistration?->player_name ?? auth()->user()->name) }}">
-                                <button class="button button-dark">{{ $myRegistration ? 'Update name' : 'Register' }}</button>
+                                       placeholder="{{ $myRegistrations->isNotEmpty() ? 'Friend or family member' : '' }}"
+                                       value="{{ old('player_name', $myRegistrations->isEmpty() ? auth()->user()->name : '') }}">
+                                <button class="button button-dark">{{ $myRegistrations->isNotEmpty() ? 'Add player' : 'Register' }}</button>
                             </div>
+                            <p class="ev-join-hint">You can register more than one player from your account, such as friends or family.</p>
                         </form>
                     @else
                         <p class="ev-note">This event is full.</p>
@@ -177,7 +203,7 @@
                     <ul class="ev-players">
                         @foreach ($event->playerRegistrations as $registration)
                             @php $playerStats = $stats[$registration->id]; @endphp
-                            <li @class(['is-me' => $registration->is($myRegistration)])>
+                            <li @class(['is-me' => $myIds->contains($registration->id)])>
                                 <span class="ev-avatar" aria-hidden="true">{{ $initials($registration->player_name) }}</span>
                                 <span class="min-w-0 flex-1">
                                     <strong>{{ $registration->player_name }}</strong>
@@ -279,7 +305,7 @@
                                 @foreach (['a' => $match->teamA, 'b' => $match->teamB] as $side => $players)
                                     @php
                                         $team = 'Team '.strtoupper($side);
-                                        $isMyTeam = $myRegistration && $players->contains('id', $myRegistration->id);
+                                        $isMyTeam = $players->pluck('id')->intersect($myIds)->isNotEmpty();
                                         $isServing = $servingSide === $side && ! $state['complete'];
                                     @endphp
                                     <section @class(['score-team', "score-team-{$side}", 'is-serving' => $isServing]) data-team="{{ strtoupper($side) }}">
@@ -341,7 +367,7 @@
                                         ?
                                     @elseif ($isAdmin)
                                         {{ $initials($player->player_name) }}
-                                    @elseif ($player->is($myRegistration))
+                                    @elseif ($myIds->contains($player->id))
                                         You
                                     @else
                                         ✓

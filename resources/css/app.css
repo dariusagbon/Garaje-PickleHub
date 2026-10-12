@@ -350,6 +350,14 @@
     .ev-join-form label { @apply text-[10px] font-bold uppercase tracking-[1px] text-[#43564a]; }
     .ev-join-row { @apply mt-2 flex flex-col gap-2 sm:flex-row; }
     .ev-join-row input { @apply min-h-12 min-w-0 flex-1 border border-[#ccbda2] bg-white px-3 text-sm outline-none transition focus:border-[#c25546] focus:ring-1 focus:ring-[#c25546]; }
+    .ev-join-hint { @apply mt-2 text-xs text-[#65776b]; }
+    .ev-my-players { @apply mt-3 divide-y divide-[#e6dbc6] border-y border-[#e6dbc6]; }
+    .ev-my-players li { @apply flex flex-wrap items-center gap-x-3 gap-y-1 py-3; animation: fade-up .3s ease-out; }
+    .ev-my-player-form { @apply flex min-w-0 flex-1 basis-56 gap-2; }
+    .ev-my-player-form input { @apply min-h-10 min-w-0 flex-1 border border-[#ccbda2] bg-white px-3 text-sm font-bold outline-none transition focus:border-[#c25546] focus:ring-1 focus:ring-[#c25546]; }
+    .ev-my-player-form .button { @apply min-h-10 px-3 py-0 text-xs; }
+    .ev-my-players small { @apply text-[11px] text-[#65776b]; }
+    .ev-remove-player { @apply ml-auto text-xs font-bold text-[#c25546] underline-offset-2 hover:underline; }
     .ev-login-cta { @apply mt-5 border border-[#e8968b] bg-[#f1e1cc] p-4; }
     .ev-login-cta p { @apply mb-3 text-sm text-[#74471f]; }
     .ev-subhead { @apply mt-8 flex items-center gap-2 text-xs font-bold uppercase tracking-[1px] text-[#43564a]; }
