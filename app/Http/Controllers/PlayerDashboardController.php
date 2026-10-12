@@ -48,19 +48,21 @@ class PlayerDashboardController extends Controller
         $finished = $games->filter(fn ($game) => $game->isComplete());
         $currentGame = $games->first(fn ($game) => ! $game->isComplete() && ! $game->event->isPast());
 
+        // An account can register several players for one event, so list each event once.
         $myEvents = $registrations->pluck('event')
+            ->unique('id')
             ->filter(fn ($event) => ! $event->isPast())
             ->sortBy(fn ($event) => $event->date->format('Y-m-d').' '.$event->time)
             ->values();
         $myEventIds = $myEvents->pluck('id');
         $eventStatus = $myEvents->mapWithKeys(function (Event $event) use ($matchmaker, $registrations) {
-            $registration = $registrations->firstWhere('event_id', $event->id);
-            $stat = $matchmaker->stats($event)[$registration->id] ?? null;
+            $mine = $registrations->where('event_id', $event->id);
+            $stats = $matchmaker->stats($event)->only($mine->pluck('id')->all());
 
             return [$event->id => (object) [
-                'player_name' => $registration->player_name,
-                'games' => $stat?->games ?? 0,
-                'active' => $stat?->active ?? false,
+                'player_name' => $mine->pluck('player_name')->join(', ', ' & '),
+                'games' => $stats->sum('games'),
+                'active' => $stats->contains('active', true),
             ]];
         });
 
@@ -82,7 +84,7 @@ class PlayerDashboardController extends Controller
 
         $wins = $finished->where('won', true)->count();
         $stats = [
-            'events' => $registrations->count(),
+            'events' => $registrations->pluck('event_id')->unique()->count(),
             'games' => $finished->count(),
             'wins' => $wins,
             'win_rate' => $finished->count() ? round($wins / $finished->count() * 100) : null,

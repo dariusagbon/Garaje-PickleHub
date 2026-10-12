@@ -314,7 +314,6 @@
     .ev-facts .ev-facts-wide { @apply col-span-2; }
     .ev-facts dd.ev-facts-login { @apply font-sans text-sm font-normal text-[#c5cbc4]; }
     .ev-facts-login a { @apply font-bold text-[#e1aa62] underline; }
-    .ev-joined small { @apply text-xs text-[#59645e]; }
     .ev-admin-only { @apply ml-auto bg-[#fff4df] px-2 py-0.5 text-[9px] text-[#8f6c3c]; }
     .ev-your-team { @apply inline-block bg-[#14201e] px-2 py-1 text-[10px] uppercase tracking-[1px] text-[#e1aa62]; }
     .ev-facts .ev-facts-meter { @apply col-span-2 flex items-center gap-3 sm:col-span-4; }
@@ -336,12 +335,18 @@
     .ev-count strong { @apply font-[Space_Grotesk] text-5xl font-bold leading-none tabular-nums; }
     .ev-count span { @apply text-sm text-[#59645e]; }
     .ev-note { @apply mt-5 border border-dashed border-[#d7d3c7] p-4 text-sm text-[#59645e]; }
-    .ev-joined { @apply mt-5 flex items-center gap-2 bg-[#e4eee5] px-4 py-3 text-sm text-[#3c6b4a]; }
-    .ev-joined > span { @apply flex h-6 w-6 items-center justify-center rounded-full bg-[#3c6b4a] text-xs text-white; }
     .ev-join-form { @apply mt-5; }
     .ev-join-form label { @apply text-[10px] font-bold uppercase tracking-[1px] text-[#59645e]; }
     .ev-join-row { @apply mt-2 flex flex-col gap-2 sm:flex-row; }
     .ev-join-row input { @apply min-h-12 min-w-0 flex-1 border border-[#c9c6ba] bg-white px-3 text-sm outline-none transition focus:border-[#c86a42] focus:ring-1 focus:ring-[#c86a42]; }
+    .ev-join-hint { @apply mt-2 text-xs text-[#788078]; }
+    .ev-my-players { @apply mt-3 divide-y divide-[#e8e4da] border-y border-[#e8e4da]; }
+    .ev-my-players li { @apply flex flex-wrap items-center gap-x-3 gap-y-1 py-3; animation: fade-up .3s ease-out; }
+    .ev-my-player-form { @apply flex min-w-0 flex-1 basis-56 gap-2; }
+    .ev-my-player-form input { @apply min-h-10 min-w-0 flex-1 border border-[#c9c6ba] bg-white px-3 text-sm font-bold outline-none transition focus:border-[#c86a42] focus:ring-1 focus:ring-[#c86a42]; }
+    .ev-my-player-form .button { @apply min-h-10 px-3 py-0 text-xs; }
+    .ev-my-players small { @apply text-[11px] text-[#788078]; }
+    .ev-remove-player { @apply ml-auto text-xs font-bold text-[#8e452d] underline-offset-2 hover:underline; }
     .ev-login-cta { @apply mt-5 border border-[#e1aa62] bg-[#fff4df] p-4; }
     .ev-login-cta p { @apply mb-3 text-sm text-[#8f6c3c]; }
     .ev-subhead { @apply mt-8 flex items-center gap-2 text-xs font-bold uppercase tracking-[1px] text-[#59645e]; }
