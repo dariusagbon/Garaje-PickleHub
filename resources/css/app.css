@@ -350,6 +350,8 @@
     .ev-join-form label { @apply text-[10px] font-bold uppercase tracking-[1px] text-[#43564a]; }
     .ev-join-row { @apply mt-2 flex flex-col gap-2 sm:flex-row; }
     .ev-join-row input { @apply min-h-12 min-w-0 flex-1 border border-[#ccbda2] bg-white px-3 text-sm outline-none transition focus:border-[#c25546] focus:ring-1 focus:ring-[#c25546]; }
+    .ev-game-actions { @apply flex shrink-0 items-center gap-3 whitespace-nowrap; }
+    .ev-fullscreen-toggle { @apply gap-2 px-3 py-2 text-[10px]; }
     .ev-join-hint { @apply mt-2 text-xs text-[#65776b]; }
     .ev-my-players { @apply mt-3 divide-y divide-[#e6dbc6] border-y border-[#e6dbc6]; }
     .ev-my-players li { @apply flex flex-wrap items-center gap-x-3 gap-y-1 py-3; animation: fade-up .3s ease-out; }
@@ -1014,4 +1016,67 @@ h1, h2, .section-title { font-weight: 900; }
     .report-table { min-width: 0; }
     .report-table tfoot { display: table-row-group; } /* totals once, at the end */
     a { color: inherit; text-decoration: none; }
+}
+
+/*
+| Event game in full screen (courtside scoring). Same idea as #scoreboard
+| above: exactly one screen tall, the team panels take the room that is
+| left, and each score shrinks to fit its box (cqh/cqw = % of that box).
+*/
+.ev-game.is-fullscreen {
+    display: flex; flex-direction: column; height: 100vh; height: 100dvh; margin: 0; overflow: hidden;
+    border: 0; border-radius: 0; padding: 1rem; background: #173d2a; color: #eee4d1;
+}
+.ev-game.is-pseudo-fullscreen { position: fixed; inset: 0; z-index: 50; }
+.ev-game.is-fullscreen > div:first-child { flex-direction: row; align-items: center; gap: .75rem; padding-bottom: .75rem; border-color: rgba(255,255,255,.15); }
+.ev-game.is-fullscreen > div:first-child p:not(.eyebrow) { display: none; }
+.ev-game.is-fullscreen .eyebrow-dark { color: #e8968b; }
+.ev-game.is-fullscreen .score-result { color: #c3d9c3; }
+.ev-game.is-fullscreen .ev-fullscreen-toggle { background: #e8968b; color: #173d2a; }
+.ev-game.is-fullscreen .score-form { display: flex; flex: 1 1 0; min-height: 0; flex-direction: column; }
+.ev-game.is-fullscreen .score-call-bar { margin-top: .75rem; background: rgba(255,255,255,.08); }
+.ev-game.is-fullscreen .scoreboard-teams { flex: 1 1 0; min-height: 0; margin-top: .75rem; grid-template-rows: minmax(0, 1fr); }
+.ev-game.is-fullscreen .score-team { display: flex; min-height: 0; flex-direction: column; overflow: hidden; padding: 1rem; border-color: rgba(255,255,255,.12); color: #eee4d1; }
+.ev-game.is-fullscreen .score-team-a { background: #245a3f; }
+.ev-game.is-fullscreen .score-team-b { background: #b8564a; }
+.ev-game.is-fullscreen .score-team.is-serving { border-color: #e8968b; }
+.ev-game.is-fullscreen .score-team p { color: #eee4d1; }
+.ev-game.is-fullscreen .score-team .eyebrow-dark { font-size: 1rem; color: #e8968b; }
+.ev-game.is-fullscreen .score-team .eyebrow::before { display: none; }
+.ev-game.is-fullscreen .score-team-b .eyebrow-dark { color: #f8dcd6; }
+.ev-game.is-fullscreen .score-number-box { display: flex; min-height: 0; flex: 1 1 0; align-items: center; justify-content: center; container-type: size; }
+.ev-game.is-fullscreen .scoreboard-number { margin: 0; line-height: .9; color: #eee4d1; letter-spacing: -.05em; font-size: clamp(2rem, min(100cqh, 75cqw), 22rem); }
+.ev-game.is-fullscreen .serve-badge { background: rgba(0,0,0,.25); }
+.ev-game.is-fullscreen .rally-button { flex-shrink: 0; min-height: 5rem; background: #eee4d1; color: #173d2a; font-size: 1rem; }
+.ev-game.is-fullscreen .rally-button:hover { background: #e8968b; }
+.ev-game.is-fullscreen .rally-button:disabled { background: rgba(255,255,255,.2); color: rgba(238,228,209,.6); }
+.ev-game.is-fullscreen .score-tools { margin-top: .75rem; }
+.ev-game.is-fullscreen .first-serve { color: #c3d9c3; }
+.ev-game.is-fullscreen .first-serve-option { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.08); color: #eee4d1; }
+.ev-game.is-fullscreen .first-serve-option.is-selected { border-color: #e8968b; background: #e8968b; color: #173d2a; }
+.ev-game.is-fullscreen .undo-rally { border-color: rgba(255,255,255,.3); background: transparent; color: #eee4d1; }
+.ev-game.is-fullscreen .score-save-bar { margin-top: .5rem; padding-top: .5rem; border-color: rgba(255,255,255,.15); }
+.ev-game.is-fullscreen .score-save-status { color: #c3d9c3; }
+
+/* Phones in portrait: tighter chrome so the scores get the room. */
+@media (max-width: 639px) {
+    .ev-game.is-fullscreen { padding: .75rem; }
+    .ev-game.is-fullscreen .score-call-bar .score-call-info { display: none; }
+    .ev-game.is-fullscreen .score-team { padding: .6rem .4rem; }
+    .ev-game.is-fullscreen .rally-button { min-height: 3.75rem; font-size: 11px; }
+}
+
+/* Short screens (phones in landscape): smallest chrome, biggest scores. */
+@media (max-height: 540px) {
+    .ev-game.is-fullscreen { padding: .5rem 1rem; }
+    .ev-game.is-fullscreen > div:first-child { padding-bottom: .4rem; }
+    .ev-game.is-fullscreen .score-call-bar { margin-top: .4rem; padding: .3rem .75rem; }
+    .ev-game.is-fullscreen .score-call-bar .score-call-info { display: none; }
+    .ev-game.is-fullscreen .scoreboard-teams { margin-top: .4rem; gap: .5rem; }
+    .ev-game.is-fullscreen .score-team { padding: .4rem .75rem; }
+    .ev-game.is-fullscreen .score-team .eyebrow-dark { font-size: .75rem; }
+    .ev-game.is-fullscreen .score-team p.min-h-10 { display: none; }
+    .ev-game.is-fullscreen .rally-button { min-height: 2.75rem; margin-top: .4rem; font-size: .8rem; }
+    .ev-game.is-fullscreen .score-tools { margin-top: .4rem; }
+    .ev-game.is-fullscreen .score-save-bar { display: none; }
 }

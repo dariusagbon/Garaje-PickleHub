@@ -3,10 +3,41 @@
 // marked data-live-score; its buttons send an "action": rally_a, rally_b,
 // undo, serve_a or serve_b. Taps are queued and sent in order.
 
+import { fullscreenController } from './fullscreen.js';
+
 const RETRY_DELAY_MS = 3000;
+// Remembers, across the reload that brings in the next game, that the scorer was in full screen.
+const FULLSCREEN_KEY = 'picklehub:event-fullscreen';
+
+const storage = {
+    get: () => { try { return sessionStorage.getItem(FULLSCREEN_KEY); } catch { return null; } },
+    set: (value) => { try { sessionStorage.setItem(FULLSCREEN_KEY, value); } catch { /* private mode */ } },
+    clear: () => { try { sessionStorage.removeItem(FULLSCREEN_KEY); } catch { /* private mode */ } },
+};
+
+// Full-screen button on each game card.
+const fullscreens = new Map();
+
+function setupFullscreen(card) {
+    const button = card.querySelector('[data-fullscreen-toggle]');
+    if (!button) return null;
+
+    const label = button.querySelector('[data-fullscreen-label]');
+    const fullscreen = fullscreenController(card, {
+        onChange(on) {
+            button.setAttribute('aria-pressed', String(on));
+            if (label) label.textContent = on ? 'Exit full screen' : 'Full screen';
+        },
+    });
+    button.addEventListener('click', () => fullscreen.toggle());
+    fullscreens.set(card, fullscreen);
+
+    return fullscreen;
+}
 
 function setupLiveScore(form) {
     const card = form.closest('.scoreboard-card');
+    const fullscreen = card ? setupFullscreen(card) : null;
     const el = (selector) => form.querySelector(selector);
     const statusBox = el('[data-save-status]');
     const statusText = el('[data-save-text]');
@@ -87,6 +118,7 @@ function setupLiveScore(form) {
 
             if (data.next_game_ready) {
                 setStatus('saved', 'Game over! Loading the next game…');
+                if (fullscreen?.isOn()) storage.set(window.location.pathname);
                 setTimeout(() => window.location.reload(), 1200);
             }
         } catch {
@@ -114,3 +146,11 @@ function setupLiveScore(form) {
 }
 
 document.querySelectorAll('form[data-live-score]').forEach(setupLiveScore);
+
+// The scorer was in full screen when the next game was drawn: show the newest live game
+// filling the window (real full screen needs a tap, so the window-filling mode is used).
+if (storage.get() === window.location.pathname) {
+    storage.clear();
+    const newest = [...fullscreens.keys()].filter((card) => !card.classList.contains('is-final')).at(-1);
+    fullscreens.get(newest)?.fillWindow();
+}
