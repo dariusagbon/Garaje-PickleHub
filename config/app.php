@@ -97,7 +97,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
-    'key' => env('APP_KEY'),
+    // Trimmed so a key pasted into a hosting dashboard with quotes or spaces still works.
+    'key' => trim((string) env('APP_KEY'), " \t\n\r'\"") ?: null,
 
     'previous_keys' => [
         ...array_filter(

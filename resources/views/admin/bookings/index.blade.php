@@ -42,7 +42,11 @@
                         {{ $booking->guest_email }}
                         · {{ $booking->booking_date->format('M j, Y') }}
                         · {{ \Carbon\Carbon::createFromTime($booking->hour)->format('g:00 A') }}
+                        · <strong>{{ \App\Models\Booking::peso($booking->amount()) }}</strong>
                     </p>
+                    @if ($booking->reference)
+                        <p class="admin-muted">Receipt {{ $booking->reference }}</p>
+                    @endif
                 </div>
 
                 {{-- Edit fields stay folded away until needed, keeping the list short (especially on phones). --}}

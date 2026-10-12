@@ -45,3 +45,19 @@ services:
         sync: false
       - key: ADMIN_NAME
         value: Administrator
+      # Email (booking codes and receipts). Example for Gmail: smtp.gmail.com, port 587,
+      # your Gmail address as the username and a 16-character Google "app password".
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        sync: false
+      - key: MAIL_FROM_NAME
+        value: PickleHub

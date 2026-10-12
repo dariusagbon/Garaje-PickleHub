@@ -9,7 +9,7 @@ menuToggle?.addEventListener('click', () => {
 });
 mainMenu?.querySelectorAll('a').forEach((link) => {
     link.addEventListener('click', () => {
-        if (window.innerWidth < 768) {
+        if (window.innerWidth < 1024) {
             mainMenu.classList.add('hidden');
             menuToggle?.setAttribute('aria-expanded', 'false');
         }

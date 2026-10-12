@@ -40,6 +40,11 @@ class AdminBookingController extends Controller
                 ->withInput();
         }
 
+        // Moving a booking to another hour charges that hour's rate.
+        if ((int) $data['hour'] !== $booking->hour || $booking->price === null) {
+            $data['price'] = Booking::rateFor((int) $data['hour']);
+        }
+
         try {
             $booking->update($data);
         } catch (QueryException $e) {
