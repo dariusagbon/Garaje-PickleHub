@@ -19,70 +19,70 @@ public class Shades
     private string _blackForest = "#010B06";
     private string _onyx = "#010603";
 
-    // 10% black
+    // 10% black + 90% primary (#0B6E3A)
     public string ForestGreen
     {
         get => _forestGreen;
         protected set => _forestGreen = HexColor.Normalize(value, nameof(ForestGreen));
     }
 
-    // 20% black
+    // 20% black + 80% primary (#0B6E3A)
     public string DeepForest
     {
         get => _deepForest;
         protected set => _deepForest = HexColor.Normalize(value, nameof(DeepForest));
     }
 
-    // 30% black
+    // 30% black + 70% primary (#0B6E3A)
     public string HunterGreen
     {
         get => _hunterGreen;
         protected set => _hunterGreen = HexColor.Normalize(value, nameof(HunterGreen));
     }
 
-    // 40% black
+    // 40% black + 60% primary (#0B6E3A)
     public string Woodland
     {
         get => _woodland;
         protected set => _woodland = HexColor.Normalize(value, nameof(Woodland));
     }
 
-    // 50% black
+    // 50% black + 50% primary (#0B6E3A)
     public string BottleGreen
     {
         get => _bottleGreen;
         protected set => _bottleGreen = HexColor.Normalize(value, nameof(BottleGreen));
     }
 
-    // 60% black
+    // 60% black + 40% primary (#0B6E3A)
     public string MidnightGreen
     {
         get => _midnightGreen;
         protected set => _midnightGreen = HexColor.Normalize(value, nameof(MidnightGreen));
     }
 
-    // 70% black
+    // 70% black + 30% primary (#0B6E3A)
     public string DarkJungle
     {
         get => _darkJungle;
         protected set => _darkJungle = HexColor.Normalize(value, nameof(DarkJungle));
     }
 
-    // 80% black
+    // 80% black + 20% primary (#0B6E3A)
     public string Ebony
     {
         get => _ebony;
         protected set => _ebony = HexColor.Normalize(value, nameof(Ebony));
     }
 
-    // 90% black
+    // 90% black + 10% primary (#0B6E3A)
     public string BlackForest
     {
         get => _blackForest;
         protected set => _blackForest = HexColor.Normalize(value, nameof(BlackForest));
     }
 
-    // 95% black
+    // 95% black + 5% primary (#0B6E3A)
     public string Onyx
     {
         get => _onyx;

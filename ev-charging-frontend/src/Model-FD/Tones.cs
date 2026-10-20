@@ -19,70 +19,70 @@ public class Tones
     private string _pewter = "#747E79";
     private string _ash = "#7A7F7D";
 
-    // 10% gray
+    // 10% gray + 90% primary (#0B6E3A)
     public string Evergreen
     {
         get => _evergreen;
         protected set => _evergreen = HexColor.Normalize(value, nameof(Evergreen));
     }
 
-    // 20% gray
+    // 20% gray + 80% primary (#0B6E3A)
     public string Pine
     {
         get => _pine;
         protected set => _pine = HexColor.Normalize(value, nameof(Pine));
     }
 
-    // 30% gray
+    // 30% gray + 70% primary (#0B6E3A)
     public string Spruce
     {
         get => _spruce;
         protected set => _spruce = HexColor.Normalize(value, nameof(Spruce));
     }
 
-    // 40% gray
+    // 40% gray + 60% primary (#0B6E3A)
     public string Juniper
     {
         get => _juniper;
         protected set => _juniper = HexColor.Normalize(value, nameof(Juniper));
     }
 
-    // 50% gray
+    // 50% gray + 50% primary (#0B6E3A)
     public string Lichen
     {
         get => _lichen;
         protected set => _lichen = HexColor.Normalize(value, nameof(Lichen));
     }
 
-    // 60% gray
+    // 60% gray + 40% primary (#0B6E3A)
     public string Thyme
     {
         get => _thyme;
         protected set => _thyme = HexColor.Normalize(value, nameof(Thyme));
     }
 
-    // 70% gray
+    // 70% gray + 30% primary (#0B6E3A)
     public string Rosemary
     {
         get => _rosemary;
         protected set => _rosemary = HexColor.Normalize(value, nameof(Rosemary));
     }
 
-    // 80% gray
+    // 80% gray + 20% primary (#0B6E3A)
     public string GreyMoss
     {
         get => _greyMoss;
         protected set => _greyMoss = HexColor.Normalize(value, nameof(GreyMoss));
     }
 
-    // 90% gray
+    // 90% gray + 10% primary (#0B6E3A)
     public string Pewter
     {
         get => _pewter;
         protected set => _pewter = HexColor.Normalize(value, nameof(Pewter));
     }
 
-    // 95% gray
+    // 95% gray + 5% primary (#0B6E3A)
     public string Ash
     {
         get => _ash;

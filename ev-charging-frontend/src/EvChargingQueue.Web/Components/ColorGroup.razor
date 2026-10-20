@@ -3,7 +3,7 @@
     <div class="swatches">
         @foreach (var color in Colors)
         {
-            <Swatch Color="ThemeColor.FromHex(color.Hex)" Label="@($"{color.Name} · {color.Percent}% {MixedWith}")" />
+            <Swatch Color="ThemeColor.FromHex(color.Hex)" Label="@($"{color.Name} · {color.Percent}% {MixedWith} + {color.PrimaryPercent}% primary")" />
         }
     </div>
 </section>

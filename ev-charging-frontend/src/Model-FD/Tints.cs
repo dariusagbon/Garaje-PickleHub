@@ -19,70 +19,70 @@ public class Tints
     private string _mintCream = "#E7F1EB";
     private string _mintMist = "#F3F8F5";
 
-    // 10% white
+    // 10% white + 90% primary (#0B6E3A)
     public string FernGreen
     {
         get => _fernGreen;
         protected set => _fernGreen = HexColor.Normalize(value, nameof(FernGreen));
     }
 
-    // 20% white
+    // 20% white + 80% primary (#0B6E3A)
     public string Jade
     {
         get => _jade;
         protected set => _jade = HexColor.Normalize(value, nameof(Jade));
     }
 
-    // 30% white
+    // 30% white + 70% primary (#0B6E3A)
     public string Eucalyptus
     {
         get => _eucalyptus;
         protected set => _eucalyptus = HexColor.Normalize(value, nameof(Eucalyptus));
     }
 
-    // 40% white
+    // 40% white + 60% primary (#0B6E3A)
     public string Seafoam
     {
         get => _seafoam;
         protected set => _seafoam = HexColor.Normalize(value, nameof(Seafoam));
     }
 
-    // 50% white
+    // 50% white + 50% primary (#0B6E3A)
     public string Sage
     {
         get => _sage;
         protected set => _sage = HexColor.Normalize(value, nameof(Sage));
     }
 
-    // 60% white
+    // 60% white + 40% primary (#0B6E3A)
     public string Celadon
     {
         get => _celadon;
         protected set => _celadon = HexColor.Normalize(value, nameof(Celadon));
     }
 
-    // 70% white
+    // 70% white + 30% primary (#0B6E3A)
     public string PastelMint
     {
         get => _pastelMint;
         protected set => _pastelMint = HexColor.Normalize(value, nameof(PastelMint));
     }
 
-    // 80% white
+    // 80% white + 20% primary (#0B6E3A)
     public string Honeydew
     {
         get => _honeydew;
         protected set => _honeydew = HexColor.Normalize(value, nameof(Honeydew));
     }
 
-    // 90% white
+    // 90% white + 10% primary (#0B6E3A)
     public string MintCream
     {
         get => _mintCream;
         protected set => _mintCream = HexColor.Normalize(value, nameof(MintCream));
     }
 
-    // 95% white
+    // 95% white + 5% primary (#0B6E3A)
     public string MintMist
     {
         get => _mintMist;

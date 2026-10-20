@@ -46,56 +46,56 @@ public partial class Palette
 
     public Shades Shades { get; }
 
-    // ChargeQ deep green: car outline and tagline in the logo
+    // 100% primary: ChargeQ deep green, car outline and tagline in the logo
     public string Primary
     {
         get => _primary;
         protected set => _primary = HexColor.Normalize(value, nameof(Primary));
     }
 
-    // ChargeQ mid green: "CHARGEQ" wordmark in the logo
+    // 100% secondary: ChargeQ mid green, "CHARGEQ" wordmark in the logo
     public string Secondary
     {
         get => _secondary;
         protected set => _secondary = HexColor.Normalize(value, nameof(Secondary));
     }
 
-    // Shades.DarkJungle (70% black)
+    // Shades.DarkJungle (70% black + 30% primary)
     public string TextPrimary
     {
         get => _textPrimary;
         protected set => _textPrimary = HexColor.Normalize(value, nameof(TextPrimary));
     }
 
-    // Tones.Juniper (40% gray)
+    // Tones.Juniper (40% gray + 60% primary)
     public string TextSecondary
     {
         get => _textSecondary;
         protected set => _textSecondary = HexColor.Normalize(value, nameof(TextSecondary));
     }
 
-    // Tints.Jade (20% white)
+    // Tints.Jade (20% white + 80% primary)
     public string BorderPrimary
     {
         get => _borderPrimary;
         protected set => _borderPrimary = HexColor.Normalize(value, nameof(BorderPrimary));
     }
 
-    // Tints.Honeydew (80% white)
+    // Tints.Honeydew (80% white + 20% primary)
     public string BorderSecondary
     {
         get => _borderSecondary;
         protected set => _borderSecondary = HexColor.Normalize(value, nameof(BorderSecondary));
     }
 
-    // Tints.MintMist (95% white)
+    // Tints.MintMist (95% white + 5% primary)
     public string BackgroundPrimary
     {
         get => _backgroundPrimary;
         protected set => _backgroundPrimary = HexColor.Normalize(value, nameof(BackgroundPrimary));
     }
 
-    // Tints.MintCream (90% white)
+    // Tints.MintCream (90% white + 10% primary)
     public string BackgroundSecondary
     {
         get => _backgroundSecondary;

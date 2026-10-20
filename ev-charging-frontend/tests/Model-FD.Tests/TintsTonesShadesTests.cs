@@ -36,6 +36,14 @@ public class TintsTonesShadesTests
             Assert.Equal(Primary.MixWith(mixedWith, c.Percent / 100.0).ToHex(), c.Hex));
     }
 
+    [Theory]
+    [MemberData(nameof(Groups))]
+    public void PrimaryPercentAndMixPercentAddUpTo100(string group, IReadOnlyList<NamedColor> colors)
+    {
+        Assert.All(colors, c => Assert.True(c.Percent + c.PrimaryPercent == 100, $"{group}.{c.Name}"));
+        Assert.Equal(5, colors.Single(c => c.Percent == 95).PrimaryPercent);
+    }
+
     [Fact]
     public void Subclass_CanSetAColorAndItIsNormalized()
     {

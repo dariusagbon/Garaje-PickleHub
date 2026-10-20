@@ -25,7 +25,10 @@ tests/Model-FD.Tests/             xUnit tests for the color models
 ## Model-FD
 
 Each of `Tints`, `Tones` and `Shades` has 10 color variables with a descriptive name,
-a comment giving its percentage, and a getter/setter. Two layers of protection:
+a comment giving its percentages, and a getter/setter. Each comment gives both halves
+of the mix, e.g. `// 95% white + 5% primary (#0B6E3A)`. In code, every entry of a class's
+`All` list has `Percent` (white/gray/black mixed in) and `PrimaryPercent` (primary green
+used); the two always add up to 100. Two layers of protection:
 
 - **`protected set`**: anyone can read a color, but only the class itself or a subclass can
   change it. `tints.MintMist = "#FFF"` from outside is a compile error.
@@ -33,7 +36,7 @@ a comment giving its percentage, and a getter/setter. Two layers of protection:
   else throws `ArgumentException`.
 
 ```csharp
-// 95% white
+// 95% white + 5% primary (#0B6E3A)
 public string MintMist
 {
     get => _mintMist;
