@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run EV Charging Queue (Blazor)",
+      "type": "blazorwasm",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/src/EvChargingQueue.Web",
+      "url": "http://localhost:5148",
+      "preLaunchTask": "build"
+    }
+  ]
+}

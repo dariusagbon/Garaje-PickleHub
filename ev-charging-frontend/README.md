@@ -67,6 +67,17 @@ var palette = new Palette(tints, new Tones(), new Shades());
 palette.TextSecondary = palette.Tones.Spruce;
 ```
 
+## Open in VS Code
+
+1. Install the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) (newer SDKs work too) and [VS Code](https://code.visualstudio.com/).
+2. In VS Code choose **File → Open Folder…** and pick this `ev-charging-frontend` folder.
+3. Accept the prompt to install the recommended extensions (C# Dev Kit).
+4. Press **F5** to build and run the app in the browser with the debugger attached,
+   or run a task from **Terminal → Run Task…**:
+   - `build` (default build task, Ctrl+Shift+B)
+   - `test` (runs the xUnit tests)
+   - `watch` (runs the app at http://localhost:5148 and reloads on save)
+
 ## Run
 
 ```bash
