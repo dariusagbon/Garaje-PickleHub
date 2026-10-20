@@ -35,7 +35,11 @@ Palette.Default.Primary[700];   // a step from the scale
 Palette.Default.ToCssVariables();
 ```
 
-Palette roles: `primary`, `secondary`, `neutral`, and one per charger state —
+Brand colors come from the ChargeQ "Plug Loop" logo in Figma: `primary` `#0B6E3A`
+(car outline, tagline), `secondary` `#3A9A2E` (wordmark), `accent` `#6CC24A` (bolt, plug)
+and the ring gradient `--gradient-brand` (deep green → lime).
+
+Palette roles: `primary`, `secondary`, `accent`, `neutral`, and one per charger state —
 `available`, `charging`, `waiting`, `fault`. The CSS variables follow
 `--color-<role>-<step>` (50–900), `--color-<role>-<step>-on` (readable text color
 on that step), `--color-<role>-on` and `--color-<role>-tone-<n>`:

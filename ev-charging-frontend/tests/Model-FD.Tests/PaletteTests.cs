@@ -35,7 +35,7 @@ public class PaletteTests
     {
         var names = Palette.Default.All.Select(s => s.Name).ToList();
 
-        Assert.Equal(["primary", "secondary", "neutral", "available", "charging", "waiting", "fault"], names);
+        Assert.Equal(["primary", "secondary", "accent", "neutral", "available", "charging", "waiting", "fault"], names);
     }
 
     [Fact]
@@ -44,7 +44,10 @@ public class PaletteTests
         var css = Palette.Default.ToCssVariables();
 
         Assert.StartsWith(":root {", css);
-        Assert.Contains("--color-primary-500: #00A878;", css);
+        Assert.Contains("--color-primary-500: #0B6E3A;", css);
+        Assert.Contains("--color-secondary-500: #3A9A2E;", css);
+        Assert.Contains("--color-accent-500: #6CC24A;", css);
+        Assert.Contains("--gradient-brand: linear-gradient(135deg, #0B6E3A, #6CC24A);", css);
         Assert.Contains("--color-primary-50: ", css);
         Assert.Contains("--color-fault-900: ", css);
         Assert.Contains("--color-primary-900-on: #FFFFFF;", css);
