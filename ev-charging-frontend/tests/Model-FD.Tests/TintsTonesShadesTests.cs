@@ -37,11 +37,9 @@ public class TintsTonesShadesTests
     }
 
     [Fact]
-    public void Setter_AcceptsValidHexAndNormalizesIt()
+    public void Subclass_CanSetAColorAndItIsNormalized()
     {
-        var tints = new Tints { MintMist = "#abc" };
-
-        Assert.Equal("#AABBCC", tints.MintMist);
+        Assert.Equal("#AABBCC", new CustomTints("#abc").MintMist);
     }
 
     [Theory]
@@ -49,21 +47,36 @@ public class TintsTonesShadesTests
     [InlineData("")]
     [InlineData("green")]
     [InlineData("#12345")]
-    public void Setter_RejectsInvalidHexAndKeepsTheOldValue(string? value)
+    public void Subclass_SettingInvalidHexThrows(string? value)
     {
-        var shades = new Shades();
-
-        var error = Assert.Throws<ArgumentException>(() => shades.Onyx = value!);
+        var error = Assert.Throws<ArgumentException>(() => new CustomShades(value!));
 
         Assert.Equal(nameof(Shades.Onyx), error.ParamName);
-        Assert.Equal("#010603", shades.Onyx);
     }
 
-    [Fact]
-    public void Instances_DoNotShareState()
+    [Theory]
+    [InlineData(typeof(Tints))]
+    [InlineData(typeof(Tones))]
+    [InlineData(typeof(Shades))]
+    public void EveryColorHasAPublicGetterAndAProtectedSetter(Type type)
     {
-        var first = new Tones { Ash = "#000000" };
+        var colors = type.GetProperties().Where(p => p.PropertyType == typeof(string)).ToList();
 
-        Assert.NotEqual(first.Ash, new Tones().Ash);
+        Assert.Equal(10, colors.Count);
+        Assert.All(colors, p =>
+        {
+            Assert.True(p.GetMethod!.IsPublic, $"{type.Name}.{p.Name} getter should be public");
+            Assert.True(p.SetMethod!.IsFamily, $"{type.Name}.{p.Name} setter should be protected");
+        });
+    }
+
+    private sealed class CustomTints : Tints
+    {
+        public CustomTints(string mintMist) => MintMist = mintMist;
+    }
+
+    private sealed class CustomShades : Shades
+    {
+        public CustomShades(string onyx) => Onyx = onyx;
     }
 }

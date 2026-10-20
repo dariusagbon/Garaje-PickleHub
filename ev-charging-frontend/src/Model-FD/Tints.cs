@@ -3,6 +3,8 @@ namespace EvChargingQueue.ModelFD;
 /// <summary>
 /// The ChargeQ primary green (#0B6E3A) mixed with white, from 10% to 95%.
 /// Light colors for backgrounds and borders.
+/// Colors are read-only from outside; setters are protected, so a theme
+/// changes them by subclassing (e.g. <c>class DarkThemeTints : Tints</c>).
 /// </summary>
 public class Tints
 {
@@ -21,70 +23,70 @@ public class Tints
     public string FernGreen
     {
         get => _fernGreen;
-        set => _fernGreen = HexColor.Normalize(value, nameof(FernGreen));
+        protected set => _fernGreen = HexColor.Normalize(value, nameof(FernGreen));
     }
 
     // 20% white
     public string Jade
     {
         get => _jade;
-        set => _jade = HexColor.Normalize(value, nameof(Jade));
+        protected set => _jade = HexColor.Normalize(value, nameof(Jade));
     }
 
     // 30% white
     public string Eucalyptus
     {
         get => _eucalyptus;
-        set => _eucalyptus = HexColor.Normalize(value, nameof(Eucalyptus));
+        protected set => _eucalyptus = HexColor.Normalize(value, nameof(Eucalyptus));
     }
 
     // 40% white
     public string Seafoam
     {
         get => _seafoam;
-        set => _seafoam = HexColor.Normalize(value, nameof(Seafoam));
+        protected set => _seafoam = HexColor.Normalize(value, nameof(Seafoam));
     }
 
     // 50% white
     public string Sage
     {
         get => _sage;
-        set => _sage = HexColor.Normalize(value, nameof(Sage));
+        protected set => _sage = HexColor.Normalize(value, nameof(Sage));
     }
 
     // 60% white
     public string Celadon
     {
         get => _celadon;
-        set => _celadon = HexColor.Normalize(value, nameof(Celadon));
+        protected set => _celadon = HexColor.Normalize(value, nameof(Celadon));
     }
 
     // 70% white
     public string PastelMint
     {
         get => _pastelMint;
-        set => _pastelMint = HexColor.Normalize(value, nameof(PastelMint));
+        protected set => _pastelMint = HexColor.Normalize(value, nameof(PastelMint));
     }
 
     // 80% white
     public string Honeydew
     {
         get => _honeydew;
-        set => _honeydew = HexColor.Normalize(value, nameof(Honeydew));
+        protected set => _honeydew = HexColor.Normalize(value, nameof(Honeydew));
     }
 
     // 90% white
     public string MintCream
     {
         get => _mintCream;
-        set => _mintCream = HexColor.Normalize(value, nameof(MintCream));
+        protected set => _mintCream = HexColor.Normalize(value, nameof(MintCream));
     }
 
     // 95% white
     public string MintMist
     {
         get => _mintMist;
-        set => _mintMist = HexColor.Normalize(value, nameof(MintMist));
+        protected set => _mintMist = HexColor.Normalize(value, nameof(MintMist));
     }
 
     /// <summary>All 10 colors in order of percent, for listing and CSS export.</summary>

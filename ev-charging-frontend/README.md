@@ -25,15 +25,19 @@ tests/Model-FD.Tests/             xUnit tests for the color models
 ## Model-FD
 
 Each of `Tints`, `Tones` and `Shades` has 10 color variables with a descriptive name,
-a comment giving its percentage, and a getter/setter. The setter is protected: invalid
-hex throws `ArgumentException` and the old value is kept.
+a comment giving its percentage, and a getter/setter. Two layers of protection:
+
+- **`protected set`**: anyone can read a color, but only the class itself or a subclass can
+  change it. `tints.MintMist = "#FFF"` from outside is a compile error.
+- **Validation**: the setter only accepts a valid hex color (stored as `#RRGGBB`); anything
+  else throws `ArgumentException`.
 
 ```csharp
 // 95% white
 public string MintMist
 {
     get => _mintMist;
-    set => _mintMist = HexColor.Normalize(value, nameof(MintMist));
+    protected set => _mintMist = HexColor.Normalize(value, nameof(MintMist));
 }
 ```
 
@@ -59,13 +63,26 @@ In CSS the roles are `--color-<role>` (e.g. `--color-text-primary`) and the name
 are `--tint-<name>`, `--tone-<name>`, `--shade-<name>` (e.g. `--shade-deep-forest`).
 `--color-on-primary` is the readable text color on `Primary`.
 
-To customize, change a variable before building the palette, or set a role directly:
+To customize, subclass. Change a variable, then pass it to the palette, or reassign a
+role in a `Palette` subclass:
 
 ```csharp
-var tints = new Tints { MintMist = "#FFFFFF" };
-var palette = new Palette(tints, new Tones(), new Shades());
-palette.TextSecondary = palette.Tones.Spruce;
+public class WhiteTints : Tints
+{
+    public WhiteTints() => MintMist = "#FFFFFF";
+}
+
+public class HighContrastPalette : Palette
+{
+    public HighContrastPalette() : base(new WhiteTints(), new Tones(), new Shades())
+    {
+        TextSecondary = Tones.Spruce;
+    }
+}
 ```
+
+Register it in `src/EvChargingQueue.Web/Program.cs` with
+`builder.Services.AddSingleton<Palette>(new HighContrastPalette());`.
 
 ## Open in VS Code
 

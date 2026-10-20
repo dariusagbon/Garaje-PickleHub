@@ -3,6 +3,8 @@ namespace EvChargingQueue.ModelFD;
 /// <summary>
 /// The ChargeQ primary green (#0B6E3A) mixed with black, from 10% to 95%.
 /// Dark colors for text and hover/pressed states.
+/// Colors are read-only from outside; setters are protected, so a theme
+/// changes them by subclassing (e.g. <c>class DarkThemeShades : Shades</c>).
 /// </summary>
 public class Shades
 {
@@ -21,70 +23,70 @@ public class Shades
     public string ForestGreen
     {
         get => _forestGreen;
-        set => _forestGreen = HexColor.Normalize(value, nameof(ForestGreen));
+        protected set => _forestGreen = HexColor.Normalize(value, nameof(ForestGreen));
     }
 
     // 20% black
     public string DeepForest
     {
         get => _deepForest;
-        set => _deepForest = HexColor.Normalize(value, nameof(DeepForest));
+        protected set => _deepForest = HexColor.Normalize(value, nameof(DeepForest));
     }
 
     // 30% black
     public string HunterGreen
     {
         get => _hunterGreen;
-        set => _hunterGreen = HexColor.Normalize(value, nameof(HunterGreen));
+        protected set => _hunterGreen = HexColor.Normalize(value, nameof(HunterGreen));
     }
 
     // 40% black
     public string Woodland
     {
         get => _woodland;
-        set => _woodland = HexColor.Normalize(value, nameof(Woodland));
+        protected set => _woodland = HexColor.Normalize(value, nameof(Woodland));
     }
 
     // 50% black
     public string BottleGreen
     {
         get => _bottleGreen;
-        set => _bottleGreen = HexColor.Normalize(value, nameof(BottleGreen));
+        protected set => _bottleGreen = HexColor.Normalize(value, nameof(BottleGreen));
     }
 
     // 60% black
     public string MidnightGreen
     {
         get => _midnightGreen;
-        set => _midnightGreen = HexColor.Normalize(value, nameof(MidnightGreen));
+        protected set => _midnightGreen = HexColor.Normalize(value, nameof(MidnightGreen));
     }
 
     // 70% black
     public string DarkJungle
     {
         get => _darkJungle;
-        set => _darkJungle = HexColor.Normalize(value, nameof(DarkJungle));
+        protected set => _darkJungle = HexColor.Normalize(value, nameof(DarkJungle));
     }
 
     // 80% black
     public string Ebony
     {
         get => _ebony;
-        set => _ebony = HexColor.Normalize(value, nameof(Ebony));
+        protected set => _ebony = HexColor.Normalize(value, nameof(Ebony));
     }
 
     // 90% black
     public string BlackForest
     {
         get => _blackForest;
-        set => _blackForest = HexColor.Normalize(value, nameof(BlackForest));
+        protected set => _blackForest = HexColor.Normalize(value, nameof(BlackForest));
     }
 
     // 95% black
     public string Onyx
     {
         get => _onyx;
-        set => _onyx = HexColor.Normalize(value, nameof(Onyx));
+        protected set => _onyx = HexColor.Normalize(value, nameof(Onyx));
     }
 
     /// <summary>All 10 colors in order of percent, for listing and CSS export.</summary>

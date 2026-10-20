@@ -7,6 +7,8 @@ namespace EvChargingQueue.ModelFD;
 /// The colors the UI actually uses. Primary and secondary are the ChargeQ
 /// brand greens; every other role points at a variable from
 /// <see cref="Tints"/>, <see cref="Tones"/> or <see cref="Shades"/>.
+/// Roles are read-only from outside; setters are protected, so a theme
+/// reassigns them by subclassing <see cref="Palette"/>.
 /// </summary>
 public partial class Palette
 {
@@ -48,56 +50,56 @@ public partial class Palette
     public string Primary
     {
         get => _primary;
-        set => _primary = HexColor.Normalize(value, nameof(Primary));
+        protected set => _primary = HexColor.Normalize(value, nameof(Primary));
     }
 
     // ChargeQ mid green: "CHARGEQ" wordmark in the logo
     public string Secondary
     {
         get => _secondary;
-        set => _secondary = HexColor.Normalize(value, nameof(Secondary));
+        protected set => _secondary = HexColor.Normalize(value, nameof(Secondary));
     }
 
     // Shades.DarkJungle (70% black)
     public string TextPrimary
     {
         get => _textPrimary;
-        set => _textPrimary = HexColor.Normalize(value, nameof(TextPrimary));
+        protected set => _textPrimary = HexColor.Normalize(value, nameof(TextPrimary));
     }
 
     // Tones.Juniper (40% gray)
     public string TextSecondary
     {
         get => _textSecondary;
-        set => _textSecondary = HexColor.Normalize(value, nameof(TextSecondary));
+        protected set => _textSecondary = HexColor.Normalize(value, nameof(TextSecondary));
     }
 
     // Tints.Jade (20% white)
     public string BorderPrimary
     {
         get => _borderPrimary;
-        set => _borderPrimary = HexColor.Normalize(value, nameof(BorderPrimary));
+        protected set => _borderPrimary = HexColor.Normalize(value, nameof(BorderPrimary));
     }
 
     // Tints.Honeydew (80% white)
     public string BorderSecondary
     {
         get => _borderSecondary;
-        set => _borderSecondary = HexColor.Normalize(value, nameof(BorderSecondary));
+        protected set => _borderSecondary = HexColor.Normalize(value, nameof(BorderSecondary));
     }
 
     // Tints.MintMist (95% white)
     public string BackgroundPrimary
     {
         get => _backgroundPrimary;
-        set => _backgroundPrimary = HexColor.Normalize(value, nameof(BackgroundPrimary));
+        protected set => _backgroundPrimary = HexColor.Normalize(value, nameof(BackgroundPrimary));
     }
 
     // Tints.MintCream (90% white)
     public string BackgroundSecondary
     {
         get => _backgroundSecondary;
-        set => _backgroundSecondary = HexColor.Normalize(value, nameof(BackgroundSecondary));
+        protected set => _backgroundSecondary = HexColor.Normalize(value, nameof(BackgroundSecondary));
     }
 
     /// <summary>The palette roles in display order.</summary>

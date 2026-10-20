@@ -27,9 +27,9 @@ public class PaletteTests
     [Fact]
     public void Roles_FollowCustomizedVariablesPassedIn()
     {
-        var tints = new Tints { MintMist = "#FFFFFF" };
+        var palette = new Palette(new WhiteTints(), new Tones(), new Shades());
 
-        Assert.Equal("#FFFFFF", new Palette(tints, new Tones(), new Shades()).BackgroundPrimary);
+        Assert.Equal("#FFFFFF", palette.BackgroundPrimary);
     }
 
     [Theory]
@@ -45,12 +45,30 @@ public class PaletteTests
     }
 
     [Fact]
-    public void Setter_RejectsInvalidHex()
+    public void Subclass_CanReassignARoleToAnotherVariable()
     {
-        var palette = new Palette();
+        var palette = new HighContrastPalette();
 
-        Assert.Throws<ArgumentException>(() => palette.TextPrimary = "not-a-color");
-        Assert.Equal("#032111", palette.TextPrimary);
+        Assert.Equal(palette.Tones.Spruce, palette.TextSecondary);
+    }
+
+    [Fact]
+    public void Subclass_SettingInvalidHexThrows()
+    {
+        Assert.Throws<ArgumentException>(() => new BrokenPalette());
+    }
+
+    [Fact]
+    public void EveryRoleHasAPublicGetterAndAProtectedSetter()
+    {
+        var roles = typeof(Palette).GetProperties().Where(p => p.PropertyType == typeof(string)).ToList();
+
+        Assert.Equal(8, roles.Count);
+        Assert.All(roles, p =>
+        {
+            Assert.True(p.GetMethod!.IsPublic, $"{p.Name} getter should be public");
+            Assert.True(p.SetMethod!.IsFamily, $"{p.Name} setter should be protected");
+        });
     }
 
     [Fact]
@@ -67,5 +85,20 @@ public class PaletteTests
         Assert.Contains("--tone-lichen: #46775D;", css);
         Assert.Contains("--shade-dark-jungle: #032111;", css);
         Assert.Equal(8 + 1 + 30, css.Split('\n').Count(l => l.TrimStart().StartsWith("--")));
+    }
+
+    private sealed class WhiteTints : Tints
+    {
+        public WhiteTints() => MintMist = "#FFFFFF";
+    }
+
+    private sealed class HighContrastPalette : Palette
+    {
+        public HighContrastPalette() => TextSecondary = Tones.Spruce;
+    }
+
+    private sealed class BrokenPalette : Palette
+    {
+        public BrokenPalette() => TextPrimary = "not-a-color";
     }
 }

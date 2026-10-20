@@ -3,6 +3,8 @@ namespace EvChargingQueue.ModelFD;
 /// <summary>
 /// The ChargeQ primary green (#0B6E3A) mixed with gray (#808080), from 10% to 95%.
 /// Muted colors for secondary text and disabled states.
+/// Colors are read-only from outside; setters are protected, so a theme
+/// changes them by subclassing (e.g. <c>class DarkThemeTones : Tones</c>).
 /// </summary>
 public class Tones
 {
@@ -21,70 +23,70 @@ public class Tones
     public string Evergreen
     {
         get => _evergreen;
-        set => _evergreen = HexColor.Normalize(value, nameof(Evergreen));
+        protected set => _evergreen = HexColor.Normalize(value, nameof(Evergreen));
     }
 
     // 20% gray
     public string Pine
     {
         get => _pine;
-        set => _pine = HexColor.Normalize(value, nameof(Pine));
+        protected set => _pine = HexColor.Normalize(value, nameof(Pine));
     }
 
     // 30% gray
     public string Spruce
     {
         get => _spruce;
-        set => _spruce = HexColor.Normalize(value, nameof(Spruce));
+        protected set => _spruce = HexColor.Normalize(value, nameof(Spruce));
     }
 
     // 40% gray
     public string Juniper
     {
         get => _juniper;
-        set => _juniper = HexColor.Normalize(value, nameof(Juniper));
+        protected set => _juniper = HexColor.Normalize(value, nameof(Juniper));
     }
 
     // 50% gray
     public string Lichen
     {
         get => _lichen;
-        set => _lichen = HexColor.Normalize(value, nameof(Lichen));
+        protected set => _lichen = HexColor.Normalize(value, nameof(Lichen));
     }
 
     // 60% gray
     public string Thyme
     {
         get => _thyme;
-        set => _thyme = HexColor.Normalize(value, nameof(Thyme));
+        protected set => _thyme = HexColor.Normalize(value, nameof(Thyme));
     }
 
     // 70% gray
     public string Rosemary
     {
         get => _rosemary;
-        set => _rosemary = HexColor.Normalize(value, nameof(Rosemary));
+        protected set => _rosemary = HexColor.Normalize(value, nameof(Rosemary));
     }
 
     // 80% gray
     public string GreyMoss
     {
         get => _greyMoss;
-        set => _greyMoss = HexColor.Normalize(value, nameof(GreyMoss));
+        protected set => _greyMoss = HexColor.Normalize(value, nameof(GreyMoss));
     }
 
     // 90% gray
     public string Pewter
     {
         get => _pewter;
-        set => _pewter = HexColor.Normalize(value, nameof(Pewter));
+        protected set => _pewter = HexColor.Normalize(value, nameof(Pewter));
     }
 
     // 95% gray
     public string Ash
     {
         get => _ash;
-        set => _ash = HexColor.Normalize(value, nameof(Ash));
+        protected set => _ash = HexColor.Normalize(value, nameof(Ash));
     }
 
     /// <summary>All 10 colors in order of percent, for listing and CSS export.</summary>
