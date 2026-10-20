@@ -1,12 +1,13 @@
 # EV Charging Queue — Front End
 
-Blazor WebAssembly (.NET 8) front end for an EV charging queue. Colors come from a
-small theme library where tints, tones, shades and the palette each live in their own class.
+Blazor WebAssembly (.NET 8) front end for an EV charging queue. Colors come from the
+**Model-FD** project (front-end models, namespace `EvChargingQueue.ModelFD`), where tints,
+tones, shades and the palette each live in their own class.
 
 ## Layout
 
 ```
-src/EvChargingQueue.Theme/        Color library (no UI dependencies)
+src/Model-FD/                     Front-end color models (no UI dependencies)
   ThemeColor.cs                   sRGB value type: hex parsing, mixing, WCAG contrast
   Tint.cs                         base color mixed with white  -> light surfaces
   Shade.cs                        base color mixed with black  -> text, borders, hover/pressed
@@ -17,7 +18,7 @@ src/EvChargingQueue.Web/          Blazor WASM app
   Components/ThemeStyles.razor    writes Palette.ToCssVariables() into <head>
   Pages/Home.razor                queue screen (station status cards)
   Pages/PalettePreview.razor      /palette — every tint, shade and tone as swatches
-tests/EvChargingQueue.Theme.Tests xUnit tests for the color math
+tests/Model-FD.Tests/             xUnit tests for the color models
 ```
 
 ## Usage

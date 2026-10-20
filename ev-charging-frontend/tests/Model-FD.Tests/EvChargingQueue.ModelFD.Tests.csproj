@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\EvChargingQueue.Theme\EvChargingQueue.Theme.csproj" />
+    <ProjectReference Include="..\..\src\Model-FD\EvChargingQueue.ModelFD.csproj" />
   </ItemGroup>
 
 </Project>

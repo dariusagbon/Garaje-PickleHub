@@ -1,4 +1,4 @@
-namespace EvChargingQueue.Theme;
+namespace EvChargingQueue.ModelFD;
 
 /// <summary>
 /// A tint is a base color mixed with white. Tints are used for light

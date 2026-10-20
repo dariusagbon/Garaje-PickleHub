@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using EvChargingQueue.Theme;
+using EvChargingQueue.ModelFD;
 using EvChargingQueue.Web;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);

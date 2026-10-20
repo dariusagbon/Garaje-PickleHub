@@ -1,4 +1,4 @@
-namespace EvChargingQueue.Theme;
+namespace EvChargingQueue.ModelFD;
 
 /// <summary>
 /// One named color expanded into a 50–900 scale: tints above 500,

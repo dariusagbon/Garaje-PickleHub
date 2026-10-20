@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace EvChargingQueue.Theme;
+namespace EvChargingQueue.ModelFD;
 
 /// <summary>
 /// An immutable sRGB color. Tints, tones and shades are all produced by

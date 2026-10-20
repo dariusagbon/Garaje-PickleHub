@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EvChargingQueue.Theme\EvChargingQueue.Theme.csproj" />
+    <ProjectReference Include="..\Model-FD\EvChargingQueue.ModelFD.csproj" />
   </ItemGroup>
 
 </Project>

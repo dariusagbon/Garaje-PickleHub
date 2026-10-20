@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace EvChargingQueue.Theme;
+namespace EvChargingQueue.ModelFD;
 
 /// <summary>
 /// The full color palette for the EV charging queue UI: brand colors plus

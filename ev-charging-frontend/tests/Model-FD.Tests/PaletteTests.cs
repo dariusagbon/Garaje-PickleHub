@@ -1,4 +1,4 @@
-namespace EvChargingQueue.Theme.Tests;
+namespace EvChargingQueue.ModelFD.Tests;
 
 public class PaletteTests
 {

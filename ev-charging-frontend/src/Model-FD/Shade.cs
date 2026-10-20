@@ -1,4 +1,4 @@
-namespace EvChargingQueue.Theme;
+namespace EvChargingQueue.ModelFD;
 
 /// <summary>
 /// A shade is a base color mixed with black. Shades are used for text,

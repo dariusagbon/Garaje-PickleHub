@@ -1,4 +1,4 @@
-namespace EvChargingQueue.Theme;
+namespace EvChargingQueue.ModelFD;
 
 /// <summary>
 /// A tone is a base color mixed with gray, which lowers its saturation
