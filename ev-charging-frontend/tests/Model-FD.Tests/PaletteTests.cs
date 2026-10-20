@@ -3,56 +3,69 @@ namespace EvChargingQueue.ModelFD.Tests;
 public class PaletteTests
 {
     [Fact]
-    public void ColorScale_HasStepsFrom50To900WithBaseAt500()
+    public void BrandColors_MatchTheChargeQLogo()
     {
-        var scale = new ColorScale("primary", ThemeColor.FromHex("#00A878"));
+        var palette = new Palette();
 
-        Assert.Equal([50, 100, 200, 300, 400, 500, 600, 700, 800, 900], scale.Steps.Keys);
-        Assert.Equal(scale.Base, scale[500]);
-        Assert.Equal(scale.Tints[0].Color, scale[50]);
-        Assert.Equal(scale.Shades[^1].Color, scale[900]);
+        Assert.Equal("#0B6E3A", palette.Primary);
+        Assert.Equal("#3A9A2E", palette.Secondary);
     }
 
     [Fact]
-    public void ColorScale_StepsGetDarkerFrom50To900()
+    public void Roles_PointAtTheirTintToneOrShadeVariables()
     {
-        var luminance = new ColorScale("fault", ThemeColor.FromHex("#EF4444"))
-            .Steps.Values.Select(c => c.RelativeLuminance).ToList();
+        var palette = new Palette();
 
-        Assert.Equal(luminance.OrderDescending(), luminance);
+        Assert.Equal(palette.Shades.DarkJungle, palette.TextPrimary);
+        Assert.Equal(palette.Tones.Juniper, palette.TextSecondary);
+        Assert.Equal(palette.Tints.Jade, palette.BorderPrimary);
+        Assert.Equal(palette.Tints.Honeydew, palette.BorderSecondary);
+        Assert.Equal(palette.Tints.MintMist, palette.BackgroundPrimary);
+        Assert.Equal(palette.Tints.MintCream, palette.BackgroundSecondary);
     }
 
     [Fact]
-    public void ColorScale_UnknownStepThrows()
+    public void Roles_FollowCustomizedVariablesPassedIn()
     {
-        var scale = new ColorScale("primary", ThemeColor.Black);
+        var tints = new Tints { MintMist = "#FFFFFF" };
 
-        Assert.Throws<KeyNotFoundException>(() => scale[550]);
+        Assert.Equal("#FFFFFF", new Palette(tints, new Tones(), new Shades()).BackgroundPrimary);
+    }
+
+    [Theory]
+    [InlineData(nameof(Palette.TextPrimary))]
+    [InlineData(nameof(Palette.TextSecondary))]
+    public void TextColors_MeetWcagAaOnBothBackgrounds(string role)
+    {
+        var palette = new Palette();
+        var text = ThemeColor.FromHex(palette.Roles.Single(r => r.Name == role).Hex);
+
+        Assert.True(text.ContrastRatio(ThemeColor.FromHex(palette.BackgroundPrimary)) >= 4.5);
+        Assert.True(text.ContrastRatio(ThemeColor.FromHex(palette.BackgroundSecondary)) >= 4.5);
     }
 
     [Fact]
-    public void Default_HasOneScalePerRoleWithUniqueNames()
+    public void Setter_RejectsInvalidHex()
     {
-        var names = Palette.Default.All.Select(s => s.Name).ToList();
+        var palette = new Palette();
 
-        Assert.Equal(["primary", "secondary", "accent", "neutral", "available", "charging", "waiting", "fault"], names);
+        Assert.Throws<ArgumentException>(() => palette.TextPrimary = "not-a-color");
+        Assert.Equal("#032111", palette.TextPrimary);
     }
 
     [Fact]
-    public void ToCssVariables_EmitsStepsForegroundAndTones()
+    public void ToCssVariables_EmitsRolesAndEveryNamedColor()
     {
-        var css = Palette.Default.ToCssVariables();
+        var css = new Palette().ToCssVariables();
 
         Assert.StartsWith(":root {", css);
-        Assert.Contains("--color-primary-500: #0B6E3A;", css);
-        Assert.Contains("--color-secondary-500: #3A9A2E;", css);
-        Assert.Contains("--color-accent-500: #6CC24A;", css);
-        Assert.Contains("--gradient-brand: linear-gradient(135deg, #0B6E3A, #6CC24A);", css);
-        Assert.Contains("--color-primary-50: ", css);
-        Assert.Contains("--color-fault-900: ", css);
-        Assert.Contains("--color-primary-900-on: #FFFFFF;", css);
-        Assert.Contains("--color-waiting-on: #000000;", css);
-        Assert.Contains("--color-neutral-tone-3: ", css);
-        Assert.EndsWith("}" + Environment.NewLine, css);
+        Assert.Contains("--color-primary: #0B6E3A;", css);
+        Assert.Contains("--color-text-primary: #032111;", css);
+        Assert.Contains("--color-background-secondary: #E7F1EB;", css);
+        Assert.Contains("--color-on-primary: #FFFFFF;", css);
+        Assert.Contains("--tint-mint-mist: #F3F8F5;", css);
+        Assert.Contains("--tone-lichen: #46775D;", css);
+        Assert.Contains("--shade-dark-jungle: #032111;", css);
+        Assert.Equal(8 + 1 + 30, css.Split('\n').Count(l => l.TrimStart().StartsWith("--")));
     }
 }

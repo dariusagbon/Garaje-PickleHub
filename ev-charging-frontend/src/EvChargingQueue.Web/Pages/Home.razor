@@ -4,13 +4,13 @@
 
 <h1>Charging queue</h1>
 
-<p>Station status colors come from the palette (<code>--color-available-*</code>, <code>--color-charging-*</code>, …).</p>
+<p class="muted">Colors come from the Model-FD palette (<code>--color-text-primary</code>, <code>--color-border-primary</code>, …).</p>
 
 <div class="stations">
-    <div class="station station--available">Charger A · Available</div>
-    <div class="station station--charging">Charger B · Charging</div>
-    <div class="station station--waiting">Charger C · Reserved</div>
-    <div class="station station--fault">Charger D · Out of service</div>
+    <div class="station"><strong>Charger A</strong><span class="muted">Available</span></div>
+    <div class="station"><strong>Charger B</strong><span class="muted">Charging</span></div>
+    <div class="station"><strong>Charger C</strong><span class="muted">Reserved</span></div>
+    <div class="station"><strong>Charger D</strong><span class="muted">Out of service</span></div>
 </div>
 
 <button class="btn-primary">Join queue</button>
