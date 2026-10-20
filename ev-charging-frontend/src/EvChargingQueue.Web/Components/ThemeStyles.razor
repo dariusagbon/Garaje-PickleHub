@@ -1,0 +1,6 @@
+@* Publishes the injected Palette as CSS custom properties in <head>. *@
+@inject Palette Palette
+
+<HeadContent>
+    <style>@Palette.ToCssVariables()</style>
+</HeadContent>

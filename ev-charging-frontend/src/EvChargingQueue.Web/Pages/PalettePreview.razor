@@ -1,0 +1,42 @@
+@page "/palette"
+@inject Palette Palette
+
+<PageTitle>Palette · EV Charging Queue</PageTitle>
+
+<h1>Palette</h1>
+
+@foreach (var scale in Palette.All)
+{
+    <section class="scale">
+        <h2>@scale.Name</h2>
+
+        <h3>Tints</h3>
+        <div class="swatches">
+            @foreach (var tint in scale.Tints)
+            {
+                <Swatch Color="tint.Color" Label="@($"+{tint.Amount:P0} white")" />
+            }
+        </div>
+
+        <h3>Base</h3>
+        <div class="swatches">
+            <Swatch Color="scale.Base" Label="500" />
+        </div>
+
+        <h3>Shades</h3>
+        <div class="swatches">
+            @foreach (var shade in scale.Shades)
+            {
+                <Swatch Color="shade.Color" Label="@($"+{shade.Amount:P0} black")" />
+            }
+        </div>
+
+        <h3>Tones</h3>
+        <div class="swatches">
+            @foreach (var tone in scale.Tones)
+            {
+                <Swatch Color="tone.Color" Label="@($"+{tone.Amount:P0} gray")" />
+            }
+        </div>
+    </section>
+}

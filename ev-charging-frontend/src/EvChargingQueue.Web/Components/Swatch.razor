@@ -1,0 +1,12 @@
+<div class="swatch" style="background: @Color.ToHex(); color: @Color.ReadableForeground().ToHex();">
+    <span class="swatch__hex">@Color.ToHex()</span>
+    <span class="swatch__label">@Label</span>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ThemeColor Color { get; set; }
+
+    [Parameter]
+    public string? Label { get; set; }
+}
